@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UPSC Spaced Repetition Tracker</title>
+<link rel="stylesheet" href="/static/css/style.css?v={{ cache_bust }}">
+</head>
+<body>
+<div class="app">
+  <!-- ===== SIDEBAR ===== -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;">
+        <style>
+          @keyframes sidebar-emblem-shine {
+            0%   { top:-100%;left:-100%;opacity:0; }
+            10%  { opacity:1; }
+            50%  { top:100%;left:100%;opacity:1; }
+            60%  { opacity:0; }
+            100% { top:100%;left:100%;opacity:0; }
+          }
+          .sidebar-emblem::after {
+            content:''; position:absolute; top:-100%; left:-100%;
+            width:60%; height:200%; z-index:2;
+            background:linear-gradient(115deg, transparent 20%, rgba(255,255,255,0.45) 45%, rgba(255,255,255,0.7) 50%, rgba(255,255,255,0.45) 55%, transparent 80%);
+            transform:rotate(25deg);
+            animation:sidebar-emblem-shine 3s ease-in-out infinite;
+            pointer-events:none;
+          }
+        </style>
+        <div class="sidebar-emblem" style="width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 12px rgba(212,160,23,0.4);flex-shrink:0;position:relative;overflow:hidden;">
+          <img src="/static/images/ashoka-emblem.webp" alt="Ashoka Emblem" style="width:40px;height:40px;object-fit:cover;border-radius:50%;position:relative;z-index:1;">
+        </div>
+        <div>
+          <h1 style="font-size:16px;margin:0;"><span style="background:linear-gradient(135deg,#d4a017,#f5d778,#c8942a);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-weight:800;">KKCS</span></h1>
+          <p style="font-size:8px;color:#6b7280;letter-spacing:2px;text-transform:uppercase;margin:1px 0 0 0;">Kandukuri Kishore Chandra Sekhar</p>
+        </div>
+      </div>
+      <p>Spaced Repetition System</p>
+    </div>
+    <nav class="sidebar-nav">
+      <button class="nav-item active" data-page="dashboard">
+        <span class="nav-icon"></span><span>Dashboard</span>
+      </button>
+      <button class="nav-item" data-page="subjects">
+        <span class="nav-icon"></span><span>Subjects</span>
+      </button>
+      <button class="nav-item" data-page="today">
+        <span class="nav-icon"></span><span>Today's Plan</span>
+      </button>
+      <button class="nav-item" data-page="calendar">
+        <span class="nav-icon"></span><span>Calendar</span>
+      </button>
+      <button class="nav-item" data-page="analytics">
+        <span class="nav-icon"></span><span>Analytics</span>
+      </button>
+      <button class="nav-item" data-page="cumulative">
+        <span class="nav-icon"></span><span>Cumulative Rev</span>
+      </button>
+      <button class="nav-item" data-page="timeline">
+        <span class="nav-icon"></span><span>Timeline</span>
+      </button>
+      <button class="nav-item" data-page="settings">
+        <span class="nav-icon"></span><span>Settings</span>
+      </button>
+      <button class="nav-item" data-page="htmlpages">
+        <span class="nav-icon"></span><span>HTML Pages</span>
+      </button>
+      <button class="nav-item" data-page="help">
+        <span class="nav-icon"></span><span>Help &amp; Logic</span>
+      </button>
+
+    </nav>
+    <div class="sidebar-footer">
+      <span>Target: UPSC 2027</span>
+    </div>
+  </aside>
+
+  <!-- ===== MAIN CONTENT ===== -->
+  <div class="main">
+
+    <!-- ===== DASHBOARD ===== -->
+    <div class="page active" id="page-dashboard">
+      <h2 class="page-title">Dashboard</h2>
+      <div class="day-type" id="dash-day-type"></div>
+      <div class="stats-row" id="dash-stats"></div>
+      <div class="card" id="dash-time-budget-card" style="margin-bottom: 16px; border-left: 4px solid var(--cyan);">
+        <div class="card-header"><span class="card-title">⏱️ Today's Time Budget</span></div>
+        <div id="dash-time-budget"></div>
+      </div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+        <div class="card">
+          <div class="card-header"><span class="card-title">Due Today</span><span class="badge badge-red" id="dash-due-count">0</span></div>
+          <div id="dash-due-list"></div>
+        </div>
+        <div class="card">
+          <div class="card-header"><span class="card-title">Currently Learning</span></div>
+          <div id="dash-learning-list"></div>
+        </div>
+      </div>
+      <div class="card" style="margin-top: 16px;">
+        <div class="card-header"><span class="card-title">⏳ Upcoming (Next 7 Days)</span></div>
+        <div id="dash-upcoming-list"></div>
+      </div>
+      <div class="card" id="dash-cumulative-card" style="margin-top: 16px; display: none; border-left: 4px solid var(--accent);">
+        <div class="card-header"><span class="card-title">🔄 Cumulative Revision Sessions</span></div>
+        <div style="font-size: 11px; color: var(--text2); margin-bottom: 10px;">Weekend consolidation sessions for mastered topics — scientifically spaced.</div>
+        <div id="dash-cumulative-list"></div>
+      </div>
+      <div class="card" id="dash-timeline-card" style="margin-top: 16px; display: none; border-left: 4px solid var(--accent2);">
+        <div class="card-header">
+          <span class="card-title">📈 Timeline Estimator</span>
+          <button class="btn btn-sm" onclick="document.querySelector('[data-page=timeline]').click();">View Full</button>
+        </div>
+        <div style="font-size: 11px; color: var(--text2); margin-bottom: 10px;">Progressive mastery forecast — based on queue position &amp; revision pipeline.</div>
+        <div id="dash-timeline-list"></div>
+      </div>
+    </div>
+
+    <!-- ===== SUBJECTS ===== -->
+    <div class="page" id="page-subjects">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px;">
+        <div>
+          <h2 class="page-title">Subjects & Topics</h2>
+          <p class="page-subtitle">Manage your subjects and micro-topics ranked by ROI</p>
+        </div>
+        <button class="btn btn-primary" onclick="openModal('add-subject')">+ Add Subject</button>
+      </div>
+      <div id="subjects-list"></div>
+    </div>
+
+    <!-- ===== TODAY'S PLAN ===== -->
+    <div class="page" id="page-today">
+      <h2 class="page-title">Today's Plan</h2>
+      <div class="day-type" id="today-day-type"></div>
+      <div id="today-time-blocks"></div>
+    </div>
+
+    <!-- ===== CALENDAR ===== -->
+    <div class="page" id="page-calendar">
+      <h2 class="page-title">Calendar</h2>
+      <p class="page-subtitle">Click any day to view tasks & mark revisions</p>
+      <div class="cal-nav">
+        <button class="btn btn-sm" onclick="calNav(-1)">◀ Prev</button>
+        <span class="cal-nav-month" id="cal-month-label"></span>
+        <button class="btn btn-sm" onclick="calNav(1)">Next ▶</button>
+        <button class="btn btn-sm" onclick="calGoToday()" style="margin-left: auto;">Today</button>
+      </div>
+      <div class="cal-layout">
+        <div class="card" style="flex:1; min-width:0;">
+          <div class="calendar-grid" id="cal-grid"></div>
+        </div>
+        <div class="cal-detail-panel" id="cal-detail-panel">
+          <div class="cal-detail-header">
+            <span class="cal-detail-date" id="cal-detail-date">Select a day</span>
+            <button class="btn btn-sm btn-icon" onclick="closeCalDetail()" title="Close">✕</button>
+          </div>
+          <div class="cal-detail-stats" id="cal-detail-stats"></div>
+          <div class="cal-detail-budget" id="cal-detail-budget"></div>
+          <div class="cal-detail-tasks" id="cal-detail-tasks">
+            <div class="empty-state" style="padding: 40px 0;">
+              <div class="empty-state-icon"></div>
+              <div class="empty-state-text">Click a day on the calendar<br>to see its tasks</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div style="margin-top: 12px; display: flex; gap: 16px; flex-wrap: wrap; font-size: 11px; color: var(--text3);">
+        <span><span class="badge badge-red" style="font-size:10px">R1</span> 1st Revision</span>
+        <span><span class="badge badge-cyan" style="font-size:10px">PYQ</span> PYQ Practice</span>
+        <span><span class="badge badge-pink" style="font-size:10px">ERA</span> Error Analysis</span>
+        <span><span class="badge badge-orange" style="font-size:10px">R3</span> 2nd Revision</span>
+        <span><span class="badge badge-lime" style="font-size:10px">MN</span> Micro Notes</span>
+        <span><span class="badge badge-purple" style="font-size:10px">CA</span> Current Affairs + Mapping</span>
+        <span><span class="badge badge-teal" style="font-size:10px">MCQ</span> MCQ Practice</span>
+        <span><span class="badge badge-indigo" style="font-size:10px">MCQA</span> MCQ Analysis</span>
+        <span><span class="badge badge-yellow" style="font-size:10px">R7</span> 3rd Revision</span>
+        <span><span class="badge badge-emerald" style="font-size:10px">MVA</span> Value Addition</span>
+        <span><span class="badge badge-accent" style="font-size:10px">MAINS</span> Mains Writing</span>
+        <span><span class="badge badge-blue" style="font-size:10px">R30</span> Final Revision</span>
+        <span style="margin-left: auto;">● = has tasks · <span style="color:var(--green)">●</span> = all done · <span style="color:var(--red)">●</span> = overdue</span>
+      </div>
+    </div>
+
+    <!-- ===== ANALYTICS ===== -->
+    <div class="page" id="page-analytics">
+      <h2 class="page-title">Analytics</h2>
+      <p class="page-subtitle">Your progress at a glance</p>
+      <div class="stats-row" id="analytics-stats"></div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+        <div class="card">
+          <div class="card-header"><span class="card-title">Subject Progress</span></div>
+          <div id="analytics-subject-progress"></div>
+        </div>
+        <div class="card">
+          <div class="card-header"><span class="card-title">Revision Compliance</span></div>
+          <div id="analytics-revision-stats"></div>
+        </div>
+      </div>
+      <div class="card" style="margin-top: 16px;">
+        <div class="card-header"><span class="card-title">Topic Lifecycle</span></div>
+        <div id="analytics-lifecycle"></div>
+      </div>
+    </div>
+
+    <!-- ===== CUMULATIVE REVISIONS ===== -->
+    <div class="page" id="page-cumulative">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px;">
+        <div>
+          <h2 class="page-title">Cumulative Revisions</h2>
+          <p class="page-subtitle">Weekend consolidation sessions — scientifically spaced for long-term retention</p>
+        </div>
+        <button class="btn btn-primary" onclick="forceBatch()" id="force-batch-btn" style="display:none;">Create Batch Now</button>
+      </div>
+
+      <!-- Stats Row -->
+      <div class="stats-row" id="cum-stats"></div>
+
+      <!-- Science Info Card -->
+      <div class="card" style="margin-bottom: 16px; border-left: 4px solid var(--accent);">
+        <div style="display: flex; align-items: flex-start; gap: 12px;">
+          <span style="font-size: 24px;">🧠</span>
+          <div>
+            <div style="font-weight: 600; font-size: 14px; margin-bottom: 6px;">Scientific Spaced Repetition — Cumulative Level</div>
+            <div style="font-size: 12px; color: var(--text2); line-height: 1.7;">
+              <strong>Sectional Batches</strong> (5-10 mastered topics, cross-subject interleaving):<br>
+              • Round 1: Next weekend after batch forms — initial consolidation<br>
+              • Round 2: 3 weeks later — intermediate spacing<br>
+              • Round 3: 8 weeks later — long-term embedding<br><br>
+              <strong>Subject-Level Revisions</strong> (triggered when all Very High+High+Medium ROI topics mastered):<br>
+              • Round 1: 2 weeks → Round 2: 6 weeks → Round 3: 14 weeks → Round 4: 24 weeks<br>
+              All sessions scheduled on <strong>Saturdays</strong> (2-day weekend blocks).
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Upcoming Weekend Sessions -->
+      <div class="card" id="cum-upcoming-card">
+        <div class="card-header">
+          <span class="card-title">📅 Upcoming Weekend Sessions</span>
+          <span class="badge badge-accent" id="cum-upcoming-count">0</span>
+        </div>
+        <div id="cum-upcoming-list"></div>
+      </div>
+
+      <!-- Pending Topics Pool -->
+      <div class="card" id="cum-pending-card">
+        <div class="card-header">
+          <span class="card-title">⏳ Pending Topics (Waiting for Batch)</span>
+          <span class="badge badge-yellow" id="cum-pending-count">0</span>
+        </div>
+        <div style="font-size: 11px; color: var(--text2); margin-bottom: 10px;">
+          Topics that have completed all 12 revision stages (mastered). A batch is auto-created when 5+ topics accumulate.
+        </div>
+        <div id="cum-pending-list"></div>
+      </div>
+
+      <!-- Sectional Batches -->
+      <div style="margin-top: 16px;">
+        <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 12px;">📦 Sectional Revision Batches</h3>
+        <div id="cum-batches-list"></div>
+      </div>
+
+      <!-- Subject-Level Revisions -->
+      <div style="margin-top: 24px;">
+        <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 12px;">📚 Subject-Level Revisions</h3>
+        <div id="cum-subject-list"></div>
+      </div>
+    </div>
+
+    <!-- ===== TIMELINE ESTIMATOR ===== -->
+    <div class="page" id="page-timeline">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px;">
+        <div>
+          <h2 class="page-title">Progressive Timeline Estimator</h2>
+          <p class="page-subtitle">Estimated mastery dates for every topic — calculated live from queue position &amp; revision pipeline</p>
+        </div>
+      </div>
+
+      <!-- Summary Stats -->
+      <div class="stats-row" id="tl-stats"></div>
+
+      <!-- Pipeline Visual -->
+      <div class="card" style="margin-bottom: 16px; border-left: 4px solid var(--accent2);">
+        <div style="display: flex; align-items: flex-start; gap: 12px;">
+          <span style="font-size: 24px;">⏱️</span>
+          <div>
+            <div style="font-weight: 600; font-size: 14px; margin-bottom: 6px;">Two-Phase Dynamic Scheduling</div>
+            <div style="font-size: 12px; color: var(--text2); line-height: 1.7;">
+              Each topic goes through a <strong>two-phase pipeline</strong>:
+              <strong>Learning</strong> →
+              Phase 1 (rigid): <strong>R1</strong> → <strong>R3</strong> → <strong>MN</strong> (standalone) →
+              <strong>R7</strong> (Sunday) → <strong>MVA</strong> → <strong>MAINS</strong> → <strong>R30</strong> |
+              Phase 2 (flexible): <strong>PYQ+ERA</strong> fill R1 day, <strong>CA+MCQ+MCQA</strong> fill after MN
+              = <strong>Full Mastery</strong>.<br>
+              Rigid stages (spaced repetition) are placed first across all topics; flexible clusters fill remaining budget gaps.
+              The estimator uses <strong>budget-aware two-phase packing</strong> — no day exceeds its budget.<br>
+              Max <strong>2 topics in parallel</strong>. High ROI topics prioritized. See <strong>Help & Logic</strong> page for full details.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Overall Timeline -->
+      <div class="card" style="margin-bottom: 16px;">
+        <div class="card-header"><span class="card-title">📊 Overall Completion Forecast</span></div>
+        <div id="tl-overall"></div>
+      </div>
+
+      <!-- Full Topic Timeline Table -->
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">📋 All Topics — Estimated Dates</span>
+          <div style="display:flex; gap:8px;">
+            <select class="form-select" id="tl-filter-status" onchange="renderTimeline()" style="font-size:11px;padding:4px 8px;width:auto;">
+              <option value="all">All Status</option>
+              <option value="not-started" selected>Not Started</option>
+              <option value="learning">Learning</option>
+              <option value="completed">Revising</option>
+              <option value="mastered">Mastered</option>
+            </select>
+          </div>
+        </div>
+        <div id="tl-topic-list" style="overflow-x:auto;"></div>
+      </div>
+    </div>
+
+    <!-- ===== SETTINGS ===== -->
+    <div class="page" id="page-settings">
+      <h2 class="page-title">Settings</h2>
+      <p class="page-subtitle">Configure your study schedule and preferences</p>
+
+      <!-- Theme Picker -->
+      <div class="card" style="margin-bottom: 16px;">
+        <div class="card-title" style="margin-bottom: 16px;">🎨 Theme</div>
+        <p style="font-size: 12px; color: var(--text2); margin-bottom: 14px;">Choose a color scheme for your tracker. Changes apply instantly.</p>
+        <div class="theme-picker-card" id="theme-picker"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title" style="margin-bottom: 16px;">Time Allocation</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Weekday Hours</label>
+            <input type="number" class="form-input" id="set-weekday-hrs" value="6" min="1" max="16">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Weekend Hours</label>
+            <input type="number" class="form-input" id="set-weekend-hrs" value="12" min="1" max="16">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Weekday Revision Block (minutes)</label>
+            <input type="number" class="form-input" id="set-revision-mins" value="60" min="15" max="180">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Weekend Revision Block (hours)</label>
+            <input type="number" class="form-input" id="set-weekend-rev-hrs" value="3" min="1" max="6">
+          </div>
+        </div>
+        <button class="btn btn-primary" onclick="saveSettings()" style="margin-top: 8px;">Save Settings</button>
+      </div>
+      <div class="card">
+        <div class="card-title" style="margin-bottom: 16px;">⏱️ Activity Durations (Hours)</div>
+        <p style="font-size: 12px; color: var(--text2); margin-bottom: 12px;">How long each activity takes. Used by the smart scheduler to avoid overloading any day.</p>
+        <div style="font-size: 13px; font-weight: 600; color: var(--red); margin: 12px 0 8px;">Revisions</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">R1 — 1st Revision</label>
+            <input type="number" class="form-input" id="set-act-r1" value="1.5" min="0.25" max="4" step="0.25">
+          </div>
+          <div class="form-group">
+            <label class="form-label">R3 — 2nd Revision</label>
+            <input type="number" class="form-input" id="set-act-r3" value="1" min="0.25" max="4" step="0.25">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">R7 — 3rd Revision</label>
+            <input type="number" class="form-input" id="set-act-r7" value="1.5" min="0.25" max="4" step="0.25">
+          </div>
+          <div class="form-group">
+            <label class="form-label">R30 — Final Revision</label>
+            <input type="number" class="form-input" id="set-act-r30" value="1" min="0.25" max="4" step="0.25">
+          </div>
+        </div>
+        <div style="font-size: 13px; font-weight: 600; color: var(--cyan); margin: 12px 0 8px;">Practice &amp; Analysis</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">PYQ Practice</label>
+            <input type="number" class="form-input" id="set-act-pyq" value="1" min="0.25" max="4" step="0.25">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Error Analysis</label>
+            <input type="number" class="form-input" id="set-act-era" value="1" min="0.25" max="4" step="0.25">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">CA + Mapping</label>
+            <input type="number" class="form-input" id="set-act-ca" value="1" min="0.25" max="4" step="0.25">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Micro Note Making</label>
+            <input type="number" class="form-input" id="set-act-mn" value="1" min="0.25" max="4" step="0.25">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">MCQ Practice</label>
+            <input type="number" class="form-input" id="set-act-mcq" value="0.5" min="0.25" max="4" step="0.25">
+          </div>
+          <div class="form-group">
+            <label class="form-label">MCQ Analysis</label>
+            <input type="number" class="form-input" id="set-act-mcqa" value="0.5" min="0.25" max="4" step="0.25">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Mains Value Addition</label>
+            <input type="number" class="form-input" id="set-act-mva" value="1" min="0.25" max="4" step="0.25">
+          </div>
+          <div class="form-group">
+            <label class="form-label">MAINS Writing</label>
+            <input type="number" class="form-input" id="set-act-mains" value="1.5" min="0.25" max="4" step="0.25">
+          </div>
+        </div>
+        <div style="font-size: 13px; font-weight: 600; color: var(--purple); margin: 12px 0 8px;">Cumulative Revision</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Sectional Batch (total hrs)</label>
+            <input type="number" class="form-input" id="set-act-sectional" value="12" min="2" max="24" step="1">
+            <span style="font-size:10px; color:var(--text3);">Spread over 1 weekend (Sat+Sun)</span>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Subject Revision (total hrs)</label>
+            <input type="number" class="form-input" id="set-act-subject" value="24" min="6" max="48" step="2">
+            <span style="font-size:10px; color:var(--text3);">Spread over 2 weekends (Sat+Sun × 2)</span>
+          </div>
+        </div>
+        <button class="btn btn-primary" onclick="saveSettings()" style="margin-top: 8px;">Save Activity Durations</button>
+      </div>
+      <div class="card">
+        <div class="card-title" style="margin-bottom: 16px;">Data Management</div>
+        <div class="export-actions">
+          <button class="btn" onclick="exportData()">Export Data (JSON)</button>
+          <button class="btn" onclick="document.getElementById('import-file').click()">Import Data</button>
+          <input type="file" id="import-file" accept=".json" style="display:none" onchange="importData(event)">
+          <button class="btn btn-danger" onclick="clearAllData()">Clear All Data</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title" style="margin-bottom: 16px;">Spaced Repetition Intervals</div>
+        <p style="font-size: 12px; color: var(--text2); margin-bottom: 12px;">Customize the revision intervals (in days). Default: 1, 5, 14, 35</p>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">R1 (Days)</label>
+            <input type="number" class="form-input" id="set-r1" value="1" min="1" max="3">
+          </div>
+          <div class="form-group">
+            <label class="form-label">R3 (Days)</label>
+            <input type="number" class="form-input" id="set-r3" value="5" min="3" max="10">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">R7 (Days)</label>
+            <input type="number" class="form-input" id="set-r7" value="14" min="7" max="21">
+          </div>
+          <div class="form-group">
+            <label class="form-label">R30 (Days)</label>
+            <input type="number" class="form-input" id="set-r30" value="35" min="28" max="60">
+          </div>
+        </div>
+        <button class="btn btn-primary" onclick="saveSettings()" style="margin-top: 8px;">Save Intervals</button>
+      </div>
+      <div class="card">
+        <div class="card-title" style="margin-bottom: 16px;">Push Notifications (ntfy)</div>
+        <p style="font-size: 12px; color: var(--text2); margin-bottom: 12px;">
+          Get instant push notifications on your phone for every action!
+          <a href="https://ntfy.sh" target="_blank" style="color: var(--accent2);">ntfy.sh</a> is free & open-source.
+        </p>
+        <div style="background: var(--bg); border-radius: 8px; padding: 12px; margin-bottom: 14px; font-size: 12px; color: var(--text2); line-height: 1.6;">
+          <strong style="color: var(--text1);">Quick Setup (2 min):</strong><br>
+          1. Install <strong>ntfy</strong> app on your phone
+          (<a href="https://play.google.com/store/apps/details?id=io.heckel.ntfy" target="_blank" style="color: var(--accent2);">Android</a> / 
+          <a href="https://apps.apple.com/app/ntfy/id1625396347" target="_blank" style="color: var(--accent2);">iOS</a>)<br>
+          2. Set a <strong>global topic</strong> below for general notifications<br>
+          3. For each subject, click the notification button on the Subjects page to set a <strong>unique channel</strong><br>
+          4. Subscribe to each channel in the ntfy app on your phone<br><br>
+          <strong style="color: var(--accent2);">Example setup:</strong><br>
+          <code style="background:var(--bg3);padding:2px 6px;border-radius:3px;">upsc-global</code> → Settings, imports, clears<br>
+          <code style="background:var(--bg3);padding:2px 6px;border-radius:3px;">upsc-polity</code> → All Polity notifications<br>
+          <code style="background:var(--bg3);padding:2px 6px;border-radius:3px;">upsc-history</code> → All History notifications<br>
+          If a subject has no channel set, it uses the global one.
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Enable Notifications</label>
+            <select class="form-select" id="set-ntfy-enabled">
+              <option value="false">Disabled</option>
+              <option value="true">Enabled</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Global ntfy Topic (fallback)</label>
+            <input type="text" class="form-input" id="set-ntfy-topic" placeholder="e.g., upsc-global">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">ntfy Server</label>
+            <input type="text" class="form-input" id="set-ntfy-server" value="https://ntfy.sh" placeholder="https://ntfy.sh">
+          </div>
+          <div class="form-group" style="display:flex; align-items:flex-end;">
+            <button class="btn btn-primary" onclick="testNtfy()" style="white-space:nowrap;">Send Test Notification</button>
+          </div>
+        </div>
+        <div id="ntfy-status" style="font-size: 12px; margin-top: 8px; color: var(--text3);"></div>
+        <button class="btn btn-primary" onclick="saveSettings()" style="margin-top: 12px;">Save Notification Settings</button>
+      </div>
+    </div>
+
+    <!-- ===== HTML PAGES ===== -->
+    <div class="page" id="page-htmlpages">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px;">
+        <div>
+          <h2 class="page-title">HTML Pages</h2>
+          <p class="page-subtitle">Upload HTML files and share viewable links</p>
+        </div>
+        <button class="btn btn-primary" onclick="document.getElementById('html-upload-input').click()">+ Upload HTML</button>
+        <input type="file" id="html-upload-input" accept=".html,.htm" multiple style="display:none" onchange="uploadHtmlFiles(event)">
+      </div>
+      <div class="card" id="html-upload-area" style="border: 2px dashed var(--border); text-align: center; padding: 40px 20px; cursor: pointer; transition: border-color .2s;" onclick="document.getElementById('html-upload-input').click()">
+        <div style="font-size: 36px; margin-bottom: 8px;">📁</div>
+        <div style="font-size: 14px; color: var(--text2);">Click or drag & drop HTML files here</div>
+        <div style="font-size: 11px; color: var(--text3); margin-top: 4px;">Only .html / .htm files accepted</div>
+      </div>
+      <div id="html-files-list" style="margin-top: 16px;"></div>
+    </div>
+
+    <!-- ===== HELP & LOGIC ===== -->
+    <div class="page" id="page-help">
+      <div style="margin-bottom: 20px;">
+        <h2 class="page-title">Help &amp; Scheduling Logic</h2>
+        <p class="page-subtitle">Understand how the Option C dynamic scheduling algorithm works under the hood</p>
+      </div>
+
+      <!-- Section 1: Overview -->
+      <div class="card" style="margin-bottom:16px; border-left:4px solid var(--accent);">
+        <div class="card-header"><span class="card-title">🎯 Overview</span></div>
+        <div style="font-size:13px; color:var(--text2); line-height:1.8; padding:4px 0;">
+          This tracker uses a <strong>12-stage spaced repetition pipeline</strong> combined with
+          <strong>Option C dynamic scheduling</strong> to maximise your daily study budget.
+          <br><br>
+          <strong>The Problem (Old System):</strong> Each of the 12 revision stages was assigned a separate calendar day.
+          If a stage only took 1h but your daily budget was 6h, the remaining 5h were wasted. Over 12 stages,
+          this meant ~11 days of sub-optimal utilisation per topic.
+          <br><br>
+          <strong>The Solution (Option C):</strong> Stages that don't need neurological spacing between them
+          are <em>packed together on the same day</em>, forming compact "blocks". The timeline estimator then uses
+          <em>budget-aware dynamic packing</em> to slide stages into the first day that has room — no wasted hours.
+        </div>
+      </div>
+
+      <!-- Section 2: The 12 Stages -->
+      <div class="card" style="margin-bottom:16px;">
+        <div class="card-header"><span class="card-title">🧠 The 12-Stage Mastery Pipeline</span></div>
+        <div style="overflow-x:auto; padding:4px 0;">
+          <table>
+            <thead><tr><th>#</th><th>Code</th><th>Stage</th><th>Hours</th><th>Purpose</th></tr></thead>
+            <tbody>
+              <tr><td>1</td><td><span class="badge badge-blue">R1</span></td><td>1st Revision — Free Recall</td><td>1.5 h</td><td>Tests immediate retention after learning</td></tr>
+              <tr><td>2</td><td><span class="badge badge-orange">PYQ</span></td><td>Previous Year Questions</td><td>1 h</td><td>Exam-pattern exposure &amp; gap identification</td></tr>
+              <tr><td>3</td><td><span class="badge badge-pink">ERA</span></td><td>Error Analysis</td><td>1 h</td><td>Fix PYQ mistakes — deepens understanding</td></tr>
+              <tr><td>4</td><td><span class="badge badge-green">R3</span></td><td>2nd Revision — Active Recall</td><td>1 h</td><td>Strengthens memory at optimal forgetting point</td></tr>
+              <tr><td>5</td><td><span class="badge badge-lime">MN</span></td><td>Micro Note Making</td><td>1 h</td><td>Condenses knowledge into exam-ready notes</td></tr>
+              <tr><td>6</td><td><span class="badge badge-yellow">CA</span></td><td>Current Affairs Mapping</td><td>1 h</td><td>Links syllabus to current events</td></tr>
+              <tr><td>7</td><td><span class="badge badge-red">MCQ</span></td><td>MCQ Practice</td><td>0.5 h</td><td>Prelims-focused rapid testing</td></tr>
+              <tr><td>8</td><td><span class="badge badge-indigo">MCQA</span></td><td>MCQ Analysis</td><td>0.5 h</td><td>Learn from mistakes, not just answers</td></tr>
+              <tr><td>9</td><td><span class="badge badge-cyan">R7</span></td><td>3rd Revision — Consolidation</td><td>1.5 h</td><td>Weekend deep-dive after forgetting curve dip</td></tr>
+              <tr><td>10</td><td><span class="badge badge-emerald">MVA</span></td><td>Mains Value Addition</td><td>1 h</td><td>Depth — quotes, case studies, committee reports</td></tr>
+              <tr><td>11</td><td><span class="badge badge-accent">MAINS</span></td><td>Mains Answer Writing</td><td>1.5 h</td><td>Full answer practice under exam conditions</td></tr>
+              <tr><td>12</td><td><span class="badge badge-purple">R30</span></td><td>Final Revision</td><td>1 h</td><td>Long-term consolidation before the exam</td></tr>
+            </tbody>
+          </table>
+          <div style="font-size:11px; color:var(--text3); margin-top:8px;">Total revision hours per topic: <strong>12 h</strong>. Stage durations are configurable in Settings → Activity Durations.</div>
+        </div>
+      </div>
+
+      <!-- Section 3: Two-Phase Scheduling Architecture -->
+      <div class="card" style="margin-bottom:16px; border-left:4px solid var(--green);">
+        <div class="card-header"><span class="card-title">⚡ Two-Phase Dynamic Scheduling</span></div>
+        <div style="font-size:13px; color:var(--text2); line-height:1.8; padding:4px 0;">
+          Instead of spreading 12 stages across 12 separate days, the scheduler uses a
+          <strong>two-phase architecture</strong> that separates <em>rigid</em> spaced-repetition
+          stages from <em>flexible</em> practice clusters:
+        </div>
+
+        <div style="margin-top:12px; font-size:13px; color:var(--text2); line-height:1.7;">
+          <div style="font-weight:600; color:var(--accent); margin-bottom:6px;">Phase 1 — Rigid Stages (Spaced Repetition + Deep Work)</div>
+          These get placed onto the calendar <strong>first</strong>, respecting minimum neurological gaps:
+        </div>
+        <div style="overflow-x:auto; margin-top:8px;">
+          <table>
+            <thead><tr><th>Stage</th><th>Hours</th><th>Earliest Date</th><th>Rule</th></tr></thead>
+            <tbody>
+              <tr><td><span class="badge badge-blue">R1</span></td><td>1.5 h</td><td>R1 interval (default 1d)</td><td>First recall — needs at least one sleep cycle</td></tr>
+              <tr><td><span class="badge badge-green">R3</span></td><td>1 h</td><td>R3 interval (default 5d), min 1d after R1</td><td>Active recall at optimal forgetting point</td></tr>
+              <tr><td><span class="badge badge-lime">MN</span> ⭐</td><td>1 h</td><td>1 day after R3</td><td><strong>Standalone</strong> — no other stages of this topic share its day</td></tr>
+              <tr><td><span class="badge badge-cyan">R7</span></td><td>1.5 h</td><td>R7 interval (default 14d), min 5d after MN, Sunday only</td><td>Weekend consolidation after forgetting curve dip</td></tr>
+              <tr><td><span class="badge badge-emerald">MVA</span></td><td>1 h</td><td>7 days after R7</td><td>Fresh perspective for mains depth</td></tr>
+              <tr><td><span class="badge badge-accent">MAINS</span></td><td>1.5 h</td><td>1 day after MVA</td><td>Answer writing with fresh value addition</td></tr>
+              <tr><td><span class="badge badge-purple">R30</span></td><td>1 h</td><td>R30 interval (default 35d), min 14d after MAINS</td><td>Final long-term consolidation</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div style="margin-top:16px; font-size:13px; color:var(--text2); line-height:1.7;">
+          <div style="font-weight:600; color:var(--yellow); margin-bottom:6px;">Phase 2 — Flexible Clusters (Practice &amp; Analysis)</div>
+          After <em>all</em> rigid stages are placed, these practice clusters fill remaining budget gaps as <strong>atomic units</strong>:
+        </div>
+        <div style="overflow-x:auto; margin-top:8px;">
+          <table>
+            <thead><tr><th>Cluster</th><th>Stages</th><th>Hours</th><th>Placed From</th><th>Rule</th></tr></thead>
+            <tbody>
+              <tr>
+                <td style="font-weight:600;">A</td>
+                <td><span class="badge badge-orange">PYQ</span> + <span class="badge badge-pink">ERA</span></td>
+                <td>1 h</td>
+                <td>R1 day onward</td>
+                <td>Practice + error analysis — packs onto R1 day if budget allows</td>
+              </tr>
+              <tr>
+                <td style="font-weight:600;">B</td>
+                <td><span class="badge badge-yellow">CA</span> + <span class="badge badge-red">MCQ</span> + <span class="badge badge-indigo">MCQA</span></td>
+                <td>2 h</td>
+                <td>Day after MN</td>
+                <td>Applied practice — mapping, testing, analysis. Never on MN day.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div style="font-size:12px; color:var(--text2); margin-top:14px; line-height:1.7; padding:8px 12px; background:rgba(255,255,255,0.03); border-radius:8px;">
+          <strong>Why Two-Phase?</strong> With multiple topics, a topic's flexible PYQ or MCQ practice could steal budget
+          from another topic's critical R3 recall. The global two-phase design ensures <em>all rigid stages
+          across all topics</em> are placed before <em>any</em> flexible cluster — spaced repetition is sacred.
+        </div>
+
+        <div style="font-size:12px; color:var(--text2); margin-top:8px; line-height:1.7;">
+          <strong>Result:</strong> 12 stages in only <strong>~8 calendar dates</strong> per topic (R1+PYQ+ERA share Day 1,
+          CA+MCQ+MCQA share one day). MN gets its own dedicated deep-focus slot.
+        </div>
+      </div>
+
+      <!-- Section 4: Before vs After -->
+      <div class="card" style="margin-bottom:16px;">
+        <div class="card-header"><span class="card-title">📊 Old System vs Two-Phase — Example</span></div>
+        <div style="font-size:13px; color:var(--text2); line-height:1.7; padding:4px 0;">
+          <strong>Scenario:</strong> Topic completed on Day 0. Weekday budget = 6h. Default intervals (R1=1, R3=5, R7=14, R30=35).
+        </div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:10px;">
+          <div>
+            <div style="font-weight:600; font-size:13px; color:var(--red); margin-bottom:8px;">❌ Old System (12 separate days)</div>
+            <div style="font-size:11px; color:var(--text3); line-height:1.8; font-family:monospace;">
+              Day 1: R1 (1.5h) — 4.5h idle<br>
+              Day 2: PYQ (1h) — 5h idle<br>
+              Day 3: ERA (1h) — 5h idle<br>
+              Day 5: R3 (1h) — 5h idle<br>
+              Day 6: MN (1h) — 5h idle<br>
+              Day 7: CA (1h) — 5h idle<br>
+              Day 8: MCQ (0.5h) — 5.5h idle<br>
+              Day 9: MCQA (0.5h) — 5.5h idle<br>
+              Day~15: R7 (1.5h) — 4.5h idle<br>
+              Day~29: MVA (1h) — 5h idle<br>
+              Day~31: MAINS (1.5h) — 4.5h idle<br>
+              Day 35: R30 (1h) — 5h idle<br>
+              <strong>Wasted: ~56h across 12 days</strong>
+            </div>
+          </div>
+          <div>
+            <div style="font-weight:600; font-size:13px; color:var(--green); margin-bottom:8px;">✅ Two-Phase (8 calendar dates)</div>
+            <div style="font-size:11px; color:var(--text3); line-height:1.8; font-family:monospace;">
+              Day 1: R1+PYQ+ERA (2.5h) — 3.5h free<br>
+              Day 5: R3 (1h) — 5h free<br>
+              Day 6: MN (1h) ⭐standalone — 5h free<br>
+              Day 7: CA+MCQ+MCQA (2h) — 4h free<br>
+              Day~18: R7 (1.5h, Sunday) — 10.5h free<br>
+              Day~25: MVA (1h) — 5h free<br>
+              Day~26: MAINS (1.5h) — 4.5h free<br>
+              Day~40: R30 (1h) — 5h free<br>
+              <br>
+              <strong>Saved: ~4 entire revision-only days!</strong><br>
+              <strong>MN gets dedicated deep-focus slot.</strong><br>
+              <strong>All freed hours → more learning.</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 5: Budget-Aware Packing -->
+      <div class="card" style="margin-bottom:16px; border-left:4px solid var(--cyan);">
+        <div class="card-header"><span class="card-title">📅 Budget-Aware Dynamic Packing (Estimator)</span></div>
+        <div style="font-size:13px; color:var(--text2); line-height:1.8; padding:4px 0;">
+          The <strong>Timeline Estimator</strong> goes one step further with budget-aware packing:
+          <ol style="margin:10px 0 0 20px;">
+            <li>For each revision stage, it computes the <strong>earliest possible date</strong> (respecting minimum gaps).</li>
+            <li>It checks if the day's budget has <strong>enough room</strong> for the stage's hours (after existing revisions + learning).</li>
+            <li>If the day is <strong>full</strong>, the stage slides to the <strong>next available day</strong> with room.</li>
+            <li>When a stage is placed, its hours are <strong>committed to that day's budget</strong>, affecting all subsequent scheduling.</li>
+          </ol>
+          <br>
+          This means the estimator accounts for:
+          <ul style="margin:6px 0 0 20px;">
+            <li><strong>Global two-phase priority:</strong> All topics' rigid stages placed before any flexible clusters</li>
+            <li><strong>Multiple topics competing</strong> for the same day's budget</li>
+            <li><strong>Weekday (6h) vs Weekend (12h)</strong> capacity differences</li>
+            <li><strong>Atomic flexible clusters:</strong> PYQ+ERA and CA+MCQ+MCQA are placed as whole units — no splitting</li>
+            <li><strong>MN isolation:</strong> Note-making days never share with other stages of the same topic</li>
+            <li><strong>Learning hours</strong> for active topics reducing available budget</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Section 6: Key Intervals -->
+      <div class="card" style="margin-bottom:16px;">
+        <div class="card-header"><span class="card-title">⏰ Configurable Intervals</span></div>
+        <div style="font-size:13px; color:var(--text2); line-height:1.8; padding:4px 0;">
+          Four key intervals can be customised in <strong>Settings → Revision Intervals</strong>:
+          <table style="margin-top:10px;">
+            <thead><tr><th>Interval</th><th>Default</th><th>Controls</th></tr></thead>
+            <tbody>
+              <tr><td><strong>R1</strong></td><td>1 day</td><td>Days from completion to first recall (Phase 1)</td></tr>
+              <tr><td><strong>R3</strong></td><td>5 days</td><td>Days from completion to active recall (Phase 1, min 1d after R1)</td></tr>
+              <tr><td><strong>R7</strong></td><td>14 days</td><td>Days from completion to consolidation (Phase 1, Sunday, min 5d after MN)</td></tr>
+              <tr><td><strong>R30</strong></td><td>35 days</td><td>Days from completion to final revision (Phase 1, min 14d after MAINS)</td></tr>
+            </tbody>
+          </table>
+          <div style="font-size:11px; color:var(--text3); margin-top:8px;">These are <em>anchor points</em>. The actual date is <code>max(anchor, previous_stage + min_gap)</code>, so reducing an interval never creates an impossible schedule.</div>
+        </div>
+      </div>
+
+      <!-- Section 7: Estimator Simulation -->
+      <div class="card" style="margin-bottom:16px; border-left:4px solid var(--yellow);">
+        <div class="card-header"><span class="card-title">🚀 Timeline Estimator — How It Simulates</span></div>
+        <div style="font-size:13px; color:var(--text2); line-height:1.8; padding:4px 0;">
+          The estimator on the <strong>Timeline</strong> page runs a day-by-day simulation up to 400 days:
+          <ol style="margin:10px 0 0 20px;">
+            <li><strong>Step 1 — Real data:</strong> Already completed/mastered topics use their actual dates.</li>
+            <li><strong>Step 2 — Build budget map:</strong> All pending revisions + cumulative sessions are loaded into a daily-hours map.</li>
+            <li><strong>Step 3 — Queue topics:</strong> Not-started topics are sorted by ROI priority, then addition order.</li>
+            <li><strong>Step 4 — Simulate each day:</strong>
+              <ul style="margin:4px 0 0 16px;">
+                <li>Compute revision load from the budget map</li>
+                <li>Available = daily budget − revision load</li>
+                <li>Spend available hours on active learning topics</li>
+                <li>When a topic finishes learning → dynamically schedule its 12 revision stages (budget-aware)</li>
+                <li>Start new topics from queue if parallel slots are free</li>
+              </ul>
+            </li>
+          </ol>
+        </div>
+      </div>
+
+      <!-- Section 8: Quick Reference -->
+      <div class="card" style="margin-bottom:16px;">
+        <div class="card-header"><span class="card-title">📝 Quick Reference</span></div>
+        <div style="font-size:13px; color:var(--text2); line-height:1.8; padding:4px 0;">
+          <table>
+            <thead><tr><th>Concept</th><th>Value</th><th>Where to Change</th></tr></thead>
+            <tbody>
+              <tr><td>Parallel learning slots</td><td>2 topics</td><td>Fixed (code)</td></tr>
+              <tr><td>Weekday budget</td><td>6 h</td><td>Settings → Study Budget</td></tr>
+              <tr><td>Weekend budget</td><td>12 h</td><td>Settings → Study Budget</td></tr>
+              <tr><td>Per-topic learning hours</td><td>0.5–100 h</td><td>Set when adding/editing a topic</td></tr>
+              <tr><td>ROI priority levels</td><td>Very High → High → Medium → Low</td><td>Set per topic</td></tr>
+              <tr><td>Stage durations</td><td>0.5–3 h each</td><td>Settings → Activity Durations</td></tr>
+              <tr><td>Revision intervals</td><td>R1/R3/R7/R30</td><td>Settings → Revision Intervals</td></tr>
+              <tr><td>R7 always on</td><td>Sunday</td><td>Fixed (consolidation weekend)</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Section 9: Cumulative Revision -->
+      <div class="card" style="margin-bottom:16px; border-left:4px solid var(--accent2);">
+        <div class="card-header"><span class="card-title">🔄 Cumulative Revision System</span></div>
+        <div style="font-size:13px; color:var(--text2); line-height:1.8; padding:4px 0;">
+          After a topic reaches <strong>Mastered</strong> status (all 12 stages done), it enters the
+          <strong>Cumulative Revision</strong> system:
+          <ul style="margin:8px 0 0 20px;">
+            <li><strong>Sectional Batches:</strong> Every 5–10 mastered topics form a cross-subject batch.
+                3 revision rounds at increasing intervals (0, 21, 56 days).</li>
+            <li><strong>Subject Revisions:</strong> When all high-ROI topics in a subject are mastered,
+                4 rounds of full-subject revision (14, 42, 98, 168 days).</li>
+            <li>Both are scheduled on <strong>Saturdays</strong> for 2-day weekend blocks.</li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+
+<!-- ===== MODAL: ADD SUBJECT ===== -->
+<div class="modal-overlay" id="modal-add-subject">
+  <div class="modal">
+    <div class="modal-title">Add New Subject</div>
+    <div class="form-group">
+      <label class="form-label">Subject Name</label>
+      <input type="text" class="form-input" id="subj-name" placeholder="e.g., Polity">
+    </div>
+    <div class="form-group">
+      <label class="form-label">ROI Priority</label>
+      <select class="form-select" id="subj-roi">
+        <option value="very-high">Very High ROI</option>
+        <option value="high">High ROI</option>
+        <option value="medium">Medium ROI</option>
+        <option value="low">Low ROI</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Color Tag</label>
+      <select class="form-select" id="subj-color">
+        <option value="#6366f1">Purple</option>
+        <option value="#3b82f6">Blue</option>
+        <option value="#22c55e">Green</option>
+        <option value="#eab308">Yellow</option>
+        <option value="#f97316">Orange</option>
+        <option value="#ef4444">Red</option>
+        <option value="#06b6d4">Cyan</option>
+        <option value="#ec4899">Pink</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">ntfy Channel (Optional)</label>
+      <input type="text" class="form-input" id="subj-ntfy-topic" placeholder="e.g., upsc-polity">
+      <div style="font-size: 11px; color: var(--text3); margin-top: 4px;">Unique ntfy topic for this subject. Subscribe to it in the ntfy app. If empty, uses the global channel.</div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Notes (Optional)</label>
+      <textarea class="form-input" id="subj-notes" rows="2" placeholder="Key resources, strategy, important areas..."></textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeModal('add-subject')">Cancel</button>
+      <button class="btn btn-primary" onclick="addSubject()">Add Subject</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== MODAL: ADD TOPIC ===== -->
+<div class="modal-overlay" id="modal-add-topic">
+  <div class="modal">
+    <div class="modal-title">Add Micro-Topic</div>
+    <input type="hidden" id="topic-subj-id">
+    <div class="form-group">
+      <label class="form-label">Topic Name</label>
+      <input type="text" class="form-input" id="topic-name" placeholder="e.g., Parliament - Money Bills">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Estimated Learning Hours</label>
+      <input type="number" class="form-input" id="topic-days" value="7.5" min="0.5" max="100" step="0.5">
+    </div>
+    <div class="form-group">
+      <label class="form-label">ROI Priority</label>
+      <select class="form-select" id="topic-roi">
+        <option value="very-high">Very High ROI (Learn First)</option>
+        <option value="high">High ROI</option>
+        <option value="medium">Medium ROI</option>
+        <option value="low">Low ROI (Learn Later)</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Notes (Optional)</label>
+      <textarea class="form-input" id="topic-notes" rows="2" placeholder="Key areas, sources..."></textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeModal('add-topic')">Cancel</button>
+      <button class="btn btn-primary" onclick="addTopic()">Add Topic</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== MODAL: TOPIC DETAIL ===== -->
+<div class="modal-overlay" id="modal-topic-detail">
+  <div class="modal" style="width: 560px;">
+    <div class="modal-title" id="detail-title"></div>
+    <div id="detail-content"></div>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeModal('topic-detail')">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== TOAST CONTAINER ===== -->
+<div class="toast-container" id="toast-container"></div>
+
+<!-- ===== FLOATING THEME BUTTON ===== -->
+<button class="theme-fab" onclick="cycleTheme()" title="Switch Theme">🎨</button>
+
+<script src="/static/js/app.js?v={{ cache_bust }}"></script>
+</body>
+</html>

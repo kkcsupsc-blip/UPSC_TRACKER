@@ -1,0 +1,1493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UPSC Prelims GS Paper I &mdash; Polity: Exhaustive PYQ-Aligned Topic Breakdown &amp; Priority Ranking</title>
+<style>
+  :root {
+    --primary: #d4a017;
+    --primary-light: #e0b840;
+    --primary-dark: #8a6500;
+    --accent: #c8942a;
+    --accent-light: #f5d778;
+    --bg: #050505;
+    --card-bg: #0c0c0c;
+    --text: #e8e0d0;
+    --text-secondary: #a89878;
+    --border: #1f1a10;
+    --high: #2e7d32;
+    --high-bg: rgba(46,125,50,0.15);
+    --medium: #e65100;
+    --medium-bg: rgba(230,81,0,0.12);
+    --low: #b71c1c;
+    --low-bg: rgba(183,28,28,0.12);
+    --medium-high-color: #4caf50;
+    --low-medium-color: #ef5350;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.72;
+    font-size: 15px;
+  }
+
+  /* Hero */
+  .hero {
+    background: linear-gradient(135deg, #0a0800 0%, #1a1400 40%, #0d0a00 70%, #141000 100%);
+    color: #f0e6d0;
+    padding: 65px 40px 55px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle at 30% 70%, rgba(212,160,23,0.08) 0%, transparent 50%),
+                radial-gradient(circle at 70% 30%, rgba(245,215,120,0.04) 0%, transparent 40%);
+    pointer-events: none;
+  }
+  .hero::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0; right: 0;
+    height: 40px;
+    background: var(--bg);
+    clip-path: ellipse(55% 100% at 50% 100%);
+  }
+  .hero h1 {
+    font-size: 2.3rem;
+    font-weight: 800;
+    margin-bottom: 14px;
+    letter-spacing: -0.5px;
+    position: relative;
+    background: linear-gradient(135deg, #d4a017, #f5d778, #c8942a);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .hero .subtitle {
+    font-size: 1.05rem;
+    opacity: 0.9;
+    max-width: 780px;
+    margin: 0 auto;
+    line-height: 1.6;
+    position: relative;
+  }
+  .hero .badge-row {
+    margin-top: 18px;
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    position: relative;
+  }
+  .hero .stat-badge {
+    background: rgba(212,160,23,0.15);
+    backdrop-filter: blur(6px);
+    border: 1px solid rgba(212,160,23,0.25);
+    padding: 6px 18px;
+    border-radius: 20px;
+    font-size: 0.88rem;
+    font-weight: 600;
+  }
+
+  /* Container */
+  .container {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 30px 24px 60px;
+  }
+
+  /* Section titles */
+  .section-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary);
+    margin: 50px 0 20px;
+    padding-bottom: 10px;
+    border-bottom: 3px solid var(--accent);
+    display: block;
+  }
+
+  /* Cards */
+  .card {
+    background: var(--card-bg);
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.3);
+    padding: 28px 32px;
+    margin-bottom: 24px;
+    border-left: 5px solid var(--primary);
+    transition: box-shadow 0.2s;
+  }
+  .card:hover { box-shadow: 0 4px 22px rgba(212,160,23,0.15); }
+  .card h3 {
+    font-size: 1.15rem;
+    color: var(--primary);
+    margin-bottom: 10px;
+  }
+
+  /* Unit cards */
+  .unit-card {
+    background: var(--card-bg);
+    border-radius: 14px;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.3);
+    margin-bottom: 32px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+  .unit-header {
+    padding: 20px 28px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .unit-header.high-yield { background: linear-gradient(135deg, #1b5e20, #2e7d32); }
+  .unit-header.medium-yield { background: linear-gradient(135deg, #e65100, #ef6c00); }
+  .unit-header.medium-high-yield { background: linear-gradient(135deg, #33691e, #558b2f); }
+  .unit-header.low-yield { background: linear-gradient(135deg, #6d4c41, #795548); }
+  .unit-header.low-medium-yield { background: linear-gradient(135deg, #bf360c, #d84315); }
+
+  .unit-header h2 {
+    color: #fff;
+    font-size: 1.22rem;
+    font-weight: 700;
+    flex: 1;
+  }
+  .unit-badge {
+    background: rgba(255,255,255,0.22);
+    color: #fff;
+    padding: 4px 14px;
+    border-radius: 20px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .unit-body { padding: 24px 28px 28px; }
+  .unit-meta {
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+  }
+  .meta-chip {
+    background: #141210;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 6px 14px;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+  }
+  .meta-chip strong { color: var(--primary); }
+
+  /* Tables */
+  .micro-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin: 16px 0 20px;
+    font-size: 0.92rem;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+  .micro-table thead th {
+    background: linear-gradient(135deg, #1a1400, #2a2000);
+    color: var(--primary);
+    padding: 12px 16px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 0.83rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .micro-table tbody td {
+    padding: 12px 16px;
+    border-bottom: 1px solid #1a1a1a;
+    vertical-align: top;
+  }
+  .micro-table tbody tr:last-child td { border-bottom: none; }
+  .micro-table tbody tr:nth-child(even) { background: #0a0a0a; }
+  .micro-table tbody tr:hover { background: #1a1400; }
+
+  /* Yield tags */
+  .yield-tag {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 12px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+  .yield-tag.high { background: var(--high-bg); color: var(--high); }
+  .yield-tag.medium { background: var(--medium-bg); color: var(--medium); }
+  .yield-tag.medium-high { background: #f1f8e9; color: #33691e; }
+  .yield-tag.low { background: var(--low-bg); color: #ef5350; }
+  .yield-tag.low-medium { background: rgba(239,83,80,0.12); color: #ef5350; }
+
+  /* Info boxes */
+  .info-box {
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin: 14px 0;
+    font-size: 0.93rem;
+    line-height: 1.65;
+  }
+  .info-box.why { background: rgba(212,160,23,0.08); border-left: 4px solid var(--primary); }
+  .info-box.pyq { background: rgba(200,148,42,0.08); border-left: 4px solid var(--accent); }
+  .info-box.prereq { background: rgba(200,148,42,0.06); border-left: 4px solid var(--accent-light); }
+  .info-box .label {
+    font-weight: 700;
+    font-size: 0.82rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+  }
+  .info-box.why .label { color: var(--primary); }
+  .info-box.pyq .label { color: var(--accent); }
+  .info-box.prereq .label { color: var(--accent-light); }
+
+  /* Priority ranking table */
+  .ranking-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin: 20px 0;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    font-size: 0.93rem;
+  }
+  .ranking-table thead th {
+    background: linear-gradient(135deg, #1a1400, #2a2000);
+    color: var(--primary);
+    padding: 14px 16px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 0.83rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .ranking-table tbody td {
+    padding: 13px 16px;
+    border-bottom: 1px solid #1a1a1a;
+    vertical-align: middle;
+  }
+  .ranking-table tbody tr:last-child td { border-bottom: none; }
+  .ranking-table tbody tr:nth-child(even) { background: #0a0a0a; }
+  .ranking-table tbody tr:hover { background: #1a1400; }
+  .rank-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    font-weight: 800;
+    font-size: 0.85rem;
+    color: #fff;
+  }
+  .rank-num.top { background: var(--high); }
+  .rank-num.mid { background: var(--primary-light); }
+  .rank-num.low-r { background: #78909c; }
+
+  /* Skeleton grid */
+  .skeleton-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+    gap: 10px;
+    margin: 16px 0;
+  }
+  .skeleton-item {
+    background: #0c0c0c;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-size: 0.91rem;
+    border-left: 4px solid var(--primary);
+  }
+  .skeleton-item strong { color: var(--primary); }
+
+  /* Construct grid */
+  .construct-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 16px;
+    margin: 16px 0;
+  }
+  .construct-card {
+    background: var(--card-bg);
+    border-radius: 10px;
+    padding: 20px 24px;
+    border: 1px solid var(--border);
+    box-shadow: 0 1px 6px rgba(0,0,0,0.2);
+  }
+  .construct-card h4 {
+    color: var(--primary-light);
+    font-size: 0.98rem;
+    margin-bottom: 8px;
+  }
+
+  /* TOC */
+  .toc {
+    background: var(--card-bg);
+    border-radius: 14px;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.3);
+    padding: 28px 32px;
+    margin: 30px 0;
+    border: 1px solid var(--border);
+    columns: 2;
+    column-gap: 32px;
+  }
+  .toc h3 {
+    font-size: 1.1rem;
+    color: var(--primary);
+    margin-bottom: 16px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--accent);
+    column-span: all;
+  }
+  .toc-item {
+    break-inside: avoid;
+    padding: 5px 0;
+    font-size: 0.93rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .toc-item a {
+    color: var(--primary-light);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .toc-item a:hover { color: var(--accent); text-decoration: underline; }
+  .toc-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #fff;
+    background: var(--primary-light);
+    flex-shrink: 0;
+  }
+
+  /* Bullet lists */
+  .bullet-list { padding-left: 22px; margin: 10px 0; }
+  .bullet-list li { margin-bottom: 6px; line-height: 1.6; }
+
+  /* Highlight box */
+  .highlight-stat {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin: 16px 0;
+  }
+  .stat-card {
+    background: linear-gradient(135deg, #1a1400, #2a2000);
+    color: #f0e6d0;
+    border-radius: 12px;
+    padding: 18px 24px;
+    flex: 1;
+    min-width: 200px;
+    text-align: center;
+  }
+  .stat-card .num {
+    font-size: 2rem;
+    font-weight: 800;
+    line-height: 1.1;
+  }
+  .stat-card .lbl {
+    font-size: 0.82rem;
+    opacity: 0.85;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: 4px;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .hero { padding: 40px 20px 35px; }
+    .hero h1 { font-size: 1.5rem; }
+    .container { padding: 20px 14px 40px; }
+    .unit-header { padding: 16px 20px; }
+    .unit-body { padding: 18px 20px 22px; }
+    .construct-grid, .skeleton-list { grid-template-columns: 1fr; }
+    .toc { columns: 1; }
+    .ranking-table, .micro-table { font-size: 0.82rem; }
+    .ranking-table thead th, .micro-table thead th { padding: 10px 12px; }
+    .ranking-table tbody td, .micro-table tbody td { padding: 10px 12px; }
+  }
+
+  @media print {
+    .hero { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .unit-header { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .card, .unit-card { break-inside: avoid; }
+    body { font-size: 12px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== HERO ===== -->
+<div class="hero">
+  <h1>UPSC Prelims GS Paper I &mdash; Polity</h1>
+  <p class="subtitle">Exhaustive PYQ-Aligned Topic Breakdown &amp; Priority Ranking &bull; 35 Units &bull; Micro-Topic Maps &bull; Elimination Strategy</p>
+  <div class="badge-row">
+    <span class="stat-badge">35 Units</span>
+    <span class="stat-badge">~88 PYQs (2014&ndash;2024)</span>
+    <span class="stat-badge">15&ndash;20 Qs / Year</span>
+    <span class="stat-badge">90% Accuracy Possible</span>
+  </div>
+</div>
+
+<div class="container">
+
+<!-- ===== SCOPE ===== -->
+<h2 class="section-title">Scope Boundary, Syllabus Anchor &amp; Unit Skeleton</h2>
+
+<div class="card">
+  <h3>Scope</h3>
+  <p>This document covers <strong>only UPSC Prelims GS Paper I</strong> Polity topics. All content is Polity-specific; Mains relevance, GS-II/III linkages, or answer-writing value are excluded.</p>
+  <p style="margin-top:8px;"><strong>Subject under analysis:</strong> Indian Polity (Prelims GS Paper I only)</p>
+</div>
+
+<!-- Stats -->
+<div class="highlight-stat">
+  <div class="stat-card"><div class="num">~88</div><div class="lbl">Polity PYQs (2014&ndash;2024)</div></div>
+  <div class="stat-card"><div class="num">~30</div><div class="lbl">Parliament &amp; Legislature Qs</div></div>
+  <div class="stat-card"><div class="num">~29</div><div class="lbl">Rights / DPSP / Duties Qs</div></div>
+  <div class="stat-card"><div class="num">15&ndash;17%</div><div class="lbl">Share of Prelims Paper</div></div>
+</div>
+
+<div class="card">
+  <h3>Unit Skeleton (35 Units)</h3>
+  <div class="skeleton-list">
+    <div class="skeleton-item"><strong>Unit 1</strong> &mdash; Historical Background</div>
+    <div class="skeleton-item"><strong>Unit 2</strong> &mdash; Concept &amp; Salient Features</div>
+    <div class="skeleton-item"><strong>Unit 3</strong> &mdash; Preamble of the Constitution</div>
+    <div class="skeleton-item"><strong>Unit 4</strong> &mdash; Union and its Territory</div>
+    <div class="skeleton-item"><strong>Unit 5</strong> &mdash; Citizenship</div>
+    <div class="skeleton-item"><strong>Unit 6</strong> &mdash; Fundamental Rights</div>
+    <div class="skeleton-item"><strong>Unit 7</strong> &mdash; Directive Principles (DPSP)</div>
+    <div class="skeleton-item"><strong>Unit 8</strong> &mdash; Fundamental Duties</div>
+    <div class="skeleton-item"><strong>Unit 9</strong> &mdash; Union Executive</div>
+    <div class="skeleton-item"><strong>Unit 10</strong> &mdash; Parliament</div>
+    <div class="skeleton-item"><strong>Unit 11</strong> &mdash; Parliamentary Committees</div>
+    <div class="skeleton-item"><strong>Unit 12</strong> &mdash; State Executive</div>
+    <div class="skeleton-item"><strong>Unit 13</strong> &mdash; State Legislature</div>
+    <div class="skeleton-item"><strong>Unit 14</strong> &mdash; Union Territories &amp; Special Areas</div>
+    <div class="skeleton-item"><strong>Unit 15</strong> &mdash; Supreme Court</div>
+    <div class="skeleton-item"><strong>Unit 16</strong> &mdash; High Court</div>
+    <div class="skeleton-item"><strong>Unit 17</strong> &mdash; Subordinate Courts</div>
+    <div class="skeleton-item"><strong>Unit 18</strong> &mdash; ADR Courts</div>
+    <div class="skeleton-item"><strong>Unit 19</strong> &mdash; Tribunals</div>
+    <div class="skeleton-item"><strong>Unit 20</strong> &mdash; Judicial Review</div>
+    <div class="skeleton-item"><strong>Unit 21</strong> &mdash; Basic Structure Doctrine</div>
+    <div class="skeleton-item"><strong>Unit 22</strong> &mdash; Basics of Federal System</div>
+    <div class="skeleton-item"><strong>Unit 23</strong> &mdash; Centre&ndash;State Relations</div>
+    <div class="skeleton-item"><strong>Unit 24</strong> &mdash; Inter-State Relations</div>
+    <div class="skeleton-item"><strong>Unit 25</strong> &mdash; Panchayati Raj</div>
+    <div class="skeleton-item"><strong>Unit 26</strong> &mdash; Urban Local Bodies</div>
+    <div class="skeleton-item"><strong>Unit 27</strong> &mdash; Elections</div>
+    <div class="skeleton-item"><strong>Unit 28</strong> &mdash; Political Dynamics</div>
+    <div class="skeleton-item"><strong>Unit 29</strong> &mdash; Emergency Provisions</div>
+    <div class="skeleton-item"><strong>Unit 30</strong> &mdash; Amendment of Constitution</div>
+    <div class="skeleton-item"><strong>Unit 31</strong> &mdash; Other Constitutional Dimensions</div>
+    <div class="skeleton-item"><strong>Unit 32</strong> &mdash; Constitutional Bodies</div>
+    <div class="skeleton-item"><strong>Unit 33</strong> &mdash; Non-Constitutional Bodies</div>
+    <div class="skeleton-item"><strong>Unit 34</strong> &mdash; Parts &amp; Schedules</div>
+    <div class="skeleton-item"><strong>Unit 35</strong> &mdash; Laws &amp; Legislations</div>
+  </div>
+</div>
+
+<!-- ===== PYQ BEHAVIOR ===== -->
+<h2 class="section-title">PYQ Behavior in Polity</h2>
+
+<div class="card">
+  <h3>Exam Pattern Insights</h3>
+  <p>Polity is <strong>high-scoring and factual</strong> in Prelims. Historically, ~15&ndash;20 questions (15&ndash;17%) in each Prelims come from Polity. In 2014&ndash;2024 Prelims, ~88 Polity questions were asked.</p>
+  <ul class="bullet-list" style="margin-top:10px;">
+    <li><strong>High-yield areas:</strong> Parliament &amp; Legislatures (~30 Qs) and Rights/DPSP/Duties (~29 Qs)</li>
+    <li><strong>Question nature:</strong> Straightforward to moderate (90% accuracy possible); statement/trap formats dominate</li>
+    <li>Even seldom-directly-asked topics (e.g. Concept of Constitution) underpin many traps</li>
+    <li>Ranking criteria: (1) PYQ frequency, (2) elimination power, (3) conceptual dependency weight</li>
+  </ul>
+</div>
+
+<div class="construct-grid">
+  <div class="construct-card">
+    <h4>&#9889; Statement-Combination Traps</h4>
+    <p>Most Polity MCQs use &ldquo;which of the above statements is/are correct?&rdquo; format. Article-number recall and boundary conditions dismantle these traps.</p>
+  </div>
+  <div class="construct-card">
+    <h4>&#9889; Article-Number Matching</h4>
+    <p>UPSC frequently tests &ldquo;which Article covers X?&rdquo; or places wrong Article numbers in options. Systematic Article mapping is the top eliminator.</p>
+  </div>
+  <div class="construct-card">
+    <h4>&#9889; Institution vs Power Swaps</h4>
+    <p>Traps swap institutions (President vs Governor, SC vs HC), powers (original vs appellate), or bodies (constitutional vs statutory).</p>
+  </div>
+  <div class="construct-card">
+    <h4>&#9889; Constitutional vs Statutory Distinction</h4>
+    <p>&ldquo;Is this body constitutional or statutory?&rdquo; is a recurring elimination lever. Confusing NHRC (statutory) with UPSC (constitutional) is a classic trap.</p>
+  </div>
+</div>
+
+<!-- ===== TOC ===== -->
+<div class="toc" id="toc">
+  <h3>Table of Contents &mdash; Priority Ranking Order</h3>
+  <div class="toc-item"><span class="toc-num">1</span><a href="#u6">Unit 6 &mdash; Fundamental Rights</a>&nbsp;<span class="yield-tag high">High</span></div>
+  <div class="toc-item"><span class="toc-num">2</span><a href="#u7">Unit 7 &mdash; DPSP</a>&nbsp;<span class="yield-tag high">High</span></div>
+  <div class="toc-item"><span class="toc-num">3</span><a href="#u8">Unit 8 &mdash; Fundamental Duties</a>&nbsp;<span class="yield-tag high">High</span></div>
+  <div class="toc-item"><span class="toc-num">4</span><a href="#u10">Unit 10 &mdash; Parliament</a>&nbsp;<span class="yield-tag high">High</span></div>
+  <div class="toc-item"><span class="toc-num">5</span><a href="#u2">Unit 2 &mdash; Concept &amp; Salient Features</a>&nbsp;<span class="yield-tag medium-high">Med&ndash;High</span></div>
+  <div class="toc-item"><span class="toc-num">6</span><a href="#u15">Unit 15 &mdash; Supreme Court</a>&nbsp;<span class="yield-tag high">High</span></div>
+  <div class="toc-item"><span class="toc-num">7</span><a href="#u20">Unit 20 &mdash; Judicial Review</a>&nbsp;<span class="yield-tag high">High</span></div>
+  <div class="toc-item"><span class="toc-num">8</span><a href="#u32">Unit 32 &mdash; Constitutional Bodies</a>&nbsp;<span class="yield-tag medium">Medium</span></div>
+  <div class="toc-item"><span class="toc-num">9</span><a href="#u23">Unit 23 &mdash; Centre&ndash;State Relations</a>&nbsp;<span class="yield-tag medium">Medium</span></div>
+  <div class="toc-item"><span class="toc-num">10</span><a href="#u9">Unit 9 &mdash; Union Executive</a>&nbsp;<span class="yield-tag medium">Medium</span></div>
+  <div class="toc-item"><span class="toc-num">11</span><a href="#u12">Unit 12 &mdash; State Executive</a>&nbsp;<span class="yield-tag medium">Medium</span></div>
+  <div class="toc-item"><span class="toc-num">12</span><a href="#u11">Unit 11 &mdash; Parliamentary Committees</a>&nbsp;<span class="yield-tag medium">Medium</span></div>
+  <div class="toc-item"><span class="toc-num">13</span><a href="#u13">Unit 13 &mdash; State Legislature</a>&nbsp;<span class="yield-tag medium">Medium</span></div>
+  <div class="toc-item"><span class="toc-num">14</span><a href="#u22">Unit 22 &mdash; Federal System</a>&nbsp;<span class="yield-tag medium">Medium</span></div>
+  <div class="toc-item"><span class="toc-num">15</span><a href="#u21">Unit 21 &mdash; Basic Structure Doctrine</a>&nbsp;<span class="yield-tag medium">Medium</span></div>
+  <div class="toc-item"><span class="toc-num">16</span><a href="#u28">Unit 28 &mdash; Political Dynamics</a>&nbsp;<span class="yield-tag medium">Medium</span></div>
+  <div class="toc-item"><span class="toc-num">17</span><a href="#u29">Unit 29 &mdash; Emergency Provisions</a>&nbsp;<span class="yield-tag medium">Medium</span></div>
+  <div class="toc-item"><span class="toc-num">18</span><a href="#u24">Unit 24 &mdash; Inter-State Relations</a>&nbsp;<span class="yield-tag low-medium">Low&ndash;Med</span></div>
+  <div class="toc-item"><span class="toc-num">19</span><a href="#u25">Unit 25 &mdash; Panchayati Raj</a>&nbsp;<span class="yield-tag low">Low</span></div>
+  <div class="toc-item"><span class="toc-num">20</span><a href="#u26">Unit 26 &mdash; Urban Local Bodies</a>&nbsp;<span class="yield-tag low">Low</span></div>
+  <div class="toc-item"><span class="toc-num">21</span><a href="#u27">Unit 27 &mdash; Elections</a>&nbsp;<span class="yield-tag low">Low</span></div>
+  <div class="toc-item"><span class="toc-num">22</span><a href="#u3">Unit 3 &mdash; Preamble</a>&nbsp;<span class="yield-tag low">Low</span></div>
+  <div class="toc-item"><span class="toc-num">23</span><a href="#u30">Unit 30 &mdash; Amendment (Art. 368)</a>&nbsp;<span class="yield-tag low-medium">Low&ndash;Med</span></div>
+  <div class="toc-item"><span class="toc-num">24</span><a href="#u1">Unit 1 &mdash; Historical Background</a>&nbsp;<span class="yield-tag low">Low</span></div>
+  <div class="toc-item"><span class="toc-num">25</span><a href="#u4">Unit 4 &mdash; Union &amp; its Territory</a>&nbsp;<span class="yield-tag low">Low</span></div>
+  <div class="toc-item"><span class="toc-num">26</span><a href="#u5">Unit 5 &mdash; Citizenship</a>&nbsp;<span class="yield-tag low">Low</span></div>
+  <div class="toc-item"><span class="toc-num">27</span><a href="#u14">Unit 14 &mdash; UTs &amp; Special Areas</a>&nbsp;<span class="yield-tag low">Low</span></div>
+  <div class="toc-item"><span class="toc-num">28</span><a href="#u16">Unit 16 &mdash; High Court</a>&nbsp;<span class="yield-tag low">Low</span></div>
+  <div class="toc-item"><span class="toc-num">29</span><a href="#u17">Unit 17 &mdash; Subordinate Courts</a>&nbsp;<span class="yield-tag low">Low</span></div>
+  <div class="toc-item"><span class="toc-num">30</span><a href="#u18">Unit 18 &mdash; ADR Courts</a>&nbsp;<span class="yield-tag low">Low</span></div>
+  <div class="toc-item"><span class="toc-num">31</span><a href="#u19">Unit 19 &mdash; Tribunals</a>&nbsp;<span class="yield-tag low">Low</span></div>
+  <div class="toc-item"><span class="toc-num">32</span><a href="#u31">Unit 31 &mdash; Other Dimensions</a>&nbsp;<span class="yield-tag low">Low</span></div>
+  <div class="toc-item"><span class="toc-num">33</span><a href="#u33">Unit 33 &mdash; Non-Constitutional Bodies</a>&nbsp;<span class="yield-tag low">Low</span></div>
+  <div class="toc-item"><span class="toc-num">34</span><a href="#u34">Unit 34 &mdash; Parts &amp; Schedules</a>&nbsp;<span class="yield-tag low">Low</span></div>
+  <div class="toc-item"><span class="toc-num">35</span><a href="#u35">Unit 35 &mdash; Laws &amp; Legislations</a>&nbsp;<span class="yield-tag low">Low</span></div>
+</div>
+
+<!-- ===== RANKING TABLE ===== -->
+<h2 class="section-title" id="ranking">Final PYQ-Driven Priority Ranking of 35 Units</h2>
+
+<table class="ranking-table">
+  <thead>
+    <tr>
+      <th style="width:45px">#</th>
+      <th>Unit &amp; Topic</th>
+      <th style="width:110px">Priority</th>
+      <th style="width:85px">PYQ Est.</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td><span class="rank-num top">1</span></td><td><strong>Unit 6</strong> &mdash; Fundamental Rights (Part III, Arts 12&ndash;35)</td><td><span class="yield-tag high">High</span></td><td>~20+</td></tr>
+    <tr><td><span class="rank-num top">2</span></td><td><strong>Unit 7</strong> &mdash; Directive Principles (Part IV, Arts 36&ndash;51)</td><td><span class="yield-tag high">High</span></td><td>~10&ndash;15</td></tr>
+    <tr><td><span class="rank-num top">3</span></td><td><strong>Unit 8</strong> &mdash; Fundamental Duties (Art. 51A)</td><td><span class="yield-tag high">High</span></td><td>~5&ndash;10</td></tr>
+    <tr><td><span class="rank-num top">4</span></td><td><strong>Unit 10</strong> &mdash; Parliament (Union Legislature)</td><td><span class="yield-tag high">High</span></td><td>~15&ndash;20</td></tr>
+    <tr><td><span class="rank-num top">5</span></td><td><strong>Unit 2</strong> &mdash; Concept &amp; Salient Features of Constitution</td><td><span class="yield-tag medium-high">Med&ndash;High</span></td><td>~1&ndash;3</td></tr>
+    <tr><td><span class="rank-num top">6</span></td><td><strong>Unit 15</strong> &mdash; Supreme Court (Arts 124&ndash;147)</td><td><span class="yield-tag high">High</span></td><td>~5&ndash;8</td></tr>
+    <tr><td><span class="rank-num top">7</span></td><td><strong>Unit 20</strong> &mdash; Judicial Review (Arts 13, 32, 226)</td><td><span class="yield-tag high">High</span></td><td>~5&ndash;7</td></tr>
+    <tr><td><span class="rank-num mid">8</span></td><td><strong>Unit 32</strong> &mdash; Constitutional Bodies (ECI, UPSC, CAG, etc.)</td><td><span class="yield-tag medium">Medium</span></td><td>~5&ndash;7</td></tr>
+    <tr><td><span class="rank-num mid">9</span></td><td><strong>Unit 23</strong> &mdash; Centre&ndash;State Relations</td><td><span class="yield-tag medium">Medium</span></td><td>~7</td></tr>
+    <tr><td><span class="rank-num mid">10</span></td><td><strong>Unit 9</strong> &mdash; Union Executive (President, PM, CoM)</td><td><span class="yield-tag medium">Medium</span></td><td>~10&ndash;12</td></tr>
+    <tr><td><span class="rank-num mid">11</span></td><td><strong>Unit 12</strong> &mdash; State Executive (Governor, CM)</td><td><span class="yield-tag medium">Medium</span></td><td>~2&ndash;3</td></tr>
+    <tr><td><span class="rank-num mid">12</span></td><td><strong>Unit 11</strong> &mdash; Parliamentary Committees</td><td><span class="yield-tag medium">Medium</span></td><td>~3&ndash;5</td></tr>
+    <tr><td><span class="rank-num mid">13</span></td><td><strong>Unit 13</strong> &mdash; State Legislature</td><td><span class="yield-tag medium">Medium</span></td><td>~3&ndash;6</td></tr>
+    <tr><td><span class="rank-num mid">14</span></td><td><strong>Unit 22</strong> &mdash; Federal System &mdash; Lists &amp; Residuary Powers</td><td><span class="yield-tag medium">Medium</span></td><td>~7</td></tr>
+    <tr><td><span class="rank-num mid">15</span></td><td><strong>Unit 21</strong> &mdash; Basic Structure Doctrine</td><td><span class="yield-tag medium">Medium</span></td><td>~3&ndash;5</td></tr>
+    <tr><td><span class="rank-num mid">16</span></td><td><strong>Unit 28</strong> &mdash; Political Dynamics (Anti-Defection, Parties)</td><td><span class="yield-tag medium">Medium</span></td><td>~5&ndash;8</td></tr>
+    <tr><td><span class="rank-num mid">17</span></td><td><strong>Unit 29</strong> &mdash; Emergency Provisions (Arts 352&ndash;360)</td><td><span class="yield-tag medium">Medium</span></td><td>~5&ndash;7</td></tr>
+    <tr><td><span class="rank-num low-r">18</span></td><td><strong>Unit 24</strong> &mdash; Inter-State Relations</td><td><span class="yield-tag low-medium">Low&ndash;Med</span></td><td>~1&ndash;2</td></tr>
+    <tr><td><span class="rank-num low-r">19</span></td><td><strong>Unit 25</strong> &mdash; Panchayati Raj (73rd Amendment)</td><td><span class="yield-tag low">Low</span></td><td>~3&ndash;5</td></tr>
+    <tr><td><span class="rank-num low-r">20</span></td><td><strong>Unit 26</strong> &mdash; Urban Local Bodies (74th Amendment)</td><td><span class="yield-tag low">Low</span></td><td>~3&ndash;4</td></tr>
+    <tr><td><span class="rank-num low-r">21</span></td><td><strong>Unit 27</strong> &mdash; Elections (Electoral System)</td><td><span class="yield-tag low">Low</span></td><td>~2&ndash;4</td></tr>
+    <tr><td><span class="rank-num low-r">22</span></td><td><strong>Unit 3</strong> &mdash; Preamble of the Constitution</td><td><span class="yield-tag low">Low</span></td><td>~6</td></tr>
+    <tr><td><span class="rank-num low-r">23</span></td><td><strong>Unit 30</strong> &mdash; Amendment of Constitution (Art. 368)</td><td><span class="yield-tag low-medium">Low&ndash;Med</span></td><td>~6</td></tr>
+    <tr><td><span class="rank-num low-r">24</span></td><td><strong>Unit 1</strong> &mdash; Historical Background</td><td><span class="yield-tag low">Low</span></td><td>~2&ndash;3</td></tr>
+    <tr><td><span class="rank-num low-r">25</span></td><td><strong>Unit 4</strong> &mdash; Union &amp; its Territory</td><td><span class="yield-tag low">Low</span></td><td>~2&ndash;3</td></tr>
+    <tr><td><span class="rank-num low-r">26</span></td><td><strong>Unit 5</strong> &mdash; Citizenship (Arts 5&ndash;11)</td><td><span class="yield-tag low">Low</span></td><td>~1</td></tr>
+    <tr><td><span class="rank-num low-r">27</span></td><td><strong>Unit 14</strong> &mdash; UTs &amp; Special Areas (Arts 371)</td><td><span class="yield-tag low">Low</span></td><td>~1&ndash;2</td></tr>
+    <tr><td><span class="rank-num low-r">28</span></td><td><strong>Unit 16</strong> &mdash; High Court</td><td><span class="yield-tag low">Low</span></td><td>~2&ndash;3</td></tr>
+    <tr><td><span class="rank-num low-r">29</span></td><td><strong>Unit 17</strong> &mdash; Subordinate Courts</td><td><span class="yield-tag low">Low</span></td><td>~0&ndash;1</td></tr>
+    <tr><td><span class="rank-num low-r">30</span></td><td><strong>Unit 18</strong> &mdash; ADR Courts</td><td><span class="yield-tag low">Low</span></td><td>~0&ndash;1</td></tr>
+    <tr><td><span class="rank-num low-r">31</span></td><td><strong>Unit 19</strong> &mdash; Tribunals</td><td><span class="yield-tag low">Low</span></td><td>~0&ndash;1</td></tr>
+    <tr><td><span class="rank-num low-r">32</span></td><td><strong>Unit 31</strong> &mdash; Other Constitutional Dimensions</td><td><span class="yield-tag low">Low</span></td><td>~2&ndash;3</td></tr>
+    <tr><td><span class="rank-num low-r">33</span></td><td><strong>Unit 33</strong> &mdash; Non-Constitutional Bodies</td><td><span class="yield-tag low">Low</span></td><td>~0&ndash;2</td></tr>
+    <tr><td><span class="rank-num low-r">34</span></td><td><strong>Unit 34</strong> &mdash; Parts &amp; Schedules</td><td><span class="yield-tag low">Low</span></td><td>~1&ndash;2</td></tr>
+    <tr><td><span class="rank-num low-r">35</span></td><td><strong>Unit 35</strong> &mdash; Laws &amp; Legislations</td><td><span class="yield-tag low">Low</span></td><td>~1&ndash;2</td></tr>
+  </tbody>
+</table>
+
+<!-- ===== UNIT-BY-UNIT DETAILED CARDS ===== -->
+<h2 class="section-title">Exhaustive Unit-by-Unit Micro-Topic Map (PYQ Order)</h2>
+
+<!-- UNIT 6 -->
+<div class="unit-card" id="u6">
+  <div class="unit-header high-yield">
+    <h2>#1 &mdash; Unit 6: Fundamental Rights (Part III, Arts 12&ndash;35)</h2>
+    <span class="unit-badge">HIGH YIELD &bull; ~20+ PYQs</span>
+  </div>
+  <div class="unit-body">
+    <div class="unit-meta">
+      <span class="meta-chip"><strong>PYQ Footprint:</strong> ~20+ questions (2013&ndash;2024)</span>
+      <span class="meta-chip"><strong>Appearance:</strong> Direct factual &bull; Statement traps &bull; Elimination-heavy</span>
+    </div>
+    <table class="micro-table">
+      <thead><tr><th>Micro-Topic</th><th>Articles</th><th>Key Points for Prelims</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Definition of &ldquo;State&rdquo;</strong></td><td>Art. 12</td><td>Who is bound by FR: includes Government, Parliament, state legislatures, local authorities, instrumentalities</td></tr>
+        <tr><td><strong>Laws inconsistent with FR</strong></td><td>Art. 13</td><td>Pre- and post-constitutional laws void if they violate Part III; constitutional basis for judicial review</td></tr>
+        <tr><td><strong>Right to Equality</strong></td><td>Arts 14&ndash;18</td><td>Equality before law; prohibition of discrimination on religion/caste/sex; abolition of titles &amp; untouchability</td></tr>
+        <tr><td><strong>Right to Freedom</strong></td><td>Arts 19&ndash;22</td><td>6 freedoms (speech, assembly, association, movement, residence, profession); reasonable restrictions; preventive detention (Art. 22)</td></tr>
+        <tr><td><strong>Right against Exploitation</strong></td><td>Arts 23&ndash;24</td><td>Prohibition of trafficking, forced labour, child labour</td></tr>
+        <tr><td><strong>Freedom of Religion</strong></td><td>Arts 25&ndash;28</td><td>Individual &amp; communal rights; secularism; no tax for any religion</td></tr>
+        <tr><td><strong>Cultural &amp; Educational Rights</strong></td><td>Arts 29&ndash;30</td><td>Minority rights to conserve culture; manage educational institutions</td></tr>
+        <tr><td><strong>Right to Constitutional Remedies</strong></td><td>Arts 32&ndash;35</td><td>Writs (habeas corpus, mandamus, etc.); Art. 32 as &ldquo;Heart and Soul&rdquo; of Constitution</td></tr>
+        <tr><td><strong>Limitations on FR</strong></td><td>Various</td><td>Not absolute; subject to reasonable restrictions; 44th Amendment removed property as FR</td></tr>
+        <tr><td><strong>FR vs DPSP</strong></td><td>Doctrine</td><td>Harmony principle (Minerva Mills case); neither can override the other absolutely</td></tr>
+        <tr><td><strong>Landmark cases</strong></td><td>Doctrine</td><td>Kesavananda (basic structure, FR immutability); Minerva Mills (harmonizing FR-DPSP)</td></tr>
+      </tbody>
+    </table>
+    <div class="info-box pyq">
+      <div class="label">Past Year Question Pattern</div>
+      Tested directly (&ldquo;Which right is NOT a FR?&rdquo;) or via statements. Questions involve article identification, nature of rights, key cases, writ jurisdiction. FR knowledge also eliminates wrong options across unrelated Polity questions.
+    </div>
+    <div class="info-box why">
+      <div class="label">Why Placed First</div>
+      FR are the <strong>foundation of rights discourse</strong> and judicial review. Mastery is crucial for many downstream topics (Art. 13, JR, Amendments). Both <strong>direct scoring</strong> and <strong>elimination-trap heavy</strong>. Provides base for understanding DPSP conflicts and basic-structure issues.
+    </div>
+    <div class="info-box prereq">
+      <div class="label">Prerequisites</div>
+      None. Basic awareness of &ldquo;State&rdquo; (Art. 12) and Article 13 helpful.
+    </div>
+  </div>
+</div>
+
+<!-- UNIT 7 -->
+<div class="unit-card" id="u7">
+  <div class="unit-header high-yield">
+    <h2>#2 &mdash; Unit 7: Directive Principles of State Policy (Part IV, Arts 36&ndash;51)</h2>
+    <span class="unit-badge">HIGH YIELD &bull; ~10&ndash;15 PYQs</span>
+  </div>
+  <div class="unit-body">
+    <div class="unit-meta">
+      <span class="meta-chip"><strong>PYQ Footprint:</strong> ~10&ndash;15 questions</span>
+      <span class="meta-chip"><strong>Appearance:</strong> Conceptual &bull; Article-mapping &bull; Elimination-based</span>
+    </div>
+    <table class="micro-table">
+      <thead><tr><th>Micro-Topic</th><th>Articles</th><th>Key Points for Prelims</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Overview &amp; Nature</strong></td><td>Arts 36&ndash;51</td><td>Non-justiciable guidelines for State; social &amp; economic welfare; Art. 37 says &ldquo;not enforceable by courts&rdquo;</td></tr>
+        <tr><td><strong>Classification of DPSPs</strong></td><td>Various</td><td><strong>Gandhian:</strong> Arts 40&ndash;48 &bull; <strong>Socialistic:</strong> 39A, 41&ndash;43 &bull; <strong>International:</strong> 51 &bull; <strong>Environmental:</strong> 48A</td></tr>
+        <tr><td><strong>Key Principles</strong></td><td>39(d), 40, 43, 48A, 45</td><td>Equal pay, village panchayats, living wage, environment, education clause</td></tr>
+        <tr><td><strong>DPSP vs FR relationship</strong></td><td>Doctrine</td><td>Harmonization (Minerva Mills); no absolute conflict</td></tr>
+        <tr><td><strong>Enforcement &amp; Use</strong></td><td>Art. 37</td><td>Courts can interpret laws in light of DPSPs; used for policy evaluation</td></tr>
+      </tbody>
+    </table>
+    <div class="info-box pyq">
+      <div class="label">Past Year Question Pattern</div>
+      &ldquo;Which of the following is a DPSP?&rdquo; &mdash; identification by article number or mapping ideals to articles. Also tested via interplay with FR. Strong elimination-based questions.
+    </div>
+    <div class="info-box why">
+      <div class="label">Why Placed Here</div>
+      DPSPs form the <strong>ideological basis</strong> of the Constitution, complementing FR. Understanding DPSPs enhances elimination accuracy on questions contrasting rights and duties. They tie into basic structure (socialist pattern).
+    </div>
+    <div class="info-box prereq">
+      <div class="label">Prerequisites</div>
+      Fundamental Rights (Unit 6) for contrast. General Article-number literacy (Arts 36&ndash;51).
+    </div>
+  </div>
+</div>
+
+<!-- UNIT 8 -->
+<div class="unit-card" id="u8">
+  <div class="unit-header high-yield">
+    <h2>#3 &mdash; Unit 8: Fundamental Duties (Art. 51A)</h2>
+    <span class="unit-badge">HIGH YIELD &bull; ~5&ndash;10 PYQs</span>
+  </div>
+  <div class="unit-body">
+    <div class="unit-meta">
+      <span class="meta-chip"><strong>PYQ Footprint:</strong> ~5&ndash;10 questions</span>
+      <span class="meta-chip"><strong>Appearance:</strong> Statement-based &bull; True/False identification &bull; Elimination</span>
+    </div>
+    <table class="micro-table">
+      <thead><tr><th>Micro-Topic</th><th>Key Points</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Art. 51A list (11 duties)</strong></td><td>Upholding Constitution &amp; sovereignty; promoting harmony; cherishing heritage; environmental protection; safeguarding public property; abjuring violence; educating children</td></tr>
+        <tr><td><strong>Nature</strong></td><td>Non-justiciable (no enforcement through courts), similar to DPSPs; bind <strong>citizens</strong> (not the State)</td></tr>
+        <tr><td><strong>Origin</strong></td><td>Added by 42nd Amendment (1976), along with &ldquo;Integrity&rdquo; in Preamble</td></tr>
+        <tr><td><strong>Common traps</strong></td><td>&ldquo;Which is NOT a duty?&rdquo; &mdash; some items confused with statutory obligations. Number of duties (11) frequently tested.</td></tr>
+      </tbody>
+    </table>
+    <div class="info-box why">
+      <div class="label">Why Placed Here</div>
+      Part of the FR/DPSP/Duties triad tested together (~29 Qs total in the category). Though low standalone scoring, knowing Duties is crucial for <strong>elimination</strong> and concept clarity (&ldquo;constitutional vs statutory obligations&rdquo;).
+    </div>
+    <div class="info-box prereq">
+      <div class="label">Prerequisites</div>
+      FR and DPSPs (to see them as counterparts; recall that Duties are not judicially enforceable).
+    </div>
+  </div>
+</div>
+
+<!-- UNIT 10 -->
+<div class="unit-card" id="u10">
+  <div class="unit-header high-yield">
+    <h2>#4 &mdash; Unit 10: Parliament (Union Legislature)</h2>
+    <span class="unit-badge">HIGHEST PYQ DENSITY &bull; ~15&ndash;20 PYQs</span>
+  </div>
+  <div class="unit-body">
+    <div class="unit-meta">
+      <span class="meta-chip"><strong>PYQ Footprint:</strong> ~15&ndash;20 questions (single most-tested topic)</span>
+      <span class="meta-chip"><strong>Appearance:</strong> Direct factual &bull; Statement-based &bull; Procedure traps</span>
+    </div>
+    <table class="micro-table">
+      <thead><tr><th>Micro-Topic</th><th>Key Points</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Composition &mdash; Lok Sabha</strong></td><td>Up to 543 elected MPs + 2 Anglo-Indian nominees; term 5 years; directly elected by FPTP</td></tr>
+        <tr><td><strong>Composition &mdash; Rajya Sabha</strong></td><td>245 seats (incl. 12 nominated); &frac13; retire every 2 years; elected by state assemblies via proportional representation</td></tr>
+        <tr><td><strong>Legislative Powers</strong></td><td>Joint procedure for ordinary bills; Money Bills originate in LS, RS can only recommend within 14 days; Constitutional Amendment bills (Art. 368)</td></tr>
+        <tr><td><strong>Parliamentary Procedures</strong></td><td>Sessions, Question Hour, Zero Hour, no-confidence motions, joint sittings; President&rsquo;s address (Art. 87)</td></tr>
+        <tr><td><strong>Privileges</strong></td><td>Freedom from arrest in civil cases; free speech in House</td></tr>
+        <tr><td><strong>Anti-Defection (10th Schedule)</strong></td><td>Disqualification grounds for leaving party or defying whip; merger exception (91st Amendment abolished &frac13; split)</td></tr>
+      </tbody>
+    </table>
+    <div class="info-box pyq">
+      <div class="label">Past Year Question Pattern</div>
+      Tested via composition facts (LS strength: 543, RS term), legislative procedure (money bills, where revenue bills originate), Speaker&rsquo;s powers. Also statement-based: &ldquo;Which is/are correct about Parliament?&rdquo;
+    </div>
+    <div class="info-box why">
+      <div class="label">Why Placed Here</div>
+      As the core of legislature, understanding Parliament is <strong>directly scoring</strong> (clear factual questions) and crucial for elimination (invalid bills, quorums). Builds on Union Executive and precedes State Legislature by analogy.
+    </div>
+    <div class="info-box prereq">
+      <div class="label">Prerequisites</div>
+      Union Executive (President&rsquo;s role in Parliament). Basic Constitution concept. Mostly self-contained once house basics are known.
+    </div>
+  </div>
+</div>
+
+<!-- UNIT 2 -->
+<div class="unit-card" id="u2">
+  <div class="unit-header medium-high-yield">
+    <h2>#5 &mdash; Unit 2: Concept &amp; Salient Features of the Constitution</h2>
+    <span class="unit-badge">MEDIUM&ndash;HIGH YIELD (Foundation)</span>
+  </div>
+  <div class="unit-body">
+    <div class="unit-meta">
+      <span class="meta-chip"><strong>PYQ Footprint:</strong> ~1&ndash;3 direct; underpins many traps</span>
+      <span class="meta-chip"><strong>Appearance:</strong> Conceptual &bull; Feature-identification &bull; Elimination-heavy</span>
+    </div>
+    <table class="micro-table">
+      <thead><tr><th>Feature</th><th>Key Points</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Written &amp; Lengthy</strong></td><td>World&rsquo;s longest written constitution; blend of rigid &amp; flexible</td></tr>
+        <tr><td><strong>Republican &amp; Parliamentary</strong></td><td>Elected Head of State (President via electoral college); executive responsible to legislature</td></tr>
+        <tr><td><strong>Federal with Unitary Bias</strong></td><td>Dual govt but Centre has residuary powers; can override states in emergencies; &ldquo;quasi-federal&rdquo;</td></tr>
+        <tr><td><strong>Secular, Socialist, Democratic</strong></td><td>Preamble ideals; basic features along with rule of law, sovereignty, unity</td></tr>
+        <tr><td><strong>Independent Judiciary &amp; JR</strong></td><td>Courts can invalidate unconstitutional laws</td></tr>
+        <tr><td><strong>Single Citizenship</strong></td><td>Distinguishes from US-style dual citizenship</td></tr>
+      </tbody>
+    </table>
+    <div class="info-box why">
+      <div class="label">Why Placed Here</div>
+      <strong>Foundational conceptual bridge</strong> &mdash; sets context for everything in Polity. Many statement traps (secular vs socialist, rigid vs flexible) rely on this knowledge. Must be mastered early to avoid confusion.
+    </div>
+    <div class="info-box prereq">
+      <div class="label">Prerequisites</div>
+      None. Basic civics is enough. Preamble wording (Unit 3) supports this.
+    </div>
+  </div>
+</div>
+
+<!-- UNIT 15 -->
+<div class="unit-card" id="u15">
+  <div class="unit-header high-yield">
+    <h2>#6 &mdash; Unit 15: Supreme Court (Part V, Arts 124&ndash;147)</h2>
+    <span class="unit-badge">HIGH YIELD &bull; ~5&ndash;8 PYQs</span>
+  </div>
+  <div class="unit-body">
+    <div class="unit-meta">
+      <span class="meta-chip"><strong>PYQ Footprint:</strong> ~5&ndash;8 questions</span>
+      <span class="meta-chip"><strong>Appearance:</strong> Direct factual &bull; Jurisdiction traps &bull; Composition questions</span>
+    </div>
+    <table class="micro-table">
+      <thead><tr><th>Micro-Topic</th><th>Key Points</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Composition</strong></td><td>CJI + other judges (currently 34); appointed by President on Collegium recommendation (CJI + 4 seniormost judges); removal by Parliament impeachment; retire at 65</td></tr>
+        <tr><td><strong>Original Jurisdiction</strong></td><td>Disputes involving states or Centre (Art. 131); election disputes</td></tr>
+        <tr><td><strong>Appellate Jurisdiction</strong></td><td>Civil &amp; criminal appeals; constitutional cases need 5-judge bench</td></tr>
+        <tr><td><strong>Writ Jurisdiction (Art. 32)</strong></td><td>Enforce FRs: habeas corpus, mandamus, prohibition, certiorari, quo warranto</td></tr>
+        <tr><td><strong>Advisory Jurisdiction (Art. 143)</strong></td><td>President may seek SC opinion on legal matters</td></tr>
+        <tr><td><strong>Transfer of Cases (Art. 139A)</strong></td><td>SC can withdraw cases from HC if common question</td></tr>
+      </tbody>
+    </table>
+    <div class="info-box why">
+      <div class="label">Why Placed Here</div>
+      Supreme Court is heavily tested and feeds into judicial review &amp; constitutional amendment discussions. Strong <strong>direct scoring</strong> (facts about jurisdiction, bench size) and <strong>elimination power</strong> (trap statements on advisory vs appellate, quorums).
+    </div>
+    <div class="info-box prereq">
+      <div class="label">Prerequisites</div>
+      None (general civics sufficient). Part V context from Unit 2 helps.
+    </div>
+  </div>
+</div>
+
+<!-- UNIT 20 -->
+<div class="unit-card" id="u20">
+  <div class="unit-header high-yield">
+    <h2>#7 &mdash; Unit 20: Judicial Review (Arts 13, 32, 226)</h2>
+    <span class="unit-badge">HIGH YIELD &bull; CONCEPTUAL CORE</span>
+  </div>
+  <div class="unit-body">
+    <div class="unit-meta">
+      <span class="meta-chip"><strong>PYQ Footprint:</strong> ~5&ndash;7 questions</span>
+      <span class="meta-chip"><strong>Appearance:</strong> Conceptual &bull; Statement-based &bull; High elimination value</span>
+    </div>
+    <table class="micro-table">
+      <thead><tr><th>Micro-Topic</th><th>Key Points</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Art. 13 &mdash; Constitutional basis</strong></td><td>&ldquo;All laws inconsistent with Part III shall be void&rdquo; &mdash; foundation for judicial review in India</td></tr>
+        <tr><td><strong>Writ Powers</strong></td><td>SC (Art. 32) and HCs (Art. 226) issue writs to enforce FR and legal rights; Art. 32 is itself a Fundamental Right</td></tr>
+        <tr><td><strong>Scope</strong></td><td>Any statute affecting FR can be struck down (void ab initio); HCs also review executive actions (Art. 226)</td></tr>
+        <tr><td><strong>Kesavananda Bharati (1973)</strong></td><td>JR is a &ldquo;fundamental characteristic&rdquo; of the Constitution; Parliament cannot alter basic structure</td></tr>
+        <tr><td><strong>L. Chandra Kumar (1997)</strong></td><td>JR is integral to basic structure; writ jurisdiction extends over tribunals</td></tr>
+      </tbody>
+    </table>
+    <div class="info-box why">
+      <div class="label">Why Placed Here</div>
+      JR underlies almost all parts of the Constitution. It is a <strong>foundational concept</strong> that unlocks Amendment (Unit 30) and Basic Structure (Unit 21). High elimination value &mdash; negates wrong statements about law validity, FR suspension, and amendment limits.
+    </div>
+    <div class="info-box prereq">
+      <div class="label">Prerequisites</div>
+      FR (Unit 6) to know which rights are enforced. Supreme Court (Unit 15) for which court exercises JR.
+    </div>
+  </div>
+</div>
+
+<!-- UNIT 32 -->
+<div class="unit-card" id="u32">
+  <div class="unit-header medium-yield">
+    <h2>#8 &mdash; Unit 32: Constitutional Bodies (ECI, UPSC, CAG, etc.)</h2>
+    <span class="unit-badge">MEDIUM YIELD &bull; ~5&ndash;7 PYQs</span>
+  </div>
+  <div class="unit-body">
+    <div class="unit-meta">
+      <span class="meta-chip"><strong>PYQ Footprint:</strong> ~5&ndash;7 questions</span>
+      <span class="meta-chip"><strong>Appearance:</strong> Factual recall &bull; Appointment/tenure traps &bull; &ldquo;Constitutional vs Statutory&rdquo;</span>
+    </div>
+    <table class="micro-table">
+      <thead><tr><th>Body</th><th>Articles</th><th>Key Prelims Facts</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Election Commission (ECI)</strong></td><td>Art. 324</td><td>Manages all elections; CEC + ECs appointed by President; term 6 yrs or age 65</td></tr>
+        <tr><td><strong>UPSC</strong></td><td>Arts 315&ndash;323</td><td>Chairman + members; appointed by President; civil services exams &amp; conduct; post-tenure restrictions</td></tr>
+        <tr><td><strong>CAG</strong></td><td>Arts 148&ndash;151</td><td>Independent auditor; appointed by President; term 6 yrs or age 65; reports to Parliament/Assemblies</td></tr>
+        <tr><td><strong>Finance Commission</strong></td><td>Art. 280</td><td>Every 5 years; recommends tax/debt sharing Centre-States; constitutional body</td></tr>
+        <tr><td><strong>Attorney General</strong></td><td>Art. 76</td><td>Chief legal advisor to Union; holds office at President&rsquo;s pleasure; must be eminent jurist</td></tr>
+      </tbody>
+    </table>
+    <div class="info-box why">
+      <div class="label">Why Placed Here</div>
+      UPSC likes facts: &ldquo;Who appoints CAG?&rdquo;, &ldquo;Which body recommends state share of taxes?&rdquo;. Also strong elimination: confusing CAG with AG, or constitutional bodies with statutory ones.
+    </div>
+    <div class="info-box prereq">
+      <div class="label">Prerequisites</div>
+      Arts 315&ndash;323, 148. Knowledge of Union roles helps.
+    </div>
+  </div>
+</div>
+
+<!-- UNIT 23 -->
+<div class="unit-card" id="u23">
+  <div class="unit-header medium-yield">
+    <h2>#9 &mdash; Unit 23: Centre&ndash;State Relations</h2>
+    <span class="unit-badge">MEDIUM YIELD &bull; ~7 PYQs</span>
+  </div>
+  <div class="unit-body">
+    <div class="unit-meta">
+      <span class="meta-chip"><strong>PYQ Footprint:</strong> ~7 questions</span>
+      <span class="meta-chip"><strong>Appearance:</strong> Constitutional safeguards &bull; Legislative powers &bull; Statement format</span>
+    </div>
+    <table class="micro-table">
+      <thead><tr><th>Micro-Topic</th><th>Key Points</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Legislative Relations (Art. 254)</strong></td><td>Union law prevails over state law in Concurrent subjects; Art. 249 requires RS &frac23; for Parliament to legislate on state subjects; Art. 252 for state request</td></tr>
+        <tr><td><strong>Administrative Relations</strong></td><td>All-India Services (IAS, IPS, IFS); Centre&rsquo;s control via President&rsquo;s rule, central grants; Art. 355 (Centre&rsquo;s duty to protect states)</td></tr>
+        <tr><td><strong>Financial Relations</strong></td><td>Finance Commission (Art. 280); Grants-in-aid (Art. 275); tax sharing mechanisms</td></tr>
+        <tr><td><strong>Inter-State Councils (Art. 263)</strong></td><td>For Centre-State coordination &amp; deliberation on common interests</td></tr>
+      </tbody>
+    </table>
+    <div class="info-box why">
+      <div class="label">Why Placed Here</div>
+      <strong>Direct scoring area</strong> with specific Articles to remember (249, 280). Bridges to Emergency (Unit 29). Eliminates vague options about Parliament&rsquo;s powers over states.
+    </div>
+    <div class="info-box prereq">
+      <div class="label">Prerequisites</div>
+      Federal System (Unit 22) &mdash; list system. President&rsquo;s powers (Unit 9) for emergency context.
+    </div>
+  </div>
+</div>
+
+<!-- UNIT 9 -->
+<div class="unit-card" id="u9">
+  <div class="unit-header medium-yield">
+    <h2>#10 &mdash; Unit 9: Union Executive (President, VP, Council of Ministers)</h2>
+    <span class="unit-badge">MEDIUM YIELD &bull; ~10&ndash;12 PYQs</span>
+  </div>
+  <div class="unit-body">
+    <div class="unit-meta">
+      <span class="meta-chip"><strong>PYQ Footprint:</strong> ~10&ndash;12 questions</span>
+      <span class="meta-chip"><strong>Appearance:</strong> Fact-based &bull; Powers/discretion traps</span>
+    </div>
+    <table class="micro-table">
+      <thead><tr><th>Micro-Topic</th><th>Key Points</th></tr></thead>
+      <tbody>
+        <tr><td><strong>President</strong></td><td>Elected by electoral college (MPs + MLAs); 5-yr term; acts on Council advice (Art. 74); pardoning powers (Art. 72); emergency powers (Arts 352, 356, 360); ordinances (Art. 123); impeachment (Art. 61)</td></tr>
+        <tr><td><strong>Vice-President</strong></td><td>Elected by MPs; ex-officio Chairman of Rajya Sabha (Arts 64&ndash;71); 5-yr term; tie-breaking role</td></tr>
+        <tr><td><strong>Council of Ministers</strong></td><td>PM appointed by President; collective responsibility to Lok Sabha (Art. 75); Cabinet vs Ministers of State distinction</td></tr>
+        <tr><td><strong>Attorney General (Art. 76)</strong></td><td>Govt legal advisor; qualification/role sometimes asked</td></tr>
+        <tr><td><strong>Ordinances (Art. 123)</strong></td><td>When Parliament not in session; lasts 6 weeks of next session</td></tr>
+      </tbody>
+    </table>
+    <div class="info-box why">
+      <div class="label">Why Placed Here</div>
+      Knowledge of President/PM is necessary before tackling Parliament or states. Good elimination potential (traps on &ldquo;discretionary power&rdquo;). Links to emergency and legislative topics.
+    </div>
+    <div class="info-box prereq">
+      <div class="label">Prerequisites</div>
+      None (basic civics). Parliament knowledge helps for VP&rsquo;s RS role.
+    </div>
+  </div>
+</div>
+
+<!-- UNIT 12 -->
+<div class="unit-card" id="u12">
+  <div class="unit-header medium-yield">
+    <h2>#11 &mdash; Unit 12: State Executive (Governor, CM, State Council)</h2>
+    <span class="unit-badge">MEDIUM YIELD &bull; ~2&ndash;3 PYQs</span>
+  </div>
+  <div class="unit-body">
+    <table class="micro-table">
+      <thead><tr><th>Micro-Topic</th><th>Key Points</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Governor</strong></td><td>Appointed by President; 5-yr tenure; discretionary powers (e.g. hung House); pardoning power at state level (Art. 161)</td></tr>
+        <tr><td><strong>Chief Minister &amp; CoM</strong></td><td>Leader of majority in State Legislature; appointed by Governor (Art. 163); collective responsibility to Assembly</td></tr>
+        <tr><td><strong>Advocate General (Art. 165)</strong></td><td>State&rsquo;s legal advisor; &ldquo;highest law officer of state&rdquo;</td></tr>
+      </tbody>
+    </table>
+    <div class="info-box why">
+      <div class="label">Why Placed Here</div>
+      Mirrors Union Executive. Needed for centre-state items and Governor-specific scenarios. Moderately useful for elimination (who nominates CM, Governor&rsquo;s reserve powers).
+    </div>
+    <div class="info-box prereq">
+      <div class="label">Prerequisites</div>
+      Union Executive (Unit 9) as parallel analogy.
+    </div>
+  </div>
+</div>
+
+<!-- UNIT 11 -->
+<div class="unit-card" id="u11">
+  <div class="unit-header medium-yield">
+    <h2>#12 &mdash; Unit 11: Parliamentary Committees</h2>
+    <span class="unit-badge">MEDIUM YIELD &bull; ~3&ndash;5 PYQs</span>
+  </div>
+  <div class="unit-body">
+    <table class="micro-table">
+      <thead><tr><th>Committee Type</th><th>Key Facts</th></tr></thead>
+      <tbody>
+        <tr><td><strong>PAC (Public Accounts Committee)</strong></td><td>22 members; Chairman from Opposition; examines public finance</td></tr>
+        <tr><td><strong>Estimates Committee</strong></td><td>30 Lok Sabha members; examines budget estimates</td></tr>
+        <tr><td><strong>DRSCs (Dept. Related Standing Committees)</strong></td><td>24 committees; 31 MPs each (21 LS + 10 RS); scrutinize bills, budgets, policies; formed 1993, restructured 2004</td></tr>
+        <tr><td><strong>Ad-hoc &amp; Joint Committees</strong></td><td>Select Committees on bills; JPC for specific issues/scams</td></tr>
+      </tbody>
+    </table>
+    <div class="info-box why">
+      <div class="label">Why Placed Here</div>
+      Logical extension of Parliament &mdash; committees do the detailed legislative work. Direct scoring on factoids (DRSC size: 31) and useful for eliminating wrong options about Parliamentary scrutiny.
+    </div>
+    <div class="info-box prereq">
+      <div class="label">Prerequisites</div>
+      Parliament basics (Unit 10).
+    </div>
+  </div>
+</div>
+
+<!-- UNIT 13 -->
+<div class="unit-card" id="u13">
+  <div class="unit-header medium-yield">
+    <h2>#13 &mdash; Unit 13: State Legislature</h2>
+    <span class="unit-badge">MEDIUM YIELD &bull; ~3&ndash;6 PYQs</span>
+  </div>
+  <div class="unit-body">
+    <table class="micro-table">
+      <thead><tr><th>Micro-Topic</th><th>Key Points</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Composition</strong></td><td>Mostly unicameral (Vidhan Sabha); few bicameral (UP, Bihar, etc. have Vidhan Parishad); Arts 168&ndash;169; Governor part of legislature</td></tr>
+        <tr><td><strong>Terms</strong></td><td>Assemblies: 5 years; Councils: 6 years (&frac13; retire biennially)</td></tr>
+        <tr><td><strong>Legislative Powers</strong></td><td>State List subjects (Art. 246); Concurrent List (both); Parliament can legislate on state list in certain conditions (Arts 249, 250)</td></tr>
+        <tr><td><strong>Reservations</strong></td><td>SC/ST quotas in Assemblies (Arts 330&ndash;332)</td></tr>
+      </tbody>
+    </table>
+    <div class="info-box why">
+      <div class="label">Why Placed Here</div>
+      Complements Union Legislature &mdash; many Prelims questions contrast the two. Essential for elimination (prevents confusing state vs union procedures). Prerequisite for Panchayati Raj and state amendments.
+    </div>
+    <div class="info-box prereq">
+      <div class="label">Prerequisites</div>
+      Union Legislature (Unit 10) for analogies. Union vs State Lists (Unit 22).
+    </div>
+  </div>
+</div>
+
+<!-- UNIT 22 -->
+<div class="unit-card" id="u22">
+  <div class="unit-header medium-yield">
+    <h2>#14 &mdash; Unit 22: Federal System &mdash; Lists &amp; Residuary Powers</h2>
+    <span class="unit-badge">MEDIUM YIELD &bull; ~7 PYQs</span>
+  </div>
+  <div class="unit-body">
+    <table class="micro-table">
+      <thead><tr><th>Micro-Topic</th><th>Key Points</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Article 246 &mdash; Division</strong></td><td><strong>Union List:</strong> 100 items (Defence, Foreign Affairs, Currency) &bull; <strong>State List:</strong> 61 items (Police, Public Order) &bull; <strong>Concurrent List:</strong> 52 items (Education, Forests)</td></tr>
+        <tr><td><strong>Residuary Powers (Art. 248)</strong></td><td>Parliament&rsquo;s exclusive power on subjects not in any list</td></tr>
+        <tr><td><strong>Conflict Resolution</strong></td><td>If items in both lists conflict, Parliament prevails</td></tr>
+        <tr><td><strong>Finance</strong></td><td>Union can tax all; states limited to state list; Grants-in-aid (Art. 275)</td></tr>
+        <tr><td><strong>All-India Services</strong></td><td>IAS, IPS (Arts 312&ndash;316) &mdash; create unity but mainly Centre-controlled</td></tr>
+      </tbody>
+    </table>
+    <div class="info-box why">
+      <div class="label">Why Placed Here</div>
+      <strong>Fundamental concept</strong> for Centre-State questions. Direct scoring via clear mapping of subjects. Enables elimination on law-making questions.
+    </div>
+    <div class="info-box prereq">
+      <div class="label">Prerequisites</div>
+      Basic understanding of federalism from Unit 2.
+    </div>
+  </div>
+</div>
+
+<!-- UNIT 21 -->
+<div class="unit-card" id="u21">
+  <div class="unit-header medium-yield">
+    <h2>#15 &mdash; Unit 21: Basic Structure Doctrine</h2>
+    <span class="unit-badge">MEDIUM YIELD &bull; ~3&ndash;5 PYQs</span>
+  </div>
+  <div class="unit-body">
+    <table class="micro-table">
+      <thead><tr><th>Micro-Topic</th><th>Key Points</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Definition</strong></td><td>No explicit Article; judicially invented doctrine (Kesavananda 1973) that certain core features cannot be amended</td></tr>
+        <tr><td><strong>Basic Features</strong></td><td>Preamble ideals, judicial review, federalism, sovereignty, dignity, parliamentary system (no exhaustive list)</td></tr>
+        <tr><td><strong>Key Cases</strong></td><td>Kesavananda Bharati (1973): Parliament&rsquo;s power unlimited under Art. 368 but cannot alter basic structure. Minerva Mills, Indira Gandhi cases reaffirm.</td></tr>
+        <tr><td><strong>Application</strong></td><td>Any amendment abrogating core features is void (e.g. NJAC struck down)</td></tr>
+      </tbody>
+    </table>
+    <div class="info-box why">
+      <div class="label">Why Placed Here</div>
+      <strong>Bridge</strong> between judicial review and amendment process. Without it, one could wrongly assume Parliament&rsquo;s power is absolute. Improves elimination on any amendment or FR-conflict question.
+    </div>
+    <div class="info-box prereq">
+      <div class="label">Prerequisites</div>
+      Judicial Review (Unit 20). FR (Unit 6) &mdash; content that&rsquo;s part of basic structure.
+    </div>
+  </div>
+</div>
+
+<!-- UNIT 28 -->
+<div class="unit-card" id="u28">
+  <div class="unit-header medium-yield">
+    <h2>#16 &mdash; Unit 28: Political Dynamics (Party System, Anti-Defection)</h2>
+    <span class="unit-badge">MEDIUM YIELD &bull; ~5&ndash;8 PYQs</span>
+  </div>
+  <div class="unit-body">
+    <table class="micro-table">
+      <thead><tr><th>Micro-Topic</th><th>Key Points</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Anti-Defection Law (10th Schedule)</strong></td><td>Disqualification for leaving party or defying whip; limited exceptions (merger); &frac13; split abolished by 91st Amendment</td></tr>
+        <tr><td><strong>Party System</strong></td><td>Multi-party democracy; National vs State party recognition criteria (vote %, seats)</td></tr>
+        <tr><td><strong>Electoral Dynamics</strong></td><td>Coalition politics; electoral bonds (now banned); foreign funding restrictions</td></tr>
+      </tbody>
+    </table>
+    <div class="info-box why">
+      <div class="label">Why Placed Here</div>
+      Anti-defection is regularly tested. Medium-scoring area extending electoral process into party behavior. Prevents wrong elimination (e.g. assuming defectors always immune).
+    </div>
+    <div class="info-box prereq">
+      <div class="label">Prerequisites</div>
+      Elections (Unit 27). Basic Features (Unit 2) for secularism context.
+    </div>
+  </div>
+</div>
+
+<!-- UNIT 29 -->
+<div class="unit-card" id="u29">
+  <div class="unit-header medium-yield">
+    <h2>#17 &mdash; Unit 29: Emergency Provisions (Part XVIII, Arts 352&ndash;360)</h2>
+    <span class="unit-badge">MEDIUM YIELD &bull; ~5&ndash;7 PYQs</span>
+  </div>
+  <div class="unit-body">
+    <table class="micro-table">
+      <thead><tr><th>Emergency Type</th><th>Article</th><th>Key Points</th></tr></thead>
+      <tbody>
+        <tr><td><strong>National Emergency</strong></td><td>Art. 352</td><td>Grounds: war/external aggression/armed rebellion (not &ldquo;internal disturbance&rdquo; post-44th); initial 6 months, Parliament extends; Art. 19 rights suspended but <strong>Arts 20 &amp; 21 can never be suspended</strong> (44th Amendment)</td></tr>
+        <tr><td><strong>President&rsquo;s Rule</strong></td><td>Art. 356</td><td>Failure of constitutional machinery in state; Governor report needed; max 3 years with ratification</td></tr>
+        <tr><td><strong>Financial Emergency</strong></td><td>Art. 360</td><td>Threat to financial stability; never invoked; rarely asked</td></tr>
+      </tbody>
+    </table>
+    <div class="info-box why">
+      <div class="label">Why Placed Here</div>
+      Links Centre-State and FR topics. Crucial to eliminate misconceptions (&ldquo;Right to Equality is suspended&rdquo; &mdash; false). Both factual &amp; conceptual, bridging FR and Centre-State.
+    </div>
+    <div class="info-box prereq">
+      <div class="label">Prerequisites</div>
+      FR (Unit 6) &mdash; which rights get suspended. Union Executive (Unit 9) &mdash; President&rsquo;s powers. Centre-State (Unit 23).
+    </div>
+  </div>
+</div>
+
+<!-- UNIT 24 -->
+<div class="unit-card" id="u24">
+  <div class="unit-header low-yield">
+    <h2>#18 &mdash; Unit 24: Inter-State Relations</h2>
+    <span class="unit-badge">LOW&ndash;MEDIUM YIELD &bull; ~1&ndash;2 PYQs</span>
+  </div>
+  <div class="unit-body">
+    <table class="micro-table">
+      <thead><tr><th>Micro-Topic</th><th>Key Points</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Inter-State Trade (Art. 301)</strong></td><td>Free trade across states with Parliamentary exceptions (Arts 302&ndash;304)</td></tr>
+        <tr><td><strong>River Water Disputes (Art. 262)</strong></td><td>Parliament can regulate; tribunals set up (e.g. Krishna Water Disputes Tribunal)</td></tr>
+        <tr><td><strong>Inter-State Councils (Art. 263)</strong></td><td>Centre-State coordination for common interests</td></tr>
+      </tbody>
+    </table>
+    <div class="info-box prereq">
+      <div class="label">Prerequisites</div>
+      Centre-State Relations (Unit 23) for trade &amp; state Articles.
+    </div>
+  </div>
+</div>
+
+<!-- UNIT 25 -->
+<div class="unit-card" id="u25">
+  <div class="unit-header low-yield">
+    <h2>#19 &mdash; Unit 25: Panchayati Raj (73rd Amendment, Part IX)</h2>
+    <span class="unit-badge">LOW YIELD &bull; ~3&ndash;5 PYQs</span>
+  </div>
+  <div class="unit-body">
+    <table class="micro-table">
+      <thead><tr><th>Micro-Topic</th><th>Key Points</th></tr></thead>
+      <tbody>
+        <tr><td><strong>73rd Amendment (1992)</strong></td><td>Added Part IX (Arts 243&ndash;243O) &amp; Eleventh Schedule; three-tier: Gram, Block, District</td></tr>
+        <tr><td><strong>Gram Sabha</strong></td><td>Mandated village-level body (Art. 243B)</td></tr>
+        <tr><td><strong>Reservations</strong></td><td>SC/ST/OBC; 33% reservation for women (Art. 243D)</td></tr>
+        <tr><td><strong>Functions</strong></td><td>Eleventh Schedule: 29 functions (agriculture, public health, etc.)</td></tr>
+        <tr><td><strong>Finances</strong></td><td>State Finance Commissions (Art. 243-I) for devolution</td></tr>
+      </tbody>
+    </table>
+    <div class="info-box prereq"><div class="label">Prerequisites</div>State Legislature (creating local laws); Art. 246 lists.</div>
+  </div>
+</div>
+
+<!-- UNIT 26 -->
+<div class="unit-card" id="u26">
+  <div class="unit-header low-yield">
+    <h2>#20 &mdash; Unit 26: Urban Local Bodies (74th Amendment, Part IXA)</h2>
+    <span class="unit-badge">LOW YIELD &bull; ~3&ndash;4 PYQs</span>
+  </div>
+  <div class="unit-body">
+    <table class="micro-table">
+      <thead><tr><th>Micro-Topic</th><th>Key Points</th></tr></thead>
+      <tbody>
+        <tr><td><strong>74th Amendment (1992)</strong></td><td>Added Part IXA (Arts 243P&ndash;243ZG) &amp; Twelfth Schedule; Nagar Panchayat, Municipal Council, Municipal Corporation</td></tr>
+        <tr><td><strong>Composition</strong></td><td>&frac23; directly elected; up to &frac13; nominated; &frac13; women reservation</td></tr>
+        <tr><td><strong>Functions</strong></td><td>Twelfth Schedule: 18 functions (urban planning, public health, roads, education)</td></tr>
+      </tbody>
+    </table>
+    <div class="info-box prereq"><div class="label">Prerequisites</div>Panchayati Raj (Unit 25) for parallel structure understanding.</div>
+  </div>
+</div>
+
+<!-- UNIT 27 -->
+<div class="unit-card" id="u27">
+  <div class="unit-header low-yield">
+    <h2>#21 &mdash; Unit 27: Elections (Electoral System)</h2>
+    <span class="unit-badge">LOW YIELD &bull; ~2&ndash;4 PYQs</span>
+  </div>
+  <div class="unit-body">
+    <table class="micro-table">
+      <thead><tr><th>Micro-Topic</th><th>Key Points</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Election Commission (Art. 324)</strong></td><td>CEC + ECs appointed by President; manages all elections; 6 years or age 65</td></tr>
+        <tr><td><strong>Electoral Rolls (Art. 325)</strong></td><td>No ineligibility by religion, race, caste, or sex</td></tr>
+        <tr><td><strong>Voting System</strong></td><td>FPTP for LS/Assembly; proportional for RS</td></tr>
+        <tr><td><strong>Universal Adult Franchise (Art. 326)</strong></td><td>All citizens 18+ eligible</td></tr>
+      </tbody>
+    </table>
+    <div class="info-box prereq"><div class="label">Prerequisites</div>None beyond general civics. Art. 324 text is crucial.</div>
+  </div>
+</div>
+
+<!-- UNIT 3 -->
+<div class="unit-card" id="u3">
+  <div class="unit-header low-yield">
+    <h2>#22 &mdash; Unit 3: Preamble of the Constitution</h2>
+    <span class="unit-badge">LOW YIELD &bull; ~6 PYQs</span>
+  </div>
+  <div class="unit-body">
+    <table class="micro-table">
+      <thead><tr><th>Micro-Topic</th><th>Key Points</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Text &amp; Ideals</strong></td><td>&ldquo;We, the people of India&rdquo; &rarr; Sovereign, Socialist, Secular, Democratic, Republic &rarr; Justice, Liberty, Equality, Fraternity</td></tr>
+        <tr><td><strong>42nd Amendment additions</strong></td><td>&ldquo;Socialist,&rdquo; &ldquo;Secular,&rdquo; and &ldquo;Integrity&rdquo; added (1976)</td></tr>
+        <tr><td><strong>Amendability</strong></td><td>Preamble can be amended (Kesavananda); basic structure limits apply</td></tr>
+        <tr><td><strong>Part of Constitution?</strong></td><td>Yes (Kesavananda overruled Berubari); but not enforceable in court</td></tr>
+      </tbody>
+    </table>
+    <div class="info-box prereq"><div class="label">Prerequisites</div>None. Supports Unit 2 and Unit 31.</div>
+  </div>
+</div>
+
+<!-- UNIT 30 -->
+<div class="unit-card" id="u30">
+  <div class="unit-header low-yield">
+    <h2>#23 &mdash; Unit 30: Amendment of the Constitution (Art. 368)</h2>
+    <span class="unit-badge">LOW&ndash;MEDIUM YIELD &bull; ~6 PYQs</span>
+  </div>
+  <div class="unit-body">
+    <table class="micro-table">
+      <thead><tr><th>Micro-Topic</th><th>Key Points</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Art. 368 Procedure</strong></td><td>Majority of total membership + &frac23; of members present (each house); President&rsquo;s assent; certain changes need &ge;&frac12; state legislature ratification</td></tr>
+        <tr><td><strong>Types of Amendments</strong></td><td><strong>Simple:</strong> like ordinary law &bull; <strong>Special majority</strong> (e.g. FR alterations) &bull; <strong>Special + State consent</strong> (federal structure, SC/HC jurisdictions)</td></tr>
+        <tr><td><strong>Key Amendments</strong></td><td>42nd (Duties, Preamble); 44th (emergency, FR); 73rd/74th (local govts); 101st (J&amp;K)</td></tr>
+        <tr><td><strong>No unlimited power</strong></td><td>Kesavananda: all amendments reviewable for basic structure compliance</td></tr>
+      </tbody>
+    </table>
+    <div class="info-box why">
+      <div class="label">Why Placed Here</div>
+      Capstone of constitutional law. Draws on JR to check limits. Directly answers questions on amendment procedures and eliminates wrong Art. 368 interpretations.
+    </div>
+    <div class="info-box prereq">
+      <div class="label">Prerequisites</div>
+      Art. 368; Basic Structure (Unit 21); Parliamentary majority concept (Unit 10).
+    </div>
+  </div>
+</div>
+
+<!-- UNIT 1 -->
+<div class="unit-card" id="u1">
+  <div class="unit-header low-yield">
+    <h2>#24 &mdash; Unit 1: Historical Background</h2>
+    <span class="unit-badge">LOW YIELD</span>
+  </div>
+  <div class="unit-body">
+    <table class="micro-table">
+      <thead><tr><th>Micro-Topic</th><th>Key Points</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Constituent Assembly</strong></td><td>Formation, key members (Ambedkar, Nehru, Patel), duration (1946&ndash;1949), committees</td></tr>
+        <tr><td><strong>Key Colonial Acts</strong></td><td>Indian Councils Acts, GoI Acts 1919 &amp; 1935 as precursors to Constitution</td></tr>
+        <tr><td><strong>Sources of Constitution</strong></td><td>GoI Act 1935 (federal structure), British (parliamentary), US (FR/JR), Irish (DPSP)</td></tr>
+      </tbody>
+    </table>
+    <div class="info-box prereq"><div class="label">Prerequisites</div>None. Stand-alone historical context.</div>
+  </div>
+</div>
+
+<!-- UNIT 4 -->
+<div class="unit-card" id="u4">
+  <div class="unit-header low-yield">
+    <h2>#25 &mdash; Unit 4: Union and its Territory</h2>
+    <span class="unit-badge">LOW YIELD &bull; ~2&ndash;3 PYQs</span>
+  </div>
+  <div class="unit-body">
+    <table class="micro-table">
+      <thead><tr><th>Micro-Topic</th><th>Key Points</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Article 1</strong></td><td>India (Bharat) &mdash; Union of States; States &amp; UTs in First Schedule</td></tr>
+        <tr><td><strong>States&rsquo; Reorganisation (Art. 3)</strong></td><td>Only Parliament can admit/alter; new states/UTs (e.g. J&amp;K reorganization 2019)</td></tr>
+        <tr><td><strong>Fifth Schedule</strong></td><td>Tribal areas in 10 states; Autonomous District Councils</td></tr>
+        <tr><td><strong>Sixth Schedule</strong></td><td>Tribal areas in NE (Assam, Nagaland etc.) with Tribal Councils</td></tr>
+        <tr><td><strong>Article 371</strong></td><td>Special provisions for various states (e.g. 371A for Nagaland)</td></tr>
+      </tbody>
+    </table>
+    <div class="info-box prereq"><div class="label">Prerequisites</div>Basic federation idea from Unit 2.</div>
+  </div>
+</div>
+
+<!-- UNIT 5 -->
+<div class="unit-card" id="u5">
+  <div class="unit-header low-yield">
+    <h2>#26 &mdash; Unit 5: Citizenship (Part II, Arts 5&ndash;11)</h2>
+    <span class="unit-badge">LOW YIELD &bull; ~1 PYQ</span>
+  </div>
+  <div class="unit-body">
+    <table class="micro-table">
+      <thead><tr><th>Micro-Topic</th><th>Key Points</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Constitutional Provisions</strong></td><td>Citizenship at commencement (Art. 5); by birth, descent, registration, naturalization, incorporation</td></tr>
+        <tr><td><strong>Citizenship Act 1955</strong></td><td>Amendments (e.g. CAA 2019); modes of acquiring/losing citizenship</td></tr>
+      </tbody>
+    </table>
+    <div class="info-box prereq"><div class="label">Prerequisites</div>None. Basic Part II knowledge.</div>
+  </div>
+</div>
+
+<!-- UNIT 14 -->
+<div class="unit-card" id="u14">
+  <div class="unit-header low-yield">
+    <h2>#27 &mdash; Unit 14: Union Territories &amp; Special Areas</h2>
+    <span class="unit-badge">LOW YIELD &bull; ~1&ndash;2 PYQs</span>
+  </div>
+  <div class="unit-body">
+    <table class="micro-table">
+      <thead><tr><th>Micro-Topic</th><th>Key Points</th></tr></thead>
+      <tbody>
+        <tr><td><strong>UTs with Legislature</strong></td><td>Delhi &amp; Puducherry have partial legislative assemblies</td></tr>
+        <tr><td><strong>Administrator-governed UTs</strong></td><td>Others governed by centrally-appointed Administrator</td></tr>
+        <tr><td><strong>Art. 371 provisions</strong></td><td>Special advisory councils, autonomy for specific states/areas</td></tr>
+      </tbody>
+    </table>
+    <div class="info-box prereq"><div class="label">Prerequisites</div>Union &amp; Territory basics (Unit 4).</div>
+  </div>
+</div>
+
+<!-- UNITS 16, 17, 18, 19 - Compact -->
+<div class="unit-card" id="u16">
+  <div class="unit-header low-yield">
+    <h2>#28&ndash;31 &mdash; Units 16&ndash;19: High Court, Subordinate Courts, ADR, Tribunals</h2>
+    <span class="unit-badge">LOW YIELD &bull; ~2&ndash;5 PYQs combined</span>
+  </div>
+  <div class="unit-body">
+    <table class="micro-table">
+      <thead><tr><th>Unit</th><th>Key Points for Prelims</th></tr></thead>
+      <tbody>
+        <tr id="u17"><td><strong>Unit 16 &mdash; High Court</strong></td><td>Arts 214&ndash;231; writ jurisdiction (Art. 226 &mdash; wider than SC&rsquo;s Art. 32); original, appellate &amp; supervisory jurisdiction; judges retire at 62; transfer by President on CJI recommendation</td></tr>
+        <tr id="u18"><td><strong>Unit 17 &mdash; Subordinate Courts</strong></td><td>District &amp; Sessions Courts; Art. 233&ndash;237; appointment by Governor in consultation with HC</td></tr>
+        <tr><td><strong>Unit 18 &mdash; ADR Courts</strong></td><td>Lok Adalats, mediation, arbitration; Lok Adalat awards are final &amp; non-appealable</td></tr>
+        <tr id="u19"><td><strong>Unit 19 &mdash; Tribunals</strong></td><td>Art. 323A (administrative tribunals, e.g. CAT) &amp; Art. 323B (other tribunals); L. Chandra Kumar: JR over tribunals is basic structure</td></tr>
+      </tbody>
+    </table>
+    <div class="info-box prereq"><div class="label">Prerequisites</div>Supreme Court (Unit 15) for judicial hierarchy context.</div>
+  </div>
+</div>
+
+<!-- UNIT 31 -->
+<div class="unit-card" id="u31">
+  <div class="unit-header low-yield">
+    <h2>#32 &mdash; Unit 31: Other Constitutional Dimensions (Secularism, Socialism, etc.)</h2>
+    <span class="unit-badge">LOW YIELD &bull; ~2&ndash;3 PYQs</span>
+  </div>
+  <div class="unit-body">
+    <table class="micro-table">
+      <thead><tr><th>Micro-Topic</th><th>Key Points</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Preamble Ideals</strong></td><td>&ldquo;Sovereign, Socialist, Secular, Democratic, Republic&rdquo;; Socialist/Secular added by 42nd Amdt</td></tr>
+        <tr><td><strong>Secularism</strong></td><td>State neutral to all religions (Arts 25&ndash;28); India&rsquo;s model = no state religion</td></tr>
+        <tr><td><strong>Rule of Law &amp; Equality</strong></td><td>Implied principles: equality before law (Basic FR); unity &amp; integrity</td></tr>
+        <tr><td><strong>Political Justice &amp; Liberty</strong></td><td>Justice (social, economic, political); Liberty (thought, expression, belief, faith, worship); Equality; Fraternity</td></tr>
+      </tbody>
+    </table>
+    <div class="info-box prereq"><div class="label">Prerequisites</div>Preamble (Unit 3) and Basic Structure (Unit 21).</div>
+  </div>
+</div>
+
+<!-- UNIT 33 -->
+<div class="unit-card" id="u33">
+  <div class="unit-header low-yield">
+    <h2>#33 &mdash; Unit 33: Non-Constitutional Bodies (Statutory/Executive)</h2>
+    <span class="unit-badge">LOW YIELD &bull; ~0&ndash;2 PYQs</span>
+  </div>
+  <div class="unit-body">
+    <table class="micro-table">
+      <thead><tr><th>Body</th><th>Status</th><th>Key Facts</th></tr></thead>
+      <tbody>
+        <tr><td><strong>NHRC</strong></td><td>Statutory (1993)</td><td>Chairman: retired SC judge; investigates HR violations</td></tr>
+        <tr><td><strong>CVC</strong></td><td>Statutory (2003)</td><td>Anti-corruption vigilance; Chairman + 2 members</td></tr>
+        <tr><td><strong>NCW / NCSC / NCST</strong></td><td>Statutory</td><td>Various commissions for women, SC, ST</td></tr>
+        <tr><td><strong>NITI Aayog</strong></td><td>Executive (2015)</td><td>Replaced Planning Commission; not constitutional</td></tr>
+        <tr><td><strong>CIC</strong></td><td>Statutory (RTI Act)</td><td>Under RTI Act 2005</td></tr>
+      </tbody>
+    </table>
+    <div class="info-box why">
+      <div class="label">Key Distinction</div>
+      The main value is recognizing <strong>constitutional vs statutory</strong> &mdash; a common Prelims check. NHRC, CBI, CVC are NOT in the Constitution; ECI, UPSC, CAG ARE.
+    </div>
+  </div>
+</div>
+
+<!-- UNIT 34 -->
+<div class="unit-card" id="u34">
+  <div class="unit-header low-yield">
+    <h2>#34 &mdash; Unit 34: Parts &amp; Schedules of the Constitution</h2>
+    <span class="unit-badge">LOW YIELD &bull; ~1&ndash;2 PYQs</span>
+  </div>
+  <div class="unit-body">
+    <table class="micro-table">
+      <thead><tr><th>Component</th><th>Key Facts</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Parts</strong></td><td>25 Parts (Part I&ndash;XXII). Part III = FRs, Part IV = DPSP, Part IX = Panchayats, Part IXA = Municipalities, Part XVIII = Emergency</td></tr>
+        <tr><td><strong>Key Schedules</strong></td><td><strong>I:</strong> States &amp; UTs &bull; <strong>V:</strong> Tribal areas &bull; <strong>VI:</strong> NE Tribal areas &bull; <strong>VII:</strong> Union/State/Concurrent Lists &bull; <strong>VIII:</strong> Languages &bull; <strong>X:</strong> Anti-Defection &bull; <strong>XI:</strong> Panchayat functions &bull; <strong>XII:</strong> Municipality functions</td></tr>
+      </tbody>
+    </table>
+    <div class="info-box prereq"><div class="label">Prerequisites</div>None. Simply the printed Constitution reference.</div>
+  </div>
+</div>
+
+<!-- UNIT 35 -->
+<div class="unit-card" id="u35">
+  <div class="unit-header low-yield">
+    <h2>#35 &mdash; Unit 35: Laws &amp; Legislations (Law-making, Ordinances)</h2>
+    <span class="unit-badge">LOW YIELD &bull; ~1&ndash;2 PYQs</span>
+  </div>
+  <div class="unit-body">
+    <table class="micro-table">
+      <thead><tr><th>Micro-Topic</th><th>Key Points</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Bill Types</strong></td><td>Ordinary, Money, Finance, Appropriation; President&rsquo;s assent &amp; pocket veto</td></tr>
+        <tr><td><strong>Ordinances</strong></td><td>President (Art. 123) &amp; Governor (Art. 213); when legislature not in session; must be ratified within 6 weeks of reassembly</td></tr>
+        <tr><td><strong>Delegated Legislation</strong></td><td>Rules/notifications by executive under parent Act; distinction from primary legislation</td></tr>
+        <tr><td><strong>Public vs Private Member Bills</strong></td><td>Procedural differences in introduction and passage</td></tr>
+      </tbody>
+    </table>
+    <div class="info-box why">
+      <div class="label">Why Placed Last</div>
+      Overlaps heavily with Parliament and Executive topics. Low direct yield but ensures completeness. Knowing ordinance rules (Arts 123/213) remains important for occasional Prelims questions.
+    </div>
+    <div class="info-box prereq">
+      <div class="label">Prerequisites</div>
+      Parliament (Unit 10) and Union Executive (Unit 9). Arts 123/213 are critical.
+    </div>
+  </div>
+</div>
+
+<!-- ===== FOOTER ===== -->
+<div style="text-align:center; margin-top:60px; padding:30px 0 10px; border-top:2px solid var(--border); color:var(--text-secondary); font-size:0.88rem;">
+  <p><strong>UPSC Prelims GS Paper I &mdash; Polity: Exhaustive PYQ-Aligned Topic Breakdown &amp; Priority Ranking</strong></p>
+  <p style="margin-top:4px;">35 Units &bull; Complete Micro-Topic Maps &bull; Elimination Strategy &bull; 100% Syllabus Coverage</p>
+</div>
+
+</div><!-- /container -->
+</body>
+</html>

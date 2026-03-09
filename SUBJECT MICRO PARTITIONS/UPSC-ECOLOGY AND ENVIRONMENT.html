@@ -1,0 +1,1192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UPSC Prelims GS Paper I &mdash; Environment &amp; Ecology: Exhaustive PYQ-Aligned Topic Dissection &amp; Priority Ranking</title>
+<style>
+  :root {
+    --primary: #1a1a1a;
+    --primary-light: #2d2d2d;
+    --primary-dark: #0d0d0d;
+    --gold: #d4a017;
+    --gold-light: #f0c75e;
+    --gold-dark: #b8860b;
+    --gold-dim: #c19a2a;
+    --bg: #0f0f0f;
+    --card-bg: #1a1a1a;
+    --text: #e8e0d0;
+    --text-secondary: #a89f8f;
+    --border: #333027;
+    --high: #4caf50;
+    --high-bg: rgba(76,175,80,0.12);
+    --medium: #ff9800;
+    --medium-bg: rgba(255,152,0,0.12);
+    --medium-high: #8bc34a;
+    --medium-high-bg: rgba(139,195,74,0.12);
+    --low: #ef5350;
+    --low-bg: rgba(239,83,80,0.1);
+    --low-medium: #ff7043;
+    --low-medium-bg: rgba(255,112,67,0.1);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.72;
+    font-size: 15px;
+  }
+
+  /* Hero */
+  .hero {
+    background: linear-gradient(135deg, #0a0a0a 0%, #1a1200 30%, #2a1f00 55%, #1a1200 80%, #0a0a0a 100%);
+    color: #fff;
+    padding: 65px 40px 55px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    border-bottom: 3px solid var(--gold);
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -50%; left: -50%;
+    width: 200%; height: 200%;
+    background: radial-gradient(circle at 40% 60%, rgba(212,160,23,0.1) 0%, transparent 50%),
+                radial-gradient(circle at 60% 30%, rgba(240,199,94,0.05) 0%, transparent 40%);
+    pointer-events: none;
+  }
+  .hero::after {
+    content: '';
+    position: absolute;
+    bottom: -2px; left: 0; right: 0;
+    height: 40px;
+    background: var(--bg);
+    clip-path: ellipse(55% 100% at 50% 100%);
+  }
+  .hero h1 {
+    font-size: 2.3rem;
+    font-weight: 800;
+    margin-bottom: 14px;
+    letter-spacing: -0.5px;
+    position: relative;
+    color: var(--gold-light);
+    text-shadow: 0 2px 20px rgba(212,160,23,0.3);
+  }
+  .hero .subtitle {
+    font-size: 1.05rem;
+    opacity: 0.85;
+    max-width: 820px;
+    margin: 0 auto;
+    line-height: 1.6;
+    position: relative;
+    color: #c9b88a;
+  }
+  .hero .badge-row {
+    margin-top: 18px;
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    position: relative;
+  }
+  .hero .stat-badge {
+    background: rgba(212,160,23,0.15);
+    backdrop-filter: blur(6px);
+    border: 1px solid rgba(212,160,23,0.3);
+    padding: 6px 18px;
+    border-radius: 20px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--gold-light);
+  }
+
+  /* Container */
+  .container {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 30px 24px 60px;
+  }
+
+  /* Section titles */
+  .section-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--gold);
+    margin: 50px 0 20px;
+    padding-bottom: 10px;
+    border-bottom: 3px solid var(--gold-dark);
+    display: block;
+  }
+
+  /* Cards */
+  .card {
+    background: var(--card-bg);
+    border-radius: 12px;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.4);
+    padding: 28px 32px;
+    margin-bottom: 24px;
+    border-left: 5px solid var(--gold-dark);
+    transition: box-shadow 0.2s;
+  }
+  .card:hover { box-shadow: 0 4px 24px rgba(212,160,23,0.12); }
+  .card h3 {
+    font-size: 1.15rem;
+    color: var(--gold);
+    margin-bottom: 10px;
+  }
+
+  /* Unit cards */
+  .unit-card {
+    background: var(--card-bg);
+    border-radius: 14px;
+    box-shadow: 0 2px 20px rgba(0,0,0,0.5);
+    margin-bottom: 32px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+  .unit-header {
+    padding: 20px 28px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .unit-header.high-yield { background: linear-gradient(135deg, #1a3a1a, #2e5a2e); border-bottom: 2px solid #4caf50; }
+  .unit-header.medium-yield { background: linear-gradient(135deg, #3a2a00, #5a4000); border-bottom: 2px solid #ff9800; }
+  .unit-header.medium-high-yield { background: linear-gradient(135deg, #2a3a0a, #405a10); border-bottom: 2px solid #8bc34a; }
+  .unit-header.low-yield { background: linear-gradient(135deg, #2a1a1a, #3a2020); border-bottom: 2px solid #78909c; }
+  .unit-header.low-medium-yield { background: linear-gradient(135deg, #3a1a0a, #4a2a10); border-bottom: 2px solid #ff7043; }
+
+  .unit-header h2 {
+    color: #fff;
+    font-size: 1.22rem;
+    font-weight: 700;
+    flex: 1;
+    text-shadow: 0 1px 6px rgba(0,0,0,0.4);
+  }
+  .unit-badge {
+    background: rgba(255,255,255,0.12);
+    color: #fff;
+    padding: 4px 14px;
+    border-radius: 20px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    white-space: nowrap;
+    border: 1px solid rgba(255,255,255,0.15);
+  }
+  .unit-body { padding: 24px 28px 28px; }
+  .unit-meta {
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+  }
+  .meta-chip {
+    background: #222018;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 6px 14px;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+  }
+  .meta-chip strong { color: var(--gold-light); }
+
+  /* Tables */
+  .micro-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin: 16px 0 20px;
+    font-size: 0.92rem;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+  .micro-table thead th {
+    background: linear-gradient(135deg, #2a1f00, #3a2a00);
+    color: var(--gold-light);
+    padding: 12px 16px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 0.83rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 2px solid var(--gold-dark);
+  }
+  .micro-table tbody td {
+    padding: 12px 16px;
+    border-bottom: 1px solid #252015;
+    vertical-align: top;
+    color: var(--text);
+  }
+  .micro-table tbody tr:last-child td { border-bottom: none; }
+  .micro-table tbody tr:nth-child(even) { background: #1e1b12; }
+  .micro-table tbody tr:hover { background: #27220f; }
+
+  /* Yield tags */
+  .yield-tag {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 12px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+  .yield-tag.high { background: var(--high-bg); color: var(--high); border: 1px solid rgba(76,175,80,0.3); }
+  .yield-tag.medium { background: var(--medium-bg); color: var(--medium); border: 1px solid rgba(255,152,0,0.3); }
+  .yield-tag.medium-high { background: var(--medium-high-bg); color: var(--medium-high); border: 1px solid rgba(139,195,74,0.3); }
+  .yield-tag.low { background: rgba(120,144,156,0.12); color: #90a4ae; border: 1px solid rgba(120,144,156,0.3); }
+  .yield-tag.low-medium { background: var(--low-medium-bg); color: var(--low-medium); border: 1px solid rgba(255,112,67,0.3); }
+
+  /* Info boxes */
+  .info-box {
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin: 14px 0;
+    font-size: 0.93rem;
+    line-height: 1.65;
+  }
+  .info-box.why { background: #1a1800; border-left: 4px solid var(--gold); }
+  .info-box.pyq { background: #0d1a20; border-left: 4px solid #2196f3; }
+  .info-box.prereq { background: #1a1208; border-left: 4px solid #ff8f00; }
+  .info-box .label {
+    font-weight: 700;
+    font-size: 0.82rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+  }
+  .info-box.why .label { color: var(--gold); }
+  .info-box.pyq .label { color: #42a5f5; }
+  .info-box.prereq .label { color: #ffb300; }
+
+  /* Ranking table */
+  .ranking-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin: 20px 0;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    font-size: 0.93rem;
+  }
+  .ranking-table thead th {
+    background: linear-gradient(135deg, #1a1200, #2a1f00);
+    color: var(--gold-light);
+    padding: 14px 16px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 0.83rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 2px solid var(--gold-dark);
+  }
+  .ranking-table tbody td {
+    padding: 13px 16px;
+    border-bottom: 1px solid #252015;
+    vertical-align: middle;
+  }
+  .ranking-table tbody tr:last-child td { border-bottom: none; }
+  .ranking-table tbody tr:nth-child(even) { background: #1e1b12; }
+  .ranking-table tbody tr:hover { background: #27220f; }
+  .rank-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    font-weight: 800;
+    font-size: 0.85rem;
+    color: #fff;
+  }
+  .rank-num.top { background: linear-gradient(135deg, #4caf50, #388e3c); }
+  .rank-num.mid { background: linear-gradient(135deg, var(--gold), var(--gold-dark)); }
+  .rank-num.low-r { background: #546e7a; }
+
+  /* Skeleton grid */
+  .skeleton-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+    gap: 10px;
+    margin: 16px 0;
+  }
+  .skeleton-item {
+    background: #1e1b12;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-size: 0.91rem;
+    border-left: 4px solid var(--gold-dark);
+    color: var(--text-secondary);
+  }
+  .skeleton-item strong { color: var(--gold-light); }
+
+  /* Construct grid */
+  .construct-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 16px;
+    margin: 16px 0;
+  }
+  .construct-card {
+    background: var(--card-bg);
+    border-radius: 10px;
+    padding: 20px 24px;
+    border: 1px solid var(--border);
+    box-shadow: 0 1px 8px rgba(0,0,0,0.3);
+  }
+  .construct-card h4 {
+    color: var(--gold);
+    font-size: 0.98rem;
+    margin-bottom: 8px;
+  }
+
+  /* TOC */
+  .toc {
+    background: var(--card-bg);
+    border-radius: 14px;
+    box-shadow: 0 2px 20px rgba(0,0,0,0.5);
+    padding: 28px 32px;
+    margin: 30px 0;
+    border: 1px solid var(--border);
+    columns: 2;
+    column-gap: 32px;
+  }
+  .toc h3 {
+    font-size: 1.1rem;
+    color: var(--gold);
+    margin-bottom: 16px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--gold-dark);
+    column-span: all;
+  }
+  .toc-item {
+    break-inside: avoid;
+    padding: 5px 0;
+    font-size: 0.93rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .toc-item a {
+    color: var(--gold-dim);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .toc-item a:hover { color: var(--gold-light); text-decoration: underline; }
+  .toc-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #000;
+    background: var(--gold);
+    flex-shrink: 0;
+  }
+
+  /* Highlight stats */
+  .highlight-stat {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin: 16px 0;
+  }
+  .stat-card {
+    background: linear-gradient(135deg, #1a1200, #2a1f00);
+    color: var(--gold-light);
+    border-radius: 12px;
+    padding: 18px 24px;
+    flex: 1;
+    min-width: 200px;
+    text-align: center;
+    border: 1px solid var(--gold-dark);
+  }
+  .stat-card .num {
+    font-size: 2rem;
+    font-weight: 800;
+    line-height: 1.1;
+    color: var(--gold-light);
+  }
+  .stat-card .lbl {
+    font-size: 0.82rem;
+    opacity: 0.8;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: 4px;
+  }
+
+  /* Bullet lists */
+  .bullet-list { padding-left: 22px; margin: 10px 0; }
+  .bullet-list li { margin-bottom: 6px; line-height: 1.6; }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .hero { padding: 40px 20px 35px; }
+    .hero h1 { font-size: 1.5rem; }
+    .container { padding: 20px 14px 40px; }
+    .unit-header { padding: 16px 20px; }
+    .unit-body { padding: 18px 20px 22px; }
+    .construct-grid, .skeleton-list { grid-template-columns: 1fr; }
+    .toc { columns: 1; }
+    .ranking-table, .micro-table { font-size: 0.82rem; }
+    .ranking-table thead th, .micro-table thead th { padding: 10px 12px; }
+    .ranking-table tbody td, .micro-table tbody td { padding: 10px 12px; }
+  }
+
+  @media print {
+    body { background: #fff; color: #1a1a1a; }
+    .hero { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .unit-header { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .card, .unit-card { break-inside: avoid; }
+    body { font-size: 12px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== HERO ===== -->
+<div class="hero">
+  <h1>UPSC Prelims GS Paper I &mdash; Environment &amp; Ecology</h1>
+  <p class="subtitle">Exhaustive PYQ-Aligned Topic Dissection &amp; Priority Ranking &bull; 15 Topic Clusters &bull; Micro-Topic Maps &bull; Elimination Strategy</p>
+  <div class="badge-row">
+    <span class="stat-badge">15 Topic Clusters</span>
+    <span class="stat-badge">~250 PYQs (2011&ndash;2024)</span>
+    <span class="stat-badge">15&ndash;20 Qs / Year</span>
+    <span class="stat-badge">Biodiversity = 22% Weight</span>
+  </div>
+</div>
+
+<div class="container">
+
+<!-- ===== SCOPE ===== -->
+<h2 class="section-title">Scope Boundary, Syllabus Anchor &amp; Topic Skeleton</h2>
+
+<div class="card">
+  <h3>Scope</h3>
+  <p>This document covers <strong>only UPSC Prelims GS Paper I</strong> Environment &amp; Ecology topics. All content is static-topic specific; Mains relevance, GS-II/III linkages, or answer-writing value are excluded.</p>
+  <p style="margin-top:8px;"><strong>Subject under analysis:</strong> Environment &amp; Ecology (Prelims GS Paper I only)</p>
+</div>
+
+<!-- Stats -->
+<div class="highlight-stat">
+  <div class="stat-card"><div class="num">~54</div><div class="lbl">Biodiversity PYQs (Highest)</div></div>
+  <div class="stat-card"><div class="num">~37</div><div class="lbl">Conservation / Initiatives</div></div>
+  <div class="stat-card"><div class="num">~37</div><div class="lbl">Pollution PYQs</div></div>
+  <div class="stat-card"><div class="num">~25</div><div class="lbl">Climate Change PYQs</div></div>
+</div>
+
+<div class="card">
+  <h3>Topic Skeleton (Environment &amp; Ecology)</h3>
+  <div class="skeleton-list">
+    <div class="skeleton-item"><strong>Ecology</strong> &mdash; Ecosystem functions, types, energy flow</div>
+    <div class="skeleton-item"><strong>Environmental Pollution</strong> &mdash; Air, water, soil, noise, e-waste</div>
+    <div class="skeleton-item"><strong>Renewable Energy</strong> &mdash; Solar, wind, biofuels, hydrogen</div>
+    <div class="skeleton-item"><strong>EIA</strong> &mdash; Environmental Impact Assessment</div>
+    <div class="skeleton-item"><strong>Biodiversity Basics</strong> &mdash; Levels, hotspots, values</div>
+    <div class="skeleton-item"><strong>Indian Fauna</strong> &mdash; Endemic/endangered species, zones</div>
+    <div class="skeleton-item"><strong>Indian Flora</strong> &mdash; Plant diversity, forest types</div>
+    <div class="skeleton-item"><strong>Protected Areas</strong> &mdash; NPs, sanctuaries, biosphere reserves</div>
+    <div class="skeleton-item"><strong>Conservation Efforts</strong> &mdash; In-situ/ex-situ, projects</div>
+    <div class="skeleton-item"><strong>Climate Change</strong> &mdash; GHGs, causes, effects</div>
+    <div class="skeleton-item"><strong>Climate Mitigation</strong> &mdash; Renewables, NDCs, NAPCC</div>
+    <div class="skeleton-item"><strong>Agri &amp; Environment</strong> &mdash; Farming impact, sustainability</div>
+    <div class="skeleton-item"><strong>Environmental Laws</strong> &mdash; EPA, WPA, FCA, Biodiversity Act</div>
+    <div class="skeleton-item"><strong>Institutional Measures</strong> &mdash; MoEF&amp;CC, CPCB, NGT, NTCA</div>
+    <div class="skeleton-item"><strong>International Framework</strong> &mdash; UNFCCC, CBD, CITES, Ramsar</div>
+    <div class="skeleton-item"><strong>Reports &amp; Indices</strong> &mdash; EPI, ISFR, GBO</div>
+    <div class="skeleton-item"><strong>Contemporary Issues</strong> &mdash; UHI, plastic ban, e-waste</div>
+  </div>
+</div>
+
+<!-- ===== PYQ BEHAVIOR ===== -->
+<h2 class="section-title">PYQ Behavior in Environment &amp; Ecology</h2>
+
+<div class="card">
+  <h3>Exam Pattern Insights</h3>
+  <p>Environment &amp; Ecology is <strong>one of the highest-scoring and most predictable</strong> sections in Prelims. Historically, ~15&ndash;20 questions (15&ndash;17%) in each Prelims come from this domain.</p>
+  <ul class="bullet-list" style="margin-top:10px;">
+    <li><strong>Highest-yield area:</strong> Biodiversity alone accounts for ~22% of all environment questions (~54 Qs)</li>
+    <li><strong>Pollution &amp; Conservation:</strong> ~37 questions each &mdash; consistently 3&ndash;5 Qs per year</li>
+    <li><strong>Climate Change:</strong> ~25 questions &mdash; rising in frequency with global focus</li>
+    <li><strong>Question nature:</strong> Statement-based, elimination-heavy, factual matching; conceptual traps dominate</li>
+    <li>Topics are sequenced to build from foundational ecology to higher-knowledge items, not by syllabus order</li>
+  </ul>
+</div>
+
+<div class="construct-grid">
+  <div class="construct-card">
+    <h4>&#127793; Statement-Combination Traps</h4>
+    <p>Most Environment MCQs use &ldquo;Which of the above statements is/are correct?&rdquo; format. Ecosystem definitions, species facts, and convention objectives are the primary trap levers.</p>
+  </div>
+  <div class="construct-card">
+    <h4>&#127793; Species&ndash;Habitat Matching</h4>
+    <p>UPSC frequently asks &ldquo;Match the species to its habitat/park/state&rdquo; or places wrong endemic pairings. Systematic fauna-flora-park mapping is the top eliminator.</p>
+  </div>
+  <div class="construct-card">
+    <h4>&#127793; Constitutional vs Statutory Bodies</h4>
+    <p>Traps swap body types (NBWL vs NGT, CPCB vs MoEFCC). Distinguishing constitutional from statutory from executive bodies is a recurring elimination lever.</p>
+  </div>
+  <div class="construct-card">
+    <h4>&#127793; Convention Objective Swaps</h4>
+    <p>&ldquo;Which convention deals with X?&rdquo; &mdash; mixing up Ramsar (wetlands) with CMS (migratory), or Montreal (ozone) with Kyoto (GHGs) is a classic Prelims trap.</p>
+  </div>
+</div>
+
+<!-- ===== TOC ===== -->
+<div class="toc" id="toc">
+  <h3>Table of Contents &mdash; Priority Ranking Order</h3>
+  <div class="toc-item"><span class="toc-num">1</span><a href="#ecology">Ecology &amp; Ecosystems</a>&nbsp;<span class="yield-tag high">High</span></div>
+  <div class="toc-item"><span class="toc-num">2</span><a href="#biodiversity">Biodiversity Basics</a>&nbsp;<span class="yield-tag high">High</span></div>
+  <div class="toc-item"><span class="toc-num">3</span><a href="#fauna">Indian Biodiversity &mdash; Fauna</a>&nbsp;<span class="yield-tag high">High</span></div>
+  <div class="toc-item"><span class="toc-num">4</span><a href="#flora">Indian Biodiversity &mdash; Flora</a>&nbsp;<span class="yield-tag high">High</span></div>
+  <div class="toc-item"><span class="toc-num">5</span><a href="#protected">Protected Area Network</a>&nbsp;<span class="yield-tag high">High</span></div>
+  <div class="toc-item"><span class="toc-num">6</span><a href="#conservation">Conservation Efforts</a>&nbsp;<span class="yield-tag high">High</span></div>
+  <div class="toc-item"><span class="toc-num">7</span><a href="#pollution">Environmental Pollution</a>&nbsp;<span class="yield-tag high">High</span></div>
+  <div class="toc-item"><span class="toc-num">8</span><a href="#climate">Climate Change</a>&nbsp;<span class="yield-tag high">High</span></div>
+  <div class="toc-item"><span class="toc-num">9</span><a href="#mitigation">Climate Change Mitigation</a>&nbsp;<span class="yield-tag medium-high">Med&ndash;High</span></div>
+  <div class="toc-item"><span class="toc-num">10</span><a href="#legislation">National Environmental Legislations</a>&nbsp;<span class="yield-tag high">High</span></div>
+  <div class="toc-item"><span class="toc-num">11</span><a href="#institutions">Institutional Measures</a>&nbsp;<span class="yield-tag medium-high">Med&ndash;High</span></div>
+  <div class="toc-item"><span class="toc-num">12</span><a href="#international">International Environmental Framework</a>&nbsp;<span class="yield-tag medium">Medium</span></div>
+  <div class="toc-item"><span class="toc-num">13</span><a href="#agriculture">Agriculture and Environment</a>&nbsp;<span class="yield-tag medium">Medium</span></div>
+  <div class="toc-item"><span class="toc-num">14</span><a href="#renewable">Renewable &amp; Alternative Energy</a>&nbsp;<span class="yield-tag medium">Medium</span></div>
+  <div class="toc-item"><span class="toc-num">15</span><a href="#eia">Environmental Impact Assessment</a>&nbsp;<span class="yield-tag medium">Medium</span></div>
+  <div class="toc-item"><span class="toc-num">16</span><a href="#reports">Reports &amp; Indices</a>&nbsp;<span class="yield-tag low">Low</span></div>
+  <div class="toc-item"><span class="toc-num">17</span><a href="#contemporary">Contemporary Environmental Issues</a>&nbsp;<span class="yield-tag low">Low</span></div>
+</div>
+
+<!-- ===== RANKING TABLE ===== -->
+<h2 class="section-title" id="ranking">Final PYQ-Driven Priority Ranking</h2>
+
+<table class="ranking-table">
+  <thead>
+    <tr>
+      <th style="width:45px">#</th>
+      <th>Topic</th>
+      <th style="width:110px">Priority</th>
+      <th style="width:90px">PYQ Est.</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td><span class="rank-num top">1</span></td><td><strong>Ecology &amp; Ecosystems</strong> &mdash; Energy flow, food webs, nutrient cycles, biomes</td><td><span class="yield-tag high">High</span></td><td>~30&ndash;40</td></tr>
+    <tr><td><span class="rank-num top">2</span></td><td><strong>Biodiversity Basics</strong> &mdash; Levels, hotspots, patterns, values</td><td><span class="yield-tag high">High</span></td><td>~54 (22%)</td></tr>
+    <tr><td><span class="rank-num top">3</span></td><td><strong>Indian Biodiversity &mdash; Fauna</strong> &mdash; Endemics, IUCN status, zoogeographic zones</td><td><span class="yield-tag high">High</span></td><td>Incl. in 54</td></tr>
+    <tr><td><span class="rank-num top">4</span></td><td><strong>Indian Biodiversity &mdash; Flora</strong> &mdash; Forest types, endemic plants, agro-biodiversity</td><td><span class="yield-tag high">High</span></td><td>Incl. in 54</td></tr>
+    <tr><td><span class="rank-num top">5</span></td><td><strong>Protected Area Network</strong> &mdash; NPs, sanctuaries, biosphere, Ramsar</td><td><span class="yield-tag high">High</span></td><td>~37</td></tr>
+    <tr><td><span class="rank-num top">6</span></td><td><strong>Conservation Efforts</strong> &mdash; In-situ / ex-situ, Project Tiger / Elephant</td><td><span class="yield-tag high">High</span></td><td>~37</td></tr>
+    <tr><td><span class="rank-num top">7</span></td><td><strong>Environmental Pollution</strong> &mdash; Air, water, soil, noise, radiation</td><td><span class="yield-tag high">High</span></td><td>~37 (15%)</td></tr>
+    <tr><td><span class="rank-num top">8</span></td><td><strong>Climate Change</strong> &mdash; GHGs, warming, effects, UNFCCC/Paris</td><td><span class="yield-tag high">High</span></td><td>~25 (10%)</td></tr>
+    <tr><td><span class="rank-num mid">9</span></td><td><strong>Climate Mitigation</strong> &mdash; Renewables, NDCs, NAPCC 8 missions</td><td><span class="yield-tag medium-high">Med&ndash;High</span></td><td>~5&ndash;10</td></tr>
+    <tr><td><span class="rank-num mid">10</span></td><td><strong>National Environmental Legislations</strong> &mdash; EPA, WPA, FCA, Air/Water Acts</td><td><span class="yield-tag high">High</span></td><td>~37</td></tr>
+    <tr><td><span class="rank-num mid">11</span></td><td><strong>Institutional Measures</strong> &mdash; MoEF&amp;CC, CPCB, NGT, NTCA</td><td><span class="yield-tag medium-high">Med&ndash;High</span></td><td>~3&ndash;5/yr</td></tr>
+    <tr><td><span class="rank-num mid">12</span></td><td><strong>International Framework</strong> &mdash; CBD, CITES, Ramsar, CMS, Basel</td><td><span class="yield-tag medium">Medium</span></td><td>~28 (11%)</td></tr>
+    <tr><td><span class="rank-num mid">13</span></td><td><strong>Agriculture &amp; Environment</strong> &mdash; Soil, agri-runoff, organic farming</td><td><span class="yield-tag medium">Medium</span></td><td>~18 (7%)</td></tr>
+    <tr><td><span class="rank-num mid">14</span></td><td><strong>Renewable &amp; Alternative Energy</strong> &mdash; Solar, wind, biofuels</td><td><span class="yield-tag medium">Medium</span></td><td>~13 (5%)</td></tr>
+    <tr><td><span class="rank-num mid">15</span></td><td><strong>EIA</strong> &mdash; Process, clearance, EIA Notification</td><td><span class="yield-tag medium">Medium</span></td><td>Few</td></tr>
+    <tr><td><span class="rank-num low-r">16</span></td><td><strong>Reports &amp; Indices</strong> &mdash; EPI, ISFR, GBO</td><td><span class="yield-tag low">Low</span></td><td>Rare</td></tr>
+    <tr><td><span class="rank-num low-r">17</span></td><td><strong>Contemporary Issues</strong> &mdash; UHI, plastic, e-waste</td><td><span class="yield-tag low">Low</span></td><td>Rare</td></tr>
+  </tbody>
+</table>
+
+<!-- ===== UNIT-BY-UNIT CARDS ===== -->
+<h2 class="section-title">Exhaustive Topic-by-Topic Micro-Topic Map (PYQ Order)</h2>
+
+<!-- #1 ECOLOGY -->
+<div class="unit-card" id="ecology">
+  <div class="unit-header high-yield">
+    <h2>#1 &mdash; Ecology &amp; Ecosystems</h2>
+    <span class="unit-badge">HIGH YIELD &bull; ~30&ndash;40 PYQs</span>
+  </div>
+  <div class="unit-body">
+    <div class="unit-meta">
+      <span class="meta-chip"><strong>PYQ Footprint:</strong> ~30&ndash;40 questions (Environment/Ecology category)</span>
+      <span class="meta-chip"><strong>Nature:</strong> Conceptual &bull; Statement MCQs &bull; Elimination-heavy</span>
+    </div>
+    <table class="micro-table">
+      <thead><tr><th>Micro-Topic</th><th>Key Points for Prelims</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Definitions</strong></td><td>Ecology vs Environment; habitat and niche; abiotic/biotic components</td></tr>
+        <tr><td><strong>Ecosystem Structure &amp; Function</strong></td><td>Components of an ecosystem (biotic/abiotic); energy flow (food chain, food web, ecological pyramids); nutrient/biogeochemical cycles (carbon, nitrogen, water)</td></tr>
+        <tr><td><strong>Interdependence &amp; Dynamics</strong></td><td>Ecological succession (types, climax community); adaptation and interactions (predation, competition, symbiosis, keystone species)</td></tr>
+        <tr><td><strong>Terrestrial Ecosystems</strong></td><td>Forests, grasslands, deserts, tundra, mountains &mdash; characteristic flora/fauna</td></tr>
+        <tr><td><strong>Aquatic Ecosystems</strong></td><td>Freshwater, marine, wetlands (including lakes, rivers, oceans, plankton communities)</td></tr>
+        <tr><td><strong>Wetland Ecosystems</strong></td><td>Mangroves, marshes &mdash; ecosystem services, Ramsar sites</td></tr>
+      </tbody>
+    </table>
+    <div class="info-box pyq">
+      <div class="label">Past Year Question Pattern</div>
+      Many statement-based traps rely on ecosystem knowledge (e.g., &ldquo;Which of these processes are part of the carbon cycle?&rdquo;). Direct factual questions on ecology test misconceptions on terms (ecosystem, environment, habitat). Mastery aids elimination (e.g., distinguishing producers vs decomposers) and concept-building for biodiversity/climate topics.
+    </div>
+    <div class="info-box why">
+      <div class="label">Why Placed First</div>
+      Ecology is the <strong>conceptual foundation</strong>. Understanding ecosystems (energy flow, food webs, cycles) underpins biodiversity (trophic interdependence), climate (carbon cycle for GHGs), conservation (ecosystem services), and pollution (biomagnification, bioindicators). Prior mastery prevents falling into statement traps in nearly <em>all</em> other environment questions.
+    </div>
+    <div class="info-box prereq">
+      <div class="label">Prerequisites</div>
+      None &mdash; this is the starting point. Basic biology/environment terms (food web, biomes, species interactions) typically covered under this topic.
+    </div>
+  </div>
+</div>
+
+<!-- #2 BIODIVERSITY BASICS -->
+<div class="unit-card" id="biodiversity">
+  <div class="unit-header high-yield">
+    <h2>#2 &mdash; Biodiversity Basics</h2>
+    <span class="unit-badge">HIGHEST PYQ DENSITY &bull; ~54 Qs &bull; 22%</span>
+  </div>
+  <div class="unit-body">
+    <div class="unit-meta">
+      <span class="meta-chip"><strong>PYQ Footprint:</strong> ~54 questions (2011&ndash;2024) &mdash; highest in Environment</span>
+      <span class="meta-chip"><strong>Nature:</strong> Definitional &bull; Conceptual &bull; Elimination-heavy</span>
+    </div>
+    <table class="micro-table">
+      <thead><tr><th>Micro-Topic</th><th>Key Points for Prelims</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Definition &amp; Levels</strong></td><td>Biodiversity meaning; levels (genetic, species, ecosystem)</td></tr>
+        <tr><td><strong>Types &amp; Patterns</strong></td><td>Taxonomic, ecological, functional diversity; spatial patterns (latitudinal, ecosystem diversity); biogeographic classification of India and world</td></tr>
+        <tr><td><strong>Hotspots &amp; Endemism</strong></td><td>India&rsquo;s biodiversity hotspots (Western Ghats, Himalayas, Indo-Burma, Sundaland); endemic-rich areas</td></tr>
+        <tr><td><strong>Functions &amp; Values</strong></td><td>Ecological (ecosystem services), economic, societal benefits (pollination, genetic resources)</td></tr>
+        <tr><td><strong>Threats &amp; Loss</strong></td><td>Causes: habitat loss, overexploitation, invasive species; effects of species extinction</td></tr>
+      </tbody>
+    </table>
+    <div class="info-box pyq">
+      <div class="label">Past Year Question Pattern</div>
+      Frequently directly quizzed (e.g., &ldquo;Which is not a place of high biodiversity?&rdquo;) and heavily used in statement traps. Its elimination power is huge: knowing hotspot locations or difference between endemic vs threatened often rules out wrong options. Prelims 2017 directly asked hotspots; 2018 asked Indian endemics.
+    </div>
+    <div class="info-box why">
+      <div class="label">Why Placed Here</div>
+      Biodiversity builds on ecological concepts (habitat loss vs species survival). It has <strong>direct scoring</strong> potential and <strong>eliminatory value</strong>. Mastery clarifies conservation schemes, protected areas, and climate impact on species. The 22% PYQ frequency mandates top priority.
+    </div>
+    <div class="info-box prereq">
+      <div class="label">Prerequisites</div>
+      Basic ecology (food chains, habitats, evolution). If absent, review Ecology &amp; Ecosystems first.
+    </div>
+  </div>
+</div>
+
+<!-- #3 FAUNA -->
+<div class="unit-card" id="fauna">
+  <div class="unit-header high-yield">
+    <h2>#3 &mdash; Indian Biodiversity &mdash; Fauna</h2>
+    <span class="unit-badge">HIGH YIELD &bull; Part of ~54 Qs</span>
+  </div>
+  <div class="unit-body">
+    <div class="unit-meta">
+      <span class="meta-chip"><strong>PYQ Footprint:</strong> Included in ~54 Q biodiversity count</span>
+      <span class="meta-chip"><strong>Nature:</strong> Factual/elimination &bull; Match animal&ndash;habitat &bull; Current-affairs linkage</span>
+    </div>
+    <table class="micro-table">
+      <thead><tr><th>Micro-Topic</th><th>Key Points for Prelims</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Faunal Diversity</strong></td><td>Categories of Indian fauna (megafauna, migratory birds, marine mammals); zoogeographic zones (Western Ghats, Gangetic plains, Eastern Himalayas)</td></tr>
+        <tr><td><strong>Endemism &amp; Conservation Status</strong></td><td>Key endemic animals (Nilgiri tahr, Ganges river dolphin); IUCN categories (critically endangered in India); Scheduled species under Wildlife Protection Act (Schedule I: tiger, one-horned rhino)</td></tr>
+        <tr><td><strong>Wildlife Hotspots</strong></td><td>Major biodiversity areas (Eastern Himalaya, Nicobar Islands); Biodiversity Parks &amp; zoos as faunal gene banks</td></tr>
+      </tbody>
+    </table>
+    <div class="info-box pyq">
+      <div class="label">Past Year Question Pattern</div>
+      Prelims often ask about specific animals (especially those in news): e.g., &ldquo;Which one is not a gharial characteristic?&rdquo; or &ldquo;State with largest number of national parks.&rdquo; Many statement-based questions list animals and ask which grouping is incorrect. High elimination power with wildlife facts.
+    </div>
+    <div class="info-box why">
+      <div class="label">Why Placed Here</div>
+      Details on Indian fauna stem from the broad biodiversity framework. Faunal diversity knowledge is directly useful for habitat&ndash;species matching elimination. It also underpins conservation topics (protected area decisions often driven by fauna).
+    </div>
+    <div class="info-box prereq">
+      <div class="label">Prerequisites</div>
+      Biodiversity Basics (hotspots, conservation concepts) and general ecology (habitat&ndash;organism relationships).
+    </div>
+  </div>
+</div>
+
+<!-- #4 FLORA -->
+<div class="unit-card" id="flora">
+  <div class="unit-header high-yield">
+    <h2>#4 &mdash; Indian Biodiversity &mdash; Flora</h2>
+    <span class="unit-badge">HIGH YIELD &bull; Complements Fauna</span>
+  </div>
+  <div class="unit-body">
+    <div class="unit-meta">
+      <span class="meta-chip"><strong>PYQ Footprint:</strong> Included in biodiversity&rsquo;s ~54 Q</span>
+      <span class="meta-chip"><strong>Nature:</strong> Factual &bull; Region&ndash;plant matching &bull; Conventions</span>
+    </div>
+    <table class="micro-table">
+      <thead><tr><th>Micro-Topic</th><th>Key Points for Prelims</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Floral Diversity</strong></td><td>Major forest types of India (tropical evergreen, deciduous, thorn, alpine); vegetation zones (Western Ghats, Sundarbans mangroves)</td></tr>
+        <tr><td><strong>Endemic/Threatened Plants</strong></td><td>Indian endemic plants (Nepenthes khasiana, rhododendrons); IUCN-listed plants (Cycas beddomei); medicinal plants significance</td></tr>
+        <tr><td><strong>Agro-biodiversity</strong></td><td>Indigenous crop varieties, seed banks, GM crop issues (impact on biodiversity); traditional botanical knowledge</td></tr>
+      </tbody>
+    </table>
+    <div class="info-box why">
+      <div class="label">Why Placed Here</div>
+      Follows fauna; together they <strong>cover India&rsquo;s biodiversity in depth</strong>. Flora knowledge is essential for recognizing conservation values (e.g., role of forests, uniqueness of certain plants) and for elimination in statements. Connects to Agriculture (crop varieties) and Conservation Efforts (e.g., Vanamahotsav).
+    </div>
+    <div class="info-box prereq">
+      <div class="label">Prerequisites</div>
+      Biodiversity Basics and general botany terms. Also Agriculture &amp; Environment for crop diversity context.
+    </div>
+  </div>
+</div>
+
+<!-- #5 PROTECTED AREAS -->
+<div class="unit-card" id="protected">
+  <div class="unit-header high-yield">
+    <h2>#5 &mdash; Protected Area Network</h2>
+    <span class="unit-badge">HIGH YIELD &bull; Part of ~37 Qs</span>
+  </div>
+  <div class="unit-body">
+    <div class="unit-meta">
+      <span class="meta-chip"><strong>PYQ Footprint:</strong> Part of ~37 Q under conservation/initiatives</span>
+      <span class="meta-chip"><strong>Nature:</strong> Factual matching &bull; Park&ndash;state pairing &bull; Elimination clusters</span>
+    </div>
+    <table class="micro-table">
+      <thead><tr><th>Micro-Topic</th><th>Key Points for Prelims</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Categories of PAs</strong></td><td>Definitions: National Park, Wildlife Sanctuary, Biosphere Reserve, Conservation Reserve, Community Reserve. Governing laws (Wildlife Protection Act)</td></tr>
+        <tr><td><strong>Notable PAs</strong></td><td>Flagship examples: Sundarbans NP, Kaziranga NP, Nilgiri Biosphere Reserve, Hazaribagh Sanctuary. International designations: UNESCO World Heritage, Ramsar sites, MAB reserves</td></tr>
+        <tr><td><strong>Scheduled Areas</strong></td><td>Areas under Forest Act / Gram Sabhas (PESA), impacting PAs</td></tr>
+      </tbody>
+    </table>
+    <div class="info-box pyq">
+      <div class="label">Past Year Question Pattern</div>
+      Direct scoring: 1&ndash;2 straightforward questions per year (matching lists). Also &ldquo;statement combination&rdquo; type (e.g., &ldquo;Which of these pairs of park&ndash;ecosystem is correct?&rdquo;). Knowledge of protected areas eliminates wrong options easily (e.g., knowing Kaziranga = one-horned rhino).
+    </div>
+    <div class="info-box why">
+      <div class="label">Why Placed Here</div>
+      Protected Areas logically follow species knowledge, translating biodiversity values into formal conservation. They are a <strong>bridge between biodiversity facts and policy</strong>. They also form the backbone for Conservation Efforts topics.
+    </div>
+    <div class="info-box prereq">
+      <div class="label">Prerequisites</div>
+      Biodiversity (fauna/flora) knowledge &mdash; to know why parks exist for certain species/ecosystems.
+    </div>
+  </div>
+</div>
+
+<!-- #6 CONSERVATION -->
+<div class="unit-card" id="conservation">
+  <div class="unit-header high-yield">
+    <h2>#6 &mdash; Conservation Efforts</h2>
+    <span class="unit-badge">HIGH YIELD &bull; Part of ~37 Qs</span>
+  </div>
+  <div class="unit-body">
+    <div class="unit-meta">
+      <span class="meta-chip"><strong>PYQ Footprint:</strong> Counted in ~37 Q for India&rsquo;s environmental initiatives</span>
+      <span class="meta-chip"><strong>Nature:</strong> Mixed factual/conceptual &bull; In-situ vs ex-situ &bull; Project matching</span>
+    </div>
+    <table class="micro-table">
+      <thead><tr><th>Micro-Topic</th><th>Key Points for Prelims</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Conservation Methods</strong></td><td><strong>In-situ:</strong> Protected areas, biosphere reserves, gene sanctuaries<br><strong>Ex-situ:</strong> Zoos, botanical gardens, seed/sperm banks. Advantages/disadvantages of each</td></tr>
+        <tr><td><strong>Species Programs</strong></td><td>Project Tiger, Project Elephant, Project Snow Leopard, Vulture Conservation, Crocodile Conservation. Successes and shortcomings</td></tr>
+        <tr><td><strong>Legal/Community Measures</strong></td><td>Wildlife Protection Act (Schedule I&ndash;V); Community reserves; CITES Appendix listings; Forest Rights (FRBM)</td></tr>
+      </tbody>
+    </table>
+    <div class="info-box pyq">
+      <div class="label">Past Year Question Pattern</div>
+      Common: &ldquo;Which projects are correctly paired with animals?&rdquo; or &ldquo;Which of these is not an in-situ measure?&rdquo; Conservation projects often appear in current-affairs based questions too. Strong eliminatory use (e.g., &ldquo;Which one is not covered by Project Elephant?&rdquo;).
+    </div>
+    <div class="info-box why">
+      <div class="label">Why Placed Here</div>
+      Builds on PAs to explain <strong>how biodiversity is actively protected</strong>. Key for direct scoring (conservation project names) and elimination. Leads naturally into laws and institutions.
+    </div>
+    <div class="info-box prereq">
+      <div class="label">Prerequisites</div>
+      Protected Areas and Biodiversity &mdash; to know what is being conserved and why.
+    </div>
+  </div>
+</div>
+
+<!-- #7 POLLUTION -->
+<div class="unit-card" id="pollution">
+  <div class="unit-header high-yield">
+    <h2>#7 &mdash; Environmental Pollution</h2>
+    <span class="unit-badge">HIGH YIELD &bull; ~37 PYQs &bull; 15%</span>
+  </div>
+  <div class="unit-body">
+    <div class="unit-meta">
+      <span class="meta-chip"><strong>PYQ Footprint:</strong> ~37 questions (2011&ndash;2024), consistently 3&ndash;5 Qs/year</span>
+      <span class="meta-chip"><strong>Nature:</strong> Conceptual/elimination &bull; Pollutant identification &bull; Definition traps</span>
+    </div>
+    <table class="micro-table">
+      <thead><tr><th>Micro-Topic</th><th>Key Points for Prelims</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Air Pollution</strong></td><td>SOx/NOx, greenhouse gases, particulate matter (PM2.5/PM10); AQI categories; photochemical smog</td></tr>
+        <tr><td><strong>Water Pollution</strong></td><td>Chemical, microbial, eutrophication; BOD/COD indicators; industrial effluents</td></tr>
+        <tr><td><strong>Soil &amp; Land Pollution</strong></td><td>Pesticides, heavy metals, mine waste; bioaccumulation and biomagnification</td></tr>
+        <tr><td><strong>Other Types</strong></td><td>Noise, radioactive, thermal, plastic/e-waste pollution</td></tr>
+        <tr><td><strong>Specific Issues</strong></td><td>Acid rain, ozone depletion (Montreal Protocol), ozone holes, GHGs and global warming</td></tr>
+        <tr><td><strong>Pollution Control</strong></td><td>CPCB/SPCB, NGT, emission norms, bio-remediation, WHO vs BIS standards; Air Quality Index</td></tr>
+      </tbody>
+    </table>
+    <div class="info-box pyq">
+      <div class="label">Past Year Question Pattern</div>
+      Every year ~3&ndash;4 questions, often statement/trap-style (e.g., &ldquo;Which of the following is false about pollutant X?&rdquo;). High eliminatory value: knowing basics eliminates wrong pollutants/diseases. Direct knowledge of pollutant names, norms, and control tech yields quick marks.
+    </div>
+    <div class="info-box why">
+      <div class="label">Why Placed Here</div>
+      Sequenced after ecosystems and biodiversity because many pollutants arise from or impact ecosystems. Mastery aids in both direct scoring (facts about pollution) and elimination (common traps about ozone vs CO&sub2;). Prerequisite for Contemporary Issues and ties to Climate Change (GHGs).
+    </div>
+    <div class="info-box prereq">
+      <div class="label">Prerequisites</div>
+      Chemistry basics of pollutants (GHGs, acid rain). Ecology (to understand bioaccumulation). Environment fundamentals.
+    </div>
+  </div>
+</div>
+
+<!-- #8 CLIMATE CHANGE -->
+<div class="unit-card" id="climate">
+  <div class="unit-header high-yield">
+    <h2>#8 &mdash; Climate Change</h2>
+    <span class="unit-badge">HIGH YIELD &bull; ~25 PYQs &bull; 10%</span>
+  </div>
+  <div class="unit-body">
+    <div class="unit-meta">
+      <span class="meta-chip"><strong>PYQ Footprint:</strong> ~25 questions (2011&ndash;2024), overlaps with current affairs (COP summits)</span>
+      <span class="meta-chip"><strong>Nature:</strong> Conceptual &bull; Statement-based &bull; International targets</span>
+    </div>
+    <table class="micro-table">
+      <thead><tr><th>Micro-Topic</th><th>Key Points for Prelims</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Climate Basics</strong></td><td>Greenhouse gases (CO&sub2;, CH&sub4;, N&sub2;O, CFCs); greenhouse effect mechanism; weather vs climate; global warming vs climate change</td></tr>
+        <tr><td><strong>Causes &amp; Effects</strong></td><td>Anthropogenic (fossil fuels, deforestation), natural factors; sea level rise, melting glaciers, extreme weather, ocean acidification</td></tr>
+        <tr><td><strong>Scientific Indicators</strong></td><td>Carbon cycle role, carbon sinks (oceans, forests), radiative forcing, climate models</td></tr>
+        <tr><td><strong>International Context</strong></td><td>UNFCCC, Kyoto Protocol, Paris Agreement (1.5&deg;C target, net-zero), IPCC reports, shared socio-economic pathways, carbon budgets</td></tr>
+      </tbody>
+    </table>
+    <div class="info-box pyq">
+      <div class="label">Past Year Question Pattern</div>
+      Frequently tested via statements (&ldquo;Which is a major GHG?&rdquo;) and climate conventions/ targets. Factual misstatements (e.g., &ldquo;Which country emits most methane?&rdquo;) are used to eliminate options. Direct scoring on definitions and conceptual clarity on cause-effect.
+    </div>
+    <div class="info-box why">
+      <div class="label">Why Placed Here</div>
+      Placed after pollution to build from local pollutants to global climate. Connects strongly to Renewable Energy &amp; Mitigation. Mastery eliminates statements about greenhouse gases vs ozone and clarifies <strong>energy sector&rsquo;s role</strong>.
+    </div>
+    <div class="info-box prereq">
+      <div class="label">Prerequisites</div>
+      Carbon cycle concepts (from Ecosystems). Greenhouse gases knowledge (from Pollution, science).
+    </div>
+  </div>
+</div>
+
+<!-- #9 MITIGATION -->
+<div class="unit-card" id="mitigation">
+  <div class="unit-header medium-high-yield">
+    <h2>#9 &mdash; Climate Change Mitigation</h2>
+    <span class="unit-badge">MEDIUM&ndash;HIGH YIELD &bull; ~5&ndash;10 PYQs</span>
+  </div>
+  <div class="unit-body">
+    <div class="unit-meta">
+      <span class="meta-chip"><strong>PYQ Footprint:</strong> ~5&ndash;10 specific mitigation Qs since 2011</span>
+      <span class="meta-chip"><strong>Nature:</strong> Conceptual/application &bull; India policy &bull; Adaptation vs mitigation</span>
+    </div>
+    <table class="micro-table">
+      <thead><tr><th>Micro-Topic</th><th>Key Points for Prelims</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Mitigation Strategies</strong></td><td>Renewable energy expansion, afforestation/Green India Mission, carbon capture/storage, energy efficiency, low-carbon tech (EVs, LEDs)</td></tr>
+        <tr><td><strong>International Instruments</strong></td><td>Paris commitments (INDC targets), Kyoto&rsquo;s CDM, Green Climate Fund</td></tr>
+        <tr><td><strong>India-specific</strong></td><td>NAPCC (8 missions: Solar, Water, Himalayan Ecosystem, Green India, Sustainable Agriculture, Habitat, Knowledge, Strategic Knowledge); NDC pledges (non-fossil energy % by 2030); Adaptation vs Mitigation distinction</td></tr>
+      </tbody>
+    </table>
+    <div class="info-box pyq">
+      <div class="label">Past Year Question Pattern</div>
+      Statements like &ldquo;Which of the following is not part of NAPCC?&rdquo; or &ldquo;Which country pledged net-zero by X year?&rdquo; Elimination questions on mitigation tech. Moderate direct weight but high linked value.
+    </div>
+    <div class="info-box why">
+      <div class="label">Why Placed Here</div>
+      Immediately after climate since it addresses solutions. <strong>Directly scoring</strong> when asked (India&rsquo;s commitments are testable facts). Enhances understanding of renewable energy and reinforces climate answers.
+    </div>
+    <div class="info-box prereq">
+      <div class="label">Prerequisites</div>
+      Climate Change basics. Also ties to Energy &amp; Forestry knowledge.
+    </div>
+  </div>
+</div>
+
+<!-- #10 LEGISLATION -->
+<div class="unit-card" id="legislation">
+  <div class="unit-header high-yield">
+    <h2>#10 &mdash; National Environmental Legislations</h2>
+    <span class="unit-badge">HIGH YIELD &bull; 2&ndash;3 Qs/Year</span>
+  </div>
+  <div class="unit-body">
+    <div class="unit-meta">
+      <span class="meta-chip"><strong>PYQ Footprint:</strong> Often 2&ndash;3 Q/year (part of India&rsquo;s Initiatives ~37 Q)</span>
+      <span class="meta-chip"><strong>Nature:</strong> Factual &bull; Act identification &bull; Statement combos</span>
+    </div>
+    <table class="micro-table">
+      <thead><tr><th>Act / Rule</th><th>Key Prelims Facts</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Environment (Protection) Act 1986</strong></td><td>Umbrella legislation; empowers Centre to set environmental standards; enacted under Art. 253 post-Stockholm</td></tr>
+        <tr><td><strong>Wildlife (Protection) Act 1972</strong></td><td>Schedule I&ndash;V for species; National Board for Wildlife; governs NPs, sanctuaries</td></tr>
+        <tr><td><strong>Forest (Conservation) Act 1980</strong></td><td>Restricts diversion of forest land; CamPA (Compensatory Afforestation Fund Act)</td></tr>
+        <tr><td><strong>Air Act 1981 / Water Act 1974</strong></td><td>Established CPCB/SPCBs; emission/effluent standards; consent mechanisms</td></tr>
+        <tr><td><strong>Biological Diversity Act 2002</strong></td><td>National Biodiversity Authority; access &amp; benefit sharing; Biodiversity Management Committees</td></tr>
+        <tr><td><strong>EIA Notification (2006/2020)</strong></td><td>Mandatory for Category A/B projects; public hearing requirements; recent draft controversies</td></tr>
+        <tr><td><strong>Constitutional Basis</strong></td><td>Art. 48A (DPSP: protect environment); Art. 51A(g) (duty: protect forests/wildlife); National Environment Policy 2006</td></tr>
+      </tbody>
+    </table>
+    <div class="info-box pyq">
+      <div class="label">Past Year Question Pattern</div>
+      High direct scoring: &ldquo;EPA 1986 was enacted under which Constitutional provision?&rdquo; or &ldquo;Which of these are covered by the Wildlife Protection Act?&rdquo; Legislation Qs eliminate options easily. Rote facts that UPSC loves to test.
+    </div>
+    <div class="info-box why">
+      <div class="label">Why Placed Here</div>
+      After conservation methods to explain the <strong>legal framework</strong> backing them. Ties ecology/biodiversity/pollution issues to rules. Knowing laws sharpens elimination and clarifies other topics.
+    </div>
+    <div class="info-box prereq">
+      <div class="label">Prerequisites</div>
+      No strict prerequisites, though Pollution (Air/Water Acts) and Conservation (Wildlife/Forest Acts) context helps.
+    </div>
+  </div>
+</div>
+
+<!-- #11 INSTITUTIONS -->
+<div class="unit-card" id="institutions">
+  <div class="unit-header medium-high-yield">
+    <h2>#11 &mdash; Institutional Measures</h2>
+    <span class="unit-badge">MEDIUM&ndash;HIGH YIELD &bull; 3&ndash;5 Qs/Year</span>
+  </div>
+  <div class="unit-body">
+    <div class="unit-meta">
+      <span class="meta-chip"><strong>PYQ Footprint:</strong> ~3&ndash;5 Q/year, part of India&rsquo;s Initiatives (~37 Q)</span>
+      <span class="meta-chip"><strong>Nature:</strong> Factual/elimination &bull; &ldquo;Which body does X?&rdquo; &bull; Statutory vs Constitutional</span>
+    </div>
+    <table class="micro-table">
+      <thead><tr><th>Body</th><th>Status</th><th>Key Prelims Facts</th></tr></thead>
+      <tbody>
+        <tr><td><strong>MoEF&amp;CC</strong></td><td>Executive</td><td>Apex ministry for environment policy; grants environmental clearances</td></tr>
+        <tr><td><strong>CPCB / SPCBs</strong></td><td>Statutory</td><td>Under Air/Water Acts; air &amp; water quality monitoring; consent mechanisms</td></tr>
+        <tr><td><strong>NGT</strong></td><td>Statutory (2010)</td><td>Adjudicates environmental disputes; orders binding; appeal to SC only</td></tr>
+        <tr><td><strong>NBWL</strong></td><td>Statutory</td><td>Advisory for WPA; chaired by PM; approves projects near PAs</td></tr>
+        <tr><td><strong>NTCA</strong></td><td>Statutory</td><td>National Tiger Conservation Authority; manages tiger reserves</td></tr>
+        <tr><td><strong>ZSI / BSI</strong></td><td>Govt body</td><td>Zoological/Botanical Survey of India &mdash; taxonomy, biodiversity inventory</td></tr>
+        <tr><td><strong>Central Zoo Authority</strong></td><td>Statutory</td><td>Regulates zoos; ex-situ conservation oversight</td></tr>
+      </tbody>
+    </table>
+    <div class="info-box why">
+      <div class="label">Why Placed Here</div>
+      Following laws, lists the <strong>agencies that implement them</strong>. Knowledge is key for elimination (identifying which body issues a clearance) and links to pollution (CPCB), wildlife (NTCA), and legal remedies (NGT).
+    </div>
+    <div class="info-box prereq">
+      <div class="label">Prerequisites</div>
+      Legislation (to know why these bodies exist) and Pollution/Conservation topics.
+    </div>
+  </div>
+</div>
+
+<!-- #12 INTERNATIONAL -->
+<div class="unit-card" id="international">
+  <div class="unit-header medium-yield">
+    <h2>#12 &mdash; International Environmental Framework</h2>
+    <span class="unit-badge">MEDIUM YIELD &bull; ~28 PYQs &bull; 11%</span>
+  </div>
+  <div class="unit-body">
+    <div class="unit-meta">
+      <span class="meta-chip"><strong>PYQ Footprint:</strong> ~28 questions (2011&ndash;2024)</span>
+      <span class="meta-chip"><strong>Nature:</strong> Conceptual/factual &bull; Convention&ndash;objective matching &bull; Elimination</span>
+    </div>
+    <table class="micro-table">
+      <thead><tr><th>Convention</th><th>Focus</th><th>Key Facts</th></tr></thead>
+      <tbody>
+        <tr><td><strong>UNFCCC / Paris</strong></td><td>Climate</td><td>Rio 1992; Paris 2015 (limit warming to 1.5&deg;C); India&rsquo;s NDCs; net-zero targets</td></tr>
+        <tr><td><strong>Kyoto Protocol</strong></td><td>GHG reduction</td><td>Binding targets for Annex I; CDM, JI, emissions trading</td></tr>
+        <tr><td><strong>CBD / Nagoya / Cartagena</strong></td><td>Biodiversity</td><td>CBD 1992; Nagoya Protocol (access &amp; benefit sharing); Cartagena (biosafety, GMOs)</td></tr>
+        <tr><td><strong>Montreal Protocol</strong></td><td>Ozone</td><td>Phase-out of ODS (CFCs, HCFCs); Kigali Amendment (HFCs)</td></tr>
+        <tr><td><strong>Ramsar Convention</strong></td><td>Wetlands</td><td>Wetlands of international importance; India has 80+ Ramsar sites</td></tr>
+        <tr><td><strong>CITES</strong></td><td>Trade</td><td>Regulates international trade in endangered species; 3 Appendices</td></tr>
+        <tr><td><strong>CMS (Bonn)</strong></td><td>Migratory</td><td>Conservation of migratory species across borders</td></tr>
+        <tr><td><strong>Basel / Stockholm</strong></td><td>Waste/POPs</td><td>Basel: hazardous waste movement; Stockholm: persistent organic pollutants</td></tr>
+        <tr><td><strong>UNCCD</strong></td><td>Desertification</td><td>Combat desertification and land degradation</td></tr>
+      </tbody>
+    </table>
+    <div class="info-box pyq">
+      <div class="label">Past Year Question Pattern</div>
+      Questions occur every year or two (often combined statements). Tend to be straightforward: &ldquo;Which protocol covers X?&rdquo; or theme of a recent COP. Eliminatory power when options mix up conventions (e.g., Ramsar vs CMS).
+    </div>
+    <div class="info-box why">
+      <div class="label">Why Placed Here</div>
+      After national laws to cover the global side. Ensures correct elimination (&ldquo;Paris limits warming to 1.5&deg;C, not 2&deg;C&rdquo;). Links climate to policy and bridges to Reports &amp; Indices (IPCC, GEO).
+    </div>
+    <div class="info-box prereq">
+      <div class="label">Prerequisites</div>
+      Climate Change and Biodiversity (to contextualize why these conventions exist).
+    </div>
+  </div>
+</div>
+
+<!-- #13 AGRICULTURE -->
+<div class="unit-card" id="agriculture">
+  <div class="unit-header medium-yield">
+    <h2>#13 &mdash; Agriculture and Environment</h2>
+    <span class="unit-badge">MEDIUM YIELD &bull; ~18 PYQs &bull; 7%</span>
+  </div>
+  <div class="unit-body">
+    <div class="unit-meta">
+      <span class="meta-chip"><strong>PYQ Footprint:</strong> ~18 questions (2011&ndash;2024)</span>
+      <span class="meta-chip"><strong>Nature:</strong> Conceptual/factual &bull; Multi-disciplinary elimination</span>
+    </div>
+    <table class="micro-table">
+      <thead><tr><th>Micro-Topic</th><th>Key Points for Prelims</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Environmental Impact</strong></td><td>Soil degradation, irrigation water use, agrochemical runoff (fertilizer/pesticide pollution); methane from rice paddies; N&sub2;O from fertilizers</td></tr>
+        <tr><td><strong>Sustainable Practices</strong></td><td>Organic farming, crop diversification, watershed management, conservation agriculture</td></tr>
+        <tr><td><strong>Agri-Biodiversity</strong></td><td>Indigenous crop varieties, seed banks; Green Revolution pros (food security) vs cons (monoculture, groundwater depletion)</td></tr>
+        <tr><td><strong>Agri-Policies</strong></td><td>Soil Health Card scheme, PMKSY (water), Paramparagat Krishi Vikas Yojana (organic)</td></tr>
+      </tbody>
+    </table>
+    <div class="info-box why">
+      <div class="label">Why Placed Here</div>
+      Agriculture often contributes to or is regulated by policies. Knowledge helps reject wrong statements about fertilizers and ties food security to ecology (e.g., impacts of GM crops on biodiversity).
+    </div>
+    <div class="info-box prereq">
+      <div class="label">Prerequisites</div>
+      Basic ecology (soil ecosystem) and conservation (genetic diversity in crops).
+    </div>
+  </div>
+</div>
+
+<!-- #14 RENEWABLE ENERGY -->
+<div class="unit-card" id="renewable">
+  <div class="unit-header medium-yield">
+    <h2>#14 &mdash; Renewable &amp; Alternative Energy Sources</h2>
+    <span class="unit-badge">MEDIUM YIELD &bull; ~13 PYQs &bull; 5%</span>
+  </div>
+  <div class="unit-body">
+    <div class="unit-meta">
+      <span class="meta-chip"><strong>PYQ Footprint:</strong> ~13 questions (2011&ndash;2024), often current-affairs framed</span>
+      <span class="meta-chip"><strong>Nature:</strong> Factual/conceptual &bull; Technology identification &bull; Policy targets</span>
+    </div>
+    <table class="micro-table">
+      <thead><tr><th>Micro-Topic</th><th>Key Points for Prelims</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Types of Renewables</strong></td><td>Solar (PV &amp; thermal), wind, hydropower, biomass/biofuels (ethanol, biodiesel), geothermal, tidal</td></tr>
+        <tr><td><strong>Recent Innovations</strong></td><td>Green hydrogen, battery storage, energy crops; energy efficiency (LEDs, efficient appliances)</td></tr>
+        <tr><td><strong>Policies &amp; Targets</strong></td><td>India&rsquo;s renewable targets (500 GW by 2030); National Solar Mission; International Solar Alliance (ISA)</td></tr>
+        <tr><td><strong>Environmental Benefits</strong></td><td>GHG reduction vs fossil fuels; life-cycle pollution comparisons</td></tr>
+      </tbody>
+    </table>
+    <div class="info-box why">
+      <div class="label">Why Placed Here</div>
+      After climate topics because renewables are <strong>mitigation tools</strong>. Understanding renewables yields elimination cues (e.g., removing fossil fuels in options) and reinforces climate answers.
+    </div>
+    <div class="info-box prereq">
+      <div class="label">Prerequisites</div>
+      Climate Change (to understand why renewables matter) and basic science of energy.
+    </div>
+  </div>
+</div>
+
+<!-- #15 EIA -->
+<div class="unit-card" id="eia">
+  <div class="unit-header medium-yield">
+    <h2>#15 &mdash; Environmental Impact Assessment (EIA)</h2>
+    <span class="unit-badge">MEDIUM YIELD &bull; Elimination-Crucial</span>
+  </div>
+  <div class="unit-body">
+    <div class="unit-meta">
+      <span class="meta-chip"><strong>PYQ Footprint:</strong> Few direct questions; appears in statement clusters</span>
+      <span class="meta-chip"><strong>Nature:</strong> Definitional/elimination &bull; Process knowledge &bull; Legal basis</span>
+    </div>
+    <table class="micro-table">
+      <thead><tr><th>Micro-Topic</th><th>Key Points for Prelims</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Definition &amp; Purpose</strong></td><td>Process to evaluate environmental impacts of projects (social, economic, health). Components: screening, scoping, public consultation</td></tr>
+        <tr><td><strong>Procedure</strong></td><td>Stages per 2006 Notification; categories A/B of projects; Environmental Clearance process</td></tr>
+        <tr><td><strong>Legal Basis</strong></td><td>Mandated under EPA 1986; EIA Notification 2020 draft (debates on public hearings)</td></tr>
+        <tr><td><strong>Key Issues</strong></td><td>Critiques (conflict of interest, dilution of norms); role of CPCB &amp; MoEF&amp;CC in EIA reviews</td></tr>
+      </tbody>
+    </table>
+    <div class="info-box why">
+      <div class="label">Why Placed Here</div>
+      Application of all earlier topics to projects. Connects policies to implementation. Provides elimination cues (e.g., &ldquo;This type of project does/does not need EIA&rdquo;).
+    </div>
+    <div class="info-box prereq">
+      <div class="label">Prerequisites</div>
+      Legislation (EPA 1986 basis) and general environmental concepts.
+    </div>
+  </div>
+</div>
+
+<!-- #16 REPORTS -->
+<div class="unit-card" id="reports">
+  <div class="unit-header low-yield">
+    <h2>#16 &mdash; Important Environmental Reports &amp; Indices</h2>
+    <span class="unit-badge">LOW YIELD &bull; Supplementary</span>
+  </div>
+  <div class="unit-body">
+    <div class="unit-meta">
+      <span class="meta-chip"><strong>PYQ Footprint:</strong> Few direct questions; helpful for elimination</span>
+      <span class="meta-chip"><strong>Nature:</strong> Current-affairs/factual &bull; Index identification</span>
+    </div>
+    <table class="micro-table">
+      <thead><tr><th>Report / Index</th><th>Key Facts</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Environmental Performance Index (EPI)</strong></td><td>Jointly by Yale-WEF; country-level performance ranking</td></tr>
+        <tr><td><strong>ND-GAIN Index</strong></td><td>Notre Dame; climate adaptation/readiness</td></tr>
+        <tr><td><strong>India State of Forest Report (ISFR)</strong></td><td>FSI biennial report; forest cover data</td></tr>
+        <tr><td><strong>Global Biodiversity Outlook (GBO)</strong></td><td>CBD reports on biodiversity status</td></tr>
+        <tr><td><strong>Global Environment Outlook (GEO)</strong></td><td>UNEP flagship report</td></tr>
+        <tr><td><strong>Wildlife Census</strong></td><td>Tiger Census (every 4 years), Elephant/Rhino counts</td></tr>
+        <tr><td><strong>NITI Aayog &mdash; CWMI</strong></td><td>Composite Water Management Index</td></tr>
+      </tbody>
+    </table>
+    <div class="info-box why">
+      <div class="label">Why Placed Here</div>
+      Mostly supplementary. Consolidates indices reflecting themes from all prior topics. Knowing a couple can be handy for elimination (e.g., knowing EPI is a country performance index, not an air pollutant metric).
+    </div>
+    <div class="info-box prereq">
+      <div class="label">Prerequisites</div>
+      General knowledge of environment topics; no specific prereq.
+    </div>
+  </div>
+</div>
+
+<!-- #17 CONTEMPORARY -->
+<div class="unit-card" id="contemporary">
+  <div class="unit-header low-yield">
+    <h2>#17 &mdash; Contemporary Environmental Issues</h2>
+    <span class="unit-badge">LOW YIELD &bull; Current-Affairs Dependent</span>
+  </div>
+  <div class="unit-body">
+    <div class="unit-meta">
+      <span class="meta-chip"><strong>PYQ Footprint:</strong> Rare &mdash; mostly through current affairs lens</span>
+      <span class="meta-chip"><strong>Nature:</strong> Factual/current-affairs &bull; Conceptual framing &bull; Distractors</span>
+    </div>
+    <table class="micro-table">
+      <thead><tr><th>Micro-Topic</th><th>Key Points for Prelims</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Urban Environmental Concerns</strong></td><td>Urban heat island (UHI) effect; noise pollution in metros; vehicular pollution episodes (Delhi smog); landfills</td></tr>
+        <tr><td><strong>Waste Management</strong></td><td>Plastic ban; e-waste rules; Solid Waste Management Rules 2016; Swachh Bharat link</td></tr>
+        <tr><td><strong>Emerging Pollutants</strong></td><td>Microplastics, endocrine disruptors, illegal mining pollution</td></tr>
+        <tr><td><strong>Environmental Disasters</strong></td><td>Floods worsened by deforestation; climate-linked disasters; oil spills</td></tr>
+      </tbody>
+    </table>
+    <div class="info-box why">
+      <div class="label">Why Placed Here</div>
+      Placed last as supplementary. Covers miscellaneous items not captured earlier (rapid urbanization effects). Mastery helps handle one-off statement traps about recent events. Understanding these issues clarifies the relevance of earlier topics (e.g., link between plastic pollution and wildlife).
+    </div>
+    <div class="info-box prereq">
+      <div class="label">Prerequisites</div>
+      General pollution and conservation concepts. Staying updated with current environmental news is needed.
+    </div>
+  </div>
+</div>
+
+<!-- ===== FOOTER ===== -->
+<div style="text-align:center; margin-top:60px; padding:30px 0 10px; border-top: 2px solid var(--border); color: var(--text-secondary); font-size:0.88rem;">
+  <p style="color: var(--gold);"><strong>UPSC Prelims GS Paper I &mdash; Environment &amp; Ecology</strong></p>
+  <p style="margin-top:4px;">Exhaustive PYQ-Aligned Topic Dissection &amp; Priority Ranking &bull; 17 Topic Clusters &bull; Micro-Topic Maps &bull; 100% Syllabus Coverage</p>
+</div>
+
+</div><!-- /container -->
+</body>
+</html>

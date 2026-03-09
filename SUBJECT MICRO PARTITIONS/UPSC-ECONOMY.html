@@ -1,0 +1,1704 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UPSC Prelims GS Paper I — Economy: Exhaustive PYQ-Aligned Topic Dissection &amp; Priority Ranking</title>
+<style>
+  :root {
+    --primary: #d4a017;
+    --primary-light: #e0b840;
+    --accent: #c8942a;
+    --accent-light: #f5d778;
+    --bg: #050505;
+    --card-bg: #0c0c0c;
+    --text: #e8e0d0;
+    --text-secondary: #a89878;
+    --border: #1f1a10;
+    --high: #2e7d32;
+    --high-bg: rgba(46,125,50,0.15);
+    --medium: #e65100;
+    --medium-bg: rgba(230,81,0,0.12);
+    --low: #b71c1c;
+    --low-bg: rgba(183,28,28,0.12);
+    --tag-high: #4caf50;
+    --tag-medium: #ff9800;
+    --tag-low: #ef5350;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    font-size: 15px;
+  }
+
+  /* Header */
+  .hero {
+    background: linear-gradient(135deg, #0a0800 0%, #1a1400 50%, #0d0a00 100%);
+    color: #f0e6d0;
+    padding: 60px 40px 50px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    right: 0;
+    height: 40px;
+    background: var(--bg);
+    clip-path: ellipse(55% 100% at 50% 100%);
+  }
+  .hero h1 {
+    font-size: 2.2rem;
+    font-weight: 700;
+    margin-bottom: 12px;
+    letter-spacing: -0.5px;
+  }
+  .hero .subtitle {
+    font-size: 1.05rem;
+    opacity: 0.9;
+    max-width: 750px;
+    margin: 0 auto;
+    line-height: 1.6;
+  }
+
+  /* Container */
+  .container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 30px 24px 60px;
+  }
+
+  /* Section titles */
+  .section-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary);
+    margin: 50px 0 20px;
+    padding-bottom: 10px;
+    border-bottom: 3px solid var(--accent);
+    display: inline-block;
+  }
+  .section-title.full { display: block; }
+
+  /* Cards */
+  .card {
+    background: var(--card-bg);
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.3);
+    padding: 28px 32px;
+    margin-bottom: 24px;
+    border-left: 5px solid var(--primary-light);
+    transition: box-shadow 0.2s;
+    border: 1px solid #1f1a10;
+  }
+  .card:hover { box-shadow: 0 4px 20px rgba(212,160,23,0.15); }
+  .card h3 {
+    font-size: 1.15rem;
+    color: var(--primary);
+    margin-bottom: 10px;
+  }
+  .card p, .card li { color: var(--text); }
+
+  /* Unit cards */
+  .unit-card {
+    background: var(--card-bg);
+    border-radius: 14px;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.4);
+    margin-bottom: 32px;
+    overflow: hidden;
+    border: 1px solid #1f1a10;
+  }
+  .unit-header {
+    padding: 20px 28px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .unit-header.high-yield { background: linear-gradient(135deg, #1b5e20, #2e7d32); }
+  .unit-header.medium-yield { background: linear-gradient(135deg, #e65100, #ef6c00); }
+  .unit-header.medium-high-yield { background: linear-gradient(135deg, #33691e, #558b2f); }
+  .unit-header.medium-low-yield { background: linear-gradient(135deg, #bf360c, #d84315); }
+  .unit-header.low-yield { background: linear-gradient(135deg, #b71c1c, #c62828); }
+  .unit-header.low-medium-yield { background: linear-gradient(135deg, #c62828, #d32f2f); }
+
+  .unit-header h2 {
+    color: #fff;
+    font-size: 1.25rem;
+    font-weight: 700;
+    flex: 1;
+  }
+  .unit-badge {
+    background: rgba(255,255,255,0.22);
+    color: #fff;
+    padding: 4px 14px;
+    border-radius: 20px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .unit-body {
+    padding: 24px 28px 28px;
+  }
+  .unit-meta {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-bottom: 18px;
+  }
+  .meta-chip {
+    background: #141008;
+    border: 1px solid #2a2210;
+    border-radius: 8px;
+    padding: 6px 14px;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+  }
+  .meta-chip strong { color: var(--text); }
+
+  /* Micro topic tables */
+  .micro-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin: 16px 0 20px;
+    font-size: 0.92rem;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+  .micro-table thead th {
+    background: #1a1400;
+    color: #d4a017;
+    padding: 12px 16px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .micro-table tbody td {
+    padding: 12px 16px;
+    border-bottom: 1px solid #1a1400;
+    vertical-align: top;
+  }
+  .micro-table tbody tr:last-child td { border-bottom: none; }
+  .micro-table tbody tr:nth-child(even) { background: #0a0800; }
+  .micro-table tbody tr:hover { background: #141008; }
+
+  /* Yield tags */
+  .yield-tag {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 12px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+  .yield-tag.high { background: var(--high-bg); color: var(--tag-high); }
+  .yield-tag.medium { background: var(--medium-bg); color: var(--tag-medium); }
+  .yield-tag.medium-high { background: #f1f8e9; color: #33691e; }
+  .yield-tag.low { background: var(--low-bg); color: var(--tag-low); }
+  .yield-tag.low-medium { background: #fce4ec; color: #880e4f; }
+
+  /* Why & prereq boxes */
+  .info-box {
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin: 14px 0;
+    font-size: 0.93rem;
+    line-height: 1.65;
+  }
+  .info-box.why {
+    background: rgba(212,160,23,0.08);
+    border-left: 4px solid #d4a017;
+  }
+  .info-box.prereq {
+    background: rgba(200,148,42,0.08);
+    border-left: 4px solid #c8942a;
+  }
+  .info-box .label {
+    font-weight: 700;
+    font-size: 0.82rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+  }
+  .info-box.why .label { color: #d4a017; }
+  .info-box.prereq .label { color: #c8942a; }
+
+  /* Priority ranking table */
+  .ranking-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin: 20px 0;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    font-size: 0.93rem;
+  }
+  .ranking-table thead th {
+    background: linear-gradient(135deg, #1a1400, #0d0a00);
+    color: #d4a017;
+    padding: 14px 18px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .ranking-table tbody td {
+    padding: 14px 18px;
+    border-bottom: 1px solid #1a1400;
+    vertical-align: top;
+  }
+  .ranking-table tbody tr:last-child td { border-bottom: none; }
+  .ranking-table tbody tr:nth-child(even) { background: #0a0800; }
+  .ranking-table tbody tr:hover { background: #141008; }
+  .rank-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    font-weight: 800;
+    font-size: 0.9rem;
+    color: #fff;
+  }
+  .rank-num.top3 { background: var(--high); }
+  .rank-num.top7 { background: var(--primary-light); }
+  .rank-num.mid { background: var(--medium); }
+  .rank-num.low { background: #78909c; }
+
+  /* Skeleton list */
+  .skeleton-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 10px;
+    margin: 16px 0;
+  }
+  .skeleton-item {
+    background: #0c0c0c;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-size: 0.92rem;
+    border-left: 4px solid var(--primary-light);
+    border: 1px solid #1f1a10;
+  }
+  .skeleton-item strong { color: var(--primary); }
+
+  /* Dependency map */
+  .dep-card {
+    background: #0c0a04;
+    border-left: 5px solid #d4a017;
+    border-radius: 12px;
+    padding: 24px 28px;
+    margin: 20px 0;
+    border: 1px solid #1f1a10;
+  }
+  .dep-card h3 { color: #d4a017; margin-bottom: 12px; }
+  .dep-chain {
+    font-family: 'Consolas', 'Fira Code', monospace;
+    background: #0a0800;
+    padding: 14px 20px;
+    border-radius: 8px;
+    margin: 8px 0;
+    font-size: 0.9rem;
+    border: 1px solid #1f1a10;
+    line-height: 2;
+    color: #e8e0d0;
+  }
+  .dep-chain .arrow { color: #d4a017; font-weight: 700; }
+
+  /* Bullet lists */
+  .bullet-list {
+    padding-left: 22px;
+    margin: 10px 0;
+  }
+  .bullet-list li {
+    margin-bottom: 6px;
+    line-height: 1.6;
+  }
+
+  /* Constructs section */
+  .construct-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(480px, 1fr));
+    gap: 18px;
+    margin: 16px 0;
+  }
+  .construct-card {
+    background: var(--card-bg);
+    border-radius: 10px;
+    padding: 20px 24px;
+    border: 1px solid #1f1a10;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.3);
+  }
+  .construct-card h4 {
+    color: var(--primary-light);
+    font-size: 1rem;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .construct-card h4::before {
+    content: '⚡';
+    font-size: 1.1rem;
+  }
+
+  /* TOC */
+  .toc {
+    background: var(--card-bg);
+    border-radius: 14px;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.4);
+    padding: 28px 32px;
+    margin: 30px 0;
+    border: 1px solid #1f1a10;
+  }
+  .toc h3 {
+    font-size: 1.1rem;
+    color: var(--primary);
+    margin-bottom: 16px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--accent);
+  }
+  .toc ol {
+    padding-left: 22px;
+  }
+  .toc li {
+    margin-bottom: 6px;
+    font-size: 0.95rem;
+  }
+  .toc a {
+    color: var(--primary-light);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .toc a:hover { color: var(--accent); text-decoration: underline; }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .hero { padding: 40px 20px 35px; }
+    .hero h1 { font-size: 1.5rem; }
+    .container { padding: 20px 14px 40px; }
+    .unit-header { padding: 16px 20px; }
+    .unit-body { padding: 18px 20px 22px; }
+    .construct-grid { grid-template-columns: 1fr; }
+    .skeleton-list { grid-template-columns: 1fr; }
+    .ranking-table, .micro-table { font-size: 0.82rem; }
+    .ranking-table thead th, .micro-table thead th { padding: 10px 12px; }
+    .ranking-table tbody td, .micro-table tbody td { padding: 10px 12px; }
+  }
+
+  /* Print */
+  @media print {
+    .hero { background: #0a0800 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .unit-header { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .card, .unit-card { break-inside: avoid; }
+    body { font-size: 12px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <h1>UPSC Prelims GS Paper I &mdash; Economy</h1>
+  <p class="subtitle">Exhaustive PYQ-Aligned Topic Dissection &amp; Priority Ranking &bull; 17 Units &bull; Micro-Topic Maps &bull; Cross-Unit Dependencies</p>
+</div>
+
+<div class="container">
+
+<!-- Scope & Anchor -->
+<h2 class="section-title full">Scope Boundary, Syllabus Anchor &amp; Unit Skeleton</h2>
+
+<div class="card">
+  <h3>Scope</h3>
+  <p>This document is restricted <strong>only</strong> to <strong>UPSC Prelims (GS Paper I)</strong>.</p>
+  <p style="margin-top:8px;"><strong>Official syllabus wording:</strong> <em>&ldquo;Economic and Social Development &mdash; Sustainable Development, Poverty, Inclusion, Demographics, Social Sector Initiatives, etc.&rdquo;</em></p>
+  <p style="margin-top:8px;"><strong>Subject under analysis:</strong> Economy (Prelims GS Paper I only)</p>
+</div>
+
+<div class="card">
+  <h3>Unit Skeleton (17 Units)</h3>
+  <div class="skeleton-list">
+    <div class="skeleton-item"><strong>Unit 1</strong> &mdash; Introduction to Economics</div>
+    <div class="skeleton-item"><strong>Unit 2</strong> &mdash; National Income Accounting</div>
+    <div class="skeleton-item"><strong>Unit 3</strong> &mdash; Money, Banking &amp; Monetary Policy</div>
+    <div class="skeleton-item"><strong>Unit 4</strong> &mdash; Finance &amp; Financial Markets</div>
+    <div class="skeleton-item"><strong>Unit 5</strong> &mdash; Public Finance in India</div>
+    <div class="skeleton-item"><strong>Unit 6</strong> &mdash; Taxation in India</div>
+    <div class="skeleton-item"><strong>Unit 7</strong> &mdash; Inflation</div>
+    <div class="skeleton-item"><strong>Unit 8</strong> &mdash; Unemployment</div>
+    <div class="skeleton-item"><strong>Unit 9</strong> &mdash; Poverty</div>
+    <div class="skeleton-item"><strong>Unit 10</strong> &mdash; Agriculture &amp; Allied Activities</div>
+    <div class="skeleton-item"><strong>Unit 11</strong> &mdash; Food Processing; Industry &amp; Manufacturing</div>
+    <div class="skeleton-item"><strong>Unit 12</strong> &mdash; Infrastructure &amp; Investment Models</div>
+    <div class="skeleton-item"><strong>Unit 13</strong> &mdash; Services &amp; Digital Economy</div>
+    <div class="skeleton-item"><strong>Unit 14</strong> &mdash; Trade &amp; External Sector</div>
+    <div class="skeleton-item"><strong>Unit 15</strong> &mdash; Planning &amp; Reform</div>
+    <div class="skeleton-item"><strong>Unit 16</strong> &mdash; International Institutions</div>
+    <div class="skeleton-item"><strong>Unit 17</strong> &mdash; Sustainable &amp; Inclusive Growth</div>
+  </div>
+</div>
+
+<div class="card">
+  <h3>What &ldquo;Economy&rdquo; Means in Prelims (PYQ-Aligned)</h3>
+  <p>UPSC does <strong>not</strong> restrict Economy to textbook macroeconomics. It repeatedly tests:</p>
+  <ul class="bullet-list">
+    <li><strong>Institutional design</strong> &mdash; who does what, statutory vs constitutional anchoring</li>
+    <li><strong>Instrument&ndash;purpose matching</strong> &mdash; what tool does what and under what conditions</li>
+    <li><strong>Definitions with boundary conditions</strong> &mdash; near-synonym traps, inclusion/exclusion</li>
+    <li><strong>Current-affairs-triggered frameworks</strong> &mdash; new RBI tool, index base revision, new IMF facility, etc.</li>
+  </ul>
+  <p style="margin-top:8px;">The exam pattern structurally supports statement-combination traps and elimination-style scoring. The <em>most valuable</em> topics are those that (i) recur, (ii) remove options across unrelated questions, and (iii) reduce ambiguity in statement verification.</p>
+</div>
+
+<!-- PYQ Constructs -->
+<h2 class="section-title full">PYQ Behavior: Dominant Constructs, Statement Traps &amp; Elimination Levers</h2>
+
+<div class="construct-grid">
+  <div class="construct-card">
+    <h4>Instrument &rarr; Purpose &rarr; Collateral &rarr; Corridor</h4>
+    <p>Highest-frequency pattern, especially in monetary policy and liquidity management. Typical traps swap: <em>&ldquo;inject vs absorb liquidity,&rdquo; &ldquo;collateralised vs uncollateralised,&rdquo; &ldquo;floor vs ceiling,&rdquo; &ldquo;repo vs reverse repo,&rdquo; &ldquo;MSF vs Bank Rate,&rdquo; &ldquo;policy rate vs operating target.&rdquo;</em></p>
+  </div>
+  <div class="construct-card">
+    <h4>Institution &rarr; Composition &rarr; Mandate &rarr; Anchoring</h4>
+    <p>High-return pattern for GST Council, MPC, CBDT/CBIC, etc. Composition anchored in specific articles/statutes. Traps swap membership/functions.</p>
+  </div>
+  <div class="construct-card">
+    <h4>Definition Boundary Traps</h4>
+    <p>Dominant in national income, inflation, external sector, and fiscal concepts. Examples: GDP production/expenditure/income approaches, CPI as inflation targeting index, REER/NEER as competitiveness indicators.</p>
+  </div>
+  <div class="construct-card">
+    <h4>Current Affairs Framed as Concepts</h4>
+    <p>Standard UPSC move: the question is not &ldquo;news recall&rdquo; but &ldquo;what does this facility/tool/index do?&rdquo; Example: &ldquo;lender of last resort&rdquo; (Prelims 2021) tested as concept, not as current affairs.</p>
+  </div>
+</div>
+
+<!-- Table of Contents -->
+<div class="toc" id="toc">
+  <h3>Table of Contents &mdash; Priority Ranking Order</h3>
+  <ol>
+    <li><a href="#unit1">Unit 1 &mdash; Introduction to Economics</a> <span class="yield-tag high">High Yield</span></li>
+    <li><a href="#unit2">Unit 2 &mdash; National Income Accounting</a> <span class="yield-tag high">High Yield</span></li>
+    <li><a href="#unit3">Unit 3 &mdash; Money, Banking &amp; Monetary Policy</a> <span class="yield-tag high">High Yield</span></li>
+    <li><a href="#unit7">Unit 7 &mdash; Inflation</a> <span class="yield-tag high">High Yield</span></li>
+    <li><a href="#unit5">Unit 5 &mdash; Public Finance in India</a> <span class="yield-tag high">High Yield</span></li>
+    <li><a href="#unit6">Unit 6 &mdash; Taxation in India</a> <span class="yield-tag high">High Yield</span></li>
+    <li><a href="#unit4">Unit 4 &mdash; Finance &amp; Financial Markets</a> <span class="yield-tag high">High Yield</span></li>
+    <li><a href="#unit14">Unit 14 &mdash; Trade &amp; External Sector</a> <span class="yield-tag high">High Yield</span></li>
+    <li><a href="#unit16">Unit 16 &mdash; International Institutions</a> <span class="yield-tag medium-high">Medium&ndash;High</span></li>
+    <li><a href="#unit10">Unit 10 &mdash; Agriculture &amp; Allied Activities</a> <span class="yield-tag medium-high">Medium&ndash;High</span></li>
+    <li><a href="#unit17">Unit 17 &mdash; Sustainable &amp; Inclusive Growth</a> <span class="yield-tag medium">Medium</span></li>
+    <li><a href="#unit9">Unit 9 &mdash; Poverty</a> <span class="yield-tag medium">Medium</span></li>
+    <li><a href="#unit8">Unit 8 &mdash; Unemployment</a> <span class="yield-tag medium">Medium</span></li>
+    <li><a href="#unit12">Unit 12 &mdash; Infrastructure &amp; Investment Models</a> <span class="yield-tag medium">Medium</span></li>
+    <li><a href="#unit13">Unit 13 &mdash; Services &amp; Digital Economy</a> <span class="yield-tag low-medium">Medium&ndash;Low</span></li>
+    <li><a href="#unit15">Unit 15 &mdash; Planning &amp; Reform</a> <span class="yield-tag low-medium">Low&ndash;Medium</span></li>
+    <li><a href="#unit11">Unit 11 &mdash; Food Processing; Industry &amp; Manufacturing</a> <span class="yield-tag low">Low</span></li>
+  </ol>
+</div>
+
+<!-- PRIORITY RANKING TABLE -->
+<h2 class="section-title full" id="ranking">Final PYQ-Driven Priority Ranking of 17 Units</h2>
+
+<table class="ranking-table">
+  <thead>
+    <tr>
+      <th style="width:55px">Rank</th>
+      <th>Unit</th>
+      <th style="width:130px">Priority</th>
+      <th style="width:100px">PYQ Est.</th>
+      <th>Key Reason</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><span class="rank-num top3">1</span></td>
+      <td><strong>Unit 1</strong> &mdash; Introduction to Economics</td>
+      <td><span class="yield-tag high">High Yield</span></td>
+      <td>~10&ndash;20</td>
+      <td>Minimum conceptual vocabulary; prevents statement traps across all later units</td>
+    </tr>
+    <tr>
+      <td><span class="rank-num top3">2</span></td>
+      <td><strong>Unit 2</strong> &mdash; National Income Accounting</td>
+      <td><span class="yield-tag high">High Yield</span></td>
+      <td>~15&ndash;30</td>
+      <td>Accounting spine for growth, deflators, fiscal ratios, external balances</td>
+    </tr>
+    <tr>
+      <td><span class="rank-num top3">3</span></td>
+      <td><strong>Unit 3</strong> &mdash; Money, Banking &amp; Monetary Policy</td>
+      <td><span class="yield-tag high">High Yield</span></td>
+      <td>~45&ndash;65</td>
+      <td>Highest PYQ density + highest elimination power (RBI instruments &amp; banking structures)</td>
+    </tr>
+    <tr>
+      <td><span class="rank-num top7">4</span></td>
+      <td><strong>Unit 7</strong> &mdash; Inflation</td>
+      <td><span class="yield-tag high">High Yield</span></td>
+      <td>~20&ndash;35</td>
+      <td>Recurring core; CPI role in targeting &amp; as deflator makes it a cross-unit eliminator</td>
+    </tr>
+    <tr>
+      <td><span class="rank-num top7">5</span></td>
+      <td><strong>Unit 5</strong> &mdash; Public Finance in India</td>
+      <td><span class="yield-tag high">High Yield</span></td>
+      <td>~25&ndash;40</td>
+      <td>Deficit definitions are high-elimination statement-combination components</td>
+    </tr>
+    <tr>
+      <td><span class="rank-num top7">6</span></td>
+      <td><strong>Unit 6</strong> &mdash; Taxation in India</td>
+      <td><span class="yield-tag high">High Yield</span></td>
+      <td>~15&ndash;30</td>
+      <td>Institution + function traps (CBDT vs CBIC; GST Council composition &amp; role)</td>
+    </tr>
+    <tr>
+      <td><span class="rank-num top7">7</span></td>
+      <td><strong>Unit 4</strong> &mdash; Finance &amp; Financial Markets</td>
+      <td><span class="yield-tag high">High Yield</span></td>
+      <td>~25&ndash;40</td>
+      <td>High-elimination &ldquo;option vocabulary bank&rdquo; &mdash; market instruments &amp; regulator roles</td>
+    </tr>
+    <tr>
+      <td><span class="rank-num top7">8</span></td>
+      <td><strong>Unit 14</strong> &mdash; Trade &amp; External Sector</td>
+      <td><span class="yield-tag high">High Yield</span></td>
+      <td>~20&ndash;35</td>
+      <td>BoP classification &amp; REER/NEER definition traps have high elimination value</td>
+    </tr>
+    <tr>
+      <td><span class="rank-num mid">9</span></td>
+      <td><strong>Unit 16</strong> &mdash; International Institutions</td>
+      <td><span class="yield-tag medium-high">Medium&ndash;High</span></td>
+      <td>~15&ndash;25</td>
+      <td>High elimination power from institution&ndash;mandate&ndash;instrument matching</td>
+    </tr>
+    <tr>
+      <td><span class="rank-num mid">10</span></td>
+      <td><strong>Unit 10</strong> &mdash; Agriculture &amp; Allied Activities</td>
+      <td><span class="yield-tag medium-high">Medium&ndash;High</span></td>
+      <td>~15&ndash;30</td>
+      <td>MSP ecosystem is recurring; cross-links with inflation/fiscal subsidy logic</td>
+    </tr>
+    <tr>
+      <td><span class="rank-num mid">11</span></td>
+      <td><strong>Unit 17</strong> &mdash; Sustainable &amp; Inclusive Growth</td>
+      <td><span class="yield-tag medium">Medium</span></td>
+      <td>~10&ndash;20</td>
+      <td>Syllabus-explicit; high scheme/framework trap zone</td>
+    </tr>
+    <tr>
+      <td><span class="rank-num mid">12</span></td>
+      <td><strong>Unit 9</strong> &mdash; Poverty</td>
+      <td><span class="yield-tag medium">Medium</span></td>
+      <td>~10&ndash;20</td>
+      <td>Conceptual &amp; measurement questions; MPI framing increasingly used</td>
+    </tr>
+    <tr>
+      <td><span class="rank-num mid">13</span></td>
+      <td><strong>Unit 8</strong> &mdash; Unemployment</td>
+      <td><span class="yield-tag medium">Medium</span></td>
+      <td>~8&ndash;15</td>
+      <td>Labour indicators &amp; PLFS; strong eliminators via denominator/reference period swaps</td>
+    </tr>
+    <tr>
+      <td><span class="rank-num mid">14</span></td>
+      <td><strong>Unit 12</strong> &mdash; Infrastructure &amp; Investment Models</td>
+      <td><span class="yield-tag medium">Medium</span></td>
+      <td>~8&ndash;15</td>
+      <td>PPP model vocabulary (BOT/Annuity) is highly standardized &amp; excellent for elimination</td>
+    </tr>
+    <tr>
+      <td><span class="rank-num low">15</span></td>
+      <td><strong>Unit 13</strong> &mdash; Services &amp; Digital Economy</td>
+      <td><span class="yield-tag low-medium">Medium&ndash;Low</span></td>
+      <td>~6&ndash;12</td>
+      <td>Often CA-triggered; overlaps with monetary/financial units</td>
+    </tr>
+    <tr>
+      <td><span class="rank-num low">16</span></td>
+      <td><strong>Unit 15</strong> &mdash; Planning &amp; Reform</td>
+      <td><span class="yield-tag low-medium">Low&ndash;Medium</span></td>
+      <td>~5&ndash;10</td>
+      <td>Intermittent; conceptual reform/planning vocabulary</td>
+    </tr>
+    <tr>
+      <td><span class="rank-num low">17</span></td>
+      <td><strong>Unit 11</strong> &mdash; Food Processing; Industry &amp; Manufacturing</td>
+      <td><span class="yield-tag low">Low</span></td>
+      <td>~4&ndash;8</td>
+      <td>Lowest density but within scope; value added vocabulary links to Unit 2</td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- ========== UNIT-BY-UNIT DETAILED CARDS ========== -->
+<h2 class="section-title full">Exhaustive Unit-by-Unit Micro-Topic Map (PYQ Order)</h2>
+
+<!-- UNIT 1 -->
+<div class="unit-card" id="unit1">
+  <div class="unit-header high-yield">
+    <h2>#1 &mdash; Unit 1: Introduction to Economics</h2>
+    <span class="unit-badge">HIGH YIELD (Prerequisite-Heavy)</span>
+  </div>
+  <div class="unit-body">
+    <div class="unit-meta">
+      <span class="meta-chip"><strong>PYQ Footprint:</strong> ~10&ndash;20 questions</span>
+      <span class="meta-chip"><strong>Appearance:</strong> Conceptual &bull; Statement-combination &bull; Elimination-heavy</span>
+    </div>
+    <table class="micro-table">
+      <thead>
+        <tr><th>Topic Block</th><th>Yield</th><th>PYQ Est.</th><th>Type</th><th>Key Micro-Topics</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Basics of economic reasoning &amp; vocabulary</strong></td>
+          <td><span class="yield-tag high">High</span></td>
+          <td>~6&ndash;10</td>
+          <td>Conceptual + Statement-combination</td>
+          <td>Scarcity; choice; opportunity cost; PPF shifts vs movements; trade-offs &amp; &ldquo;cost&rdquo; in economic sense</td>
+        </tr>
+        <tr>
+          <td><strong>Microeconomics core constructs</strong></td>
+          <td><span class="yield-tag medium">Medium</span></td>
+          <td>~3&ndash;6</td>
+          <td>Statement-combination</td>
+          <td>Demand vs quantity demanded; elasticity (price, income); substitutes vs complements; normal vs inferior vs Giffen; consumer/producer surplus</td>
+        </tr>
+        <tr>
+          <td><strong>Market structures &amp; pricing power</strong></td>
+          <td><span class="yield-tag low-medium">Low&ndash;Med</span></td>
+          <td>~1&ndash;3</td>
+          <td>Conceptual</td>
+          <td>Perfect competition / monopoly / monopolistic / oligopoly (features for MCQ distinctions only)</td>
+        </tr>
+        <tr>
+          <td><strong>Macroeconomics core constructs</strong></td>
+          <td><span class="yield-tag high">High</span></td>
+          <td>~6&ndash;10</td>
+          <td>Conceptual + Elimination-heavy</td>
+          <td>AD vs AS as idea; business cycle phases; recession/stagnation; output gap; nominal vs real; stocks vs flows; circular flow</td>
+        </tr>
+        <tr>
+          <td><strong>Goods vs services; factor vs product markets</strong></td>
+          <td><span class="yield-tag medium">Medium</span></td>
+          <td>~1&ndash;3</td>
+          <td>Statement-based eliminators</td>
+          <td>Factor income vs transfer; productive vs unproductive in national accounts sense</td>
+        </tr>
+        <tr>
+          <td><strong>Externalities &amp; public goods</strong></td>
+          <td><span class="yield-tag medium">Medium</span></td>
+          <td>~2&ndash;4</td>
+          <td>Statement-combination</td>
+          <td>Externality vs spillover; positive/negative; non-rival, non-excludable; common pool resources; free-rider</td>
+        </tr>
+        <tr>
+          <td><strong>Market failure &amp; govt intervention vocabulary</strong></td>
+          <td><span class="yield-tag medium">Medium</span></td>
+          <td>~2&ndash;4</td>
+          <td>Conceptual</td>
+          <td>Price ceiling/floor effects; rationing; deadweight loss concept; subsidies &amp; incidence intuition</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="info-box why">
+      <div class="label">Why This Unit is First</div>
+      This unit is the <strong>conceptual grammar</strong> of Economy MCQs: most statement traps in later units reuse these words with altered boundary conditions (&ldquo;real vs nominal,&rdquo; &ldquo;stock vs flow,&rdquo; &ldquo;transfer vs factor income,&rdquo; &ldquo;public good vs merit good&rdquo;). Treating it as optional leads to systematic elimination errors across Units 2, 5, 7, and 14.
+    </div>
+    <div class="info-box prereq">
+      <div class="label">Prerequisites</div>
+      None.
+    </div>
+  </div>
+</div>
+
+<!-- UNIT 2 -->
+<div class="unit-card" id="unit2">
+  <div class="unit-header high-yield">
+    <h2>#2 &mdash; Unit 2: National Income Accounting</h2>
+    <span class="unit-badge">HIGH YIELD</span>
+  </div>
+  <div class="unit-body">
+    <div class="unit-meta">
+      <span class="meta-chip"><strong>PYQ Footprint:</strong> ~15&ndash;30 questions</span>
+      <span class="meta-chip"><strong>Appearance:</strong> Statement-combination + conceptual definitions; numeracy-light but definition-heavy</span>
+    </div>
+    <table class="micro-table">
+      <thead>
+        <tr><th>Topic Block</th><th>Yield</th><th>PYQ Est.</th><th>Type</th><th>Key Micro-Topics</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>GDP, GVA, Value Added &mdash; definitions &amp; relationships</strong></td>
+          <td><span class="yield-tag high">High</span></td>
+          <td>~8&ndash;14</td>
+          <td>Statement-combination + Elimination-heavy</td>
+          <td>Value added = output &minus; intermediate consumption; GDP (production) = &Sigma; value added + taxes net of subsidies on products; GVA vs GDP distinction</td>
+        </tr>
+        <tr>
+          <td><strong>Three approaches to GDP</strong></td>
+          <td><span class="yield-tag high">High</span></td>
+          <td>~6&ndash;10</td>
+          <td>Statement-combination</td>
+          <td>Production approach vs expenditure (PFCE, GFCE, GFCF, change in stocks, net exports) vs income approach (COE, GOS, mixed income); &ldquo;discrepancy&rdquo; concept</td>
+        </tr>
+        <tr>
+          <td><strong>Nominal vs Real; deflators</strong></td>
+          <td><span class="yield-tag high">High</span></td>
+          <td>~6&ndash;10</td>
+          <td>Conceptual + Elimination-heavy</td>
+          <td>Deflator logic (current/constant); index logic; base year meaning; chain linking concept</td>
+        </tr>
+        <tr>
+          <td><strong>GDP vs GNP; domestic vs national</strong></td>
+          <td><span class="yield-tag medium">Medium</span></td>
+          <td>~2&ndash;5</td>
+          <td>Statement-combination</td>
+          <td>&ldquo;Resident&rdquo; concept; factor income from abroad; NFIA; NNP/NDP distinctions</td>
+        </tr>
+        <tr>
+          <td><strong>Savings, investment, capital formation</strong></td>
+          <td><span class="yield-tag medium">Medium</span></td>
+          <td>~2&ndash;5</td>
+          <td>Conceptual</td>
+          <td>GFCF vs gross capital formation; depreciation/CFC; capital-output intuition</td>
+        </tr>
+        <tr>
+          <td><strong>Sectoral composition &amp; structural change</strong></td>
+          <td><span class="yield-tag medium">Medium</span></td>
+          <td>~2&ndash;4</td>
+          <td>Conceptual</td>
+          <td>Primary/secondary/tertiary shares; what &ldquo;services&rdquo; covers; measurement sensitivity</td>
+        </tr>
+        <tr>
+          <td><strong>Base-year revision (CA trigger)</strong></td>
+          <td><span class="yield-tag medium">Medium</span></td>
+          <td>~1&ndash;3</td>
+          <td>Direct factual + Statement traps</td>
+          <td>What revision changes (weights, data sources, methods); why measured growth rates can shift</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="info-box why">
+      <div class="label">Why This Placement</div>
+      National income accounting is placed <strong>before</strong> money/fiscal/inflation because Prelims repeatedly tests definitions that sit inside other questions. If GDP/GVA/current/constant/deflator boundaries are unclear, elimination fails even when current affairs are known.
+    </div>
+    <div class="info-box prereq">
+      <div class="label">Prerequisites</div>
+      Unit 1 (macro vocabulary: real vs nominal; stocks vs flows).
+    </div>
+  </div>
+</div>
+
+<!-- UNIT 3 -->
+<div class="unit-card" id="unit3">
+  <div class="unit-header high-yield">
+    <h2>#3 &mdash; Unit 3: Money, Banking &amp; Monetary Policy</h2>
+    <span class="unit-badge">TOP SCORER + TOP ELIMINATOR</span>
+  </div>
+  <div class="unit-body">
+    <div class="unit-meta">
+      <span class="meta-chip"><strong>PYQ Footprint:</strong> ~45&ndash;65 questions</span>
+      <span class="meta-chip"><strong>Appearance:</strong> Statement-combination + Elimination-heavy</span>
+    </div>
+    <table class="micro-table">
+      <thead>
+        <tr><th>Topic Block</th><th>Yield</th><th>PYQ Est.</th><th>Type</th><th>Key Micro-Topics</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Monetary policy framework &amp; decision structure</strong></td>
+          <td><span class="yield-tag high">High</span></td>
+          <td>~8&ndash;12</td>
+          <td>Statement-combination</td>
+          <td>MPC decides policy repo rate for inflation target; meeting frequency/quorum; voting/casting vote logic; WACR as operating target aligned to repo via liquidity management</td>
+        </tr>
+        <tr>
+          <td><strong>Policy rates &amp; liquidity corridor instruments</strong></td>
+          <td><span class="yield-tag high">High</span></td>
+          <td>~12&ndash;18</td>
+          <td>Elimination-heavy</td>
+          <td><strong>Repo:</strong> liquidity injected against govt securities collateral &bull; <strong>Reverse Repo:</strong> absorb liquidity against eligible securities &bull; <strong>SDF:</strong> uncollateralised deposits, 25 bps below repo, floor of corridor &bull; <strong>MSF:</strong> penal overnight borrowing dipping into SLR, 25 bps above repo &bull; <strong>LAF corridor:</strong> MSF ceiling, SDF floor, repo in middle &bull; <strong>CRR/SLR:</strong> definitional boundaries, gazette-notified</td>
+        </tr>
+        <tr>
+          <td><strong>Bank Rate &amp; its linkage</strong></td>
+          <td><span class="yield-tag high">High</span></td>
+          <td>~3&ndash;6</td>
+          <td>Statement-combination</td>
+          <td>Published under Section 49 of RBI Act; aligned with MSF; penal rate for reserve shortfalls</td>
+        </tr>
+        <tr>
+          <td><strong>Money supply &amp; liquidity aggregates</strong></td>
+          <td><span class="yield-tag high">High</span></td>
+          <td>~6&ndash;10</td>
+          <td>Conceptual + Elimination</td>
+          <td>Monetary base / high powered money; broad money; credit creation; money multiplier; NDTL role; liquidity surplus/deficit logic</td>
+        </tr>
+        <tr>
+          <td><strong>Banking system structure &amp; regulated entities</strong></td>
+          <td><span class="yield-tag high">High</span></td>
+          <td>~8&ndash;12</td>
+          <td>Statement-combination</td>
+          <td>Scheduled vs non-scheduled; commercial vs cooperative vs RRBs; SFB/payment bank; NBFC vs bank; deposit-taking vs non-deposit NBFC</td>
+        </tr>
+        <tr>
+          <td><strong>Bank balance sheet &amp; core risks</strong></td>
+          <td><span class="yield-tag medium">Medium</span></td>
+          <td>~3&ndash;6</td>
+          <td>Statement-combination</td>
+          <td>NPAs; provisioning; CRAR; risk-weighted assets; liquidity risk vs solvency risk</td>
+        </tr>
+        <tr>
+          <td><strong>&ldquo;Lender of last resort&rdquo; &amp; emergency liquidity</strong></td>
+          <td><span class="yield-tag medium">Medium</span></td>
+          <td>~1&ndash;3</td>
+          <td>Direct + Elimination</td>
+          <td>LoLR = liquidity support to banks in temporary crisis; trap is &ldquo;lending to government deficits&rdquo; (Prelims 2021)</td>
+        </tr>
+        <tr>
+          <td><strong>Payments systems &amp; monetary transmission</strong></td>
+          <td><span class="yield-tag medium">Medium</span></td>
+          <td>~2&ndash;5</td>
+          <td>Conceptual (CA-framed)</td>
+          <td>Transmission: policy rate &rarr; money market &rarr; bank lending; why liquidity management matters for WACR</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="info-box why">
+      <div class="label">Why This is the Top Scoring Unit</div>
+      UPSC repeatedly uses RBI instruments as <strong>statement-trap payloads</strong>, and the same vocabulary appears as distractors in questions not &ldquo;about monetary policy.&rdquo; RBI&rsquo;s formal, published definitions make elimination deterministic when learned properly.
+    </div>
+    <div class="info-box prereq">
+      <div class="label">Prerequisites</div>
+      Unit 1 (macro vocabulary), Unit 2 (real vs nominal; deflator logic), plus basic &ldquo;stocks vs flows.&rdquo;
+    </div>
+  </div>
+</div>
+
+<!-- UNIT 7 -->
+<div class="unit-card" id="unit7">
+  <div class="unit-header high-yield">
+    <h2>#4 &mdash; Unit 7: Inflation</h2>
+    <span class="unit-badge">HIGH YIELD</span>
+  </div>
+  <div class="unit-body">
+    <div class="unit-meta">
+      <span class="meta-chip"><strong>PYQ Footprint:</strong> ~20&ndash;35 questions</span>
+      <span class="meta-chip"><strong>Appearance:</strong> Statement-combination &bull; Conceptual &bull; Elimination-heavy</span>
+    </div>
+    <table class="micro-table">
+      <thead>
+        <tr><th>Topic Block</th><th>Yield</th><th>PYQ Est.</th><th>Type</th><th>Key Micro-Topics</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>CPI as inflation measure &amp; institutional role</strong></td>
+          <td><span class="yield-tag high">High</span></td>
+          <td>~8&ndash;12</td>
+          <td>Conceptual + Statement-combination</td>
+          <td>CPI measures price changes of household consumption basket; used for inflation targeting, price stability monitoring, and as deflator</td>
+        </tr>
+        <tr>
+          <td><strong>CPI base year, basket revision</strong></td>
+          <td><span class="yield-tag high">High</span></td>
+          <td>~2&ndash;5</td>
+          <td>Direct factual + Statement traps</td>
+          <td>Base year revisions; item basket/weights update; broader services coverage; why inflation series can shift</td>
+        </tr>
+        <tr>
+          <td><strong>Inflation targeting framework (India)</strong></td>
+          <td><span class="yield-tag high">High</span></td>
+          <td>~3&ndash;6</td>
+          <td>Statement-combination</td>
+          <td>CPI headline target center &amp; tolerance band; target retention logic; &ldquo;price stability while keeping in mind growth&rdquo;</td>
+        </tr>
+        <tr>
+          <td><strong>Types &amp; dynamics of inflation</strong></td>
+          <td><span class="yield-tag medium">Medium</span></td>
+          <td>~3&ndash;6</td>
+          <td>Conceptual</td>
+          <td>Demand-pull vs cost-push; headline vs core; food/fuel shock logic; disinflation vs deflation; stagflation</td>
+        </tr>
+        <tr>
+          <td><strong>WPI vs CPI &amp; deflator logic</strong></td>
+          <td><span class="yield-tag medium">Medium</span></td>
+          <td>~2&ndash;5</td>
+          <td>Statement-combination</td>
+          <td>CPI as household retail; WPI as wholesale; GDP deflator concept; when indices are used as deflators</td>
+        </tr>
+        <tr>
+          <td><strong>Inflation &amp; interest rates (real vs nominal)</strong></td>
+          <td><span class="yield-tag medium">Medium</span></td>
+          <td>~2&ndash;5</td>
+          <td>Conceptual + Elimination</td>
+          <td>Fisher intuition; why tightening reduces demand; &ldquo;liquidity absorption&rdquo; vs &ldquo;rate hike&rdquo; confusion</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="info-box why">
+      <div class="label">Why This Placement</div>
+      Inflation is placed immediately after money/monetary policy because UPSC binds them via MPC and CPI. CPI is explicitly used for inflation targeting and price stability monitoring, making it a cross-question eliminator.
+    </div>
+    <div class="info-box prereq">
+      <div class="label">Prerequisites</div>
+      Unit 1 (nominal/real), Unit 2 (deflator concept), Unit 3 (policy corridor and RBI tools).
+    </div>
+  </div>
+</div>
+
+<!-- UNIT 5 -->
+<div class="unit-card" id="unit5">
+  <div class="unit-header high-yield">
+    <h2>#5 &mdash; Unit 5: Public Finance in India</h2>
+    <span class="unit-badge">HIGH YIELD</span>
+  </div>
+  <div class="unit-body">
+    <div class="unit-meta">
+      <span class="meta-chip"><strong>PYQ Footprint:</strong> ~25&ndash;40 questions</span>
+      <span class="meta-chip"><strong>Appearance:</strong> Statement-combination &bull; Direct factual definitions &bull; Elimination-heavy</span>
+    </div>
+    <table class="micro-table">
+      <thead>
+        <tr><th>Topic Block</th><th>Yield</th><th>PYQ Est.</th><th>Type</th><th>Key Micro-Topics</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Budget structure: receipts/expenditure classification</strong></td>
+          <td><span class="yield-tag high">High</span></td>
+          <td>~8&ndash;12</td>
+          <td>Statement-combination</td>
+          <td>Revenue receipts vs capital receipts; revenue expenditure vs capital expenditure; borrowings treatment; grants vs loans; &ldquo;capital expenditure = asset creation&rdquo; trap</td>
+        </tr>
+        <tr>
+          <td><strong>Deficit concepts &amp; their meaning</strong></td>
+          <td><span class="yield-tag high">High</span></td>
+          <td>~8&ndash;12</td>
+          <td>Statement-combination + Elimination-heavy</td>
+          <td>Fiscal deficit, revenue deficit, primary deficit; what each includes/excludes (interest payments, borrowings); &ldquo;revenue deficit = borrowing for current consumption&rdquo; trap</td>
+        </tr>
+        <tr>
+          <td><strong>Public debt, debt management, interest burden</strong></td>
+          <td><span class="yield-tag medium">Medium</span></td>
+          <td>~3&ndash;6</td>
+          <td>Conceptual</td>
+          <td>Internal vs external debt; short vs long; rollover/refinancing risk; debt-to-GDP ratio</td>
+        </tr>
+        <tr>
+          <td><strong>Fiscal policy mechanics</strong></td>
+          <td><span class="yield-tag medium">Medium</span></td>
+          <td>~4&ndash;8</td>
+          <td>Conceptual + Elimination</td>
+          <td>Countercyclical vs procyclical; automatic stabilizers; crowding out; capital expenditure multiplier (qualitative)</td>
+        </tr>
+        <tr>
+          <td><strong>Transfers &amp; devolution vocabulary</strong></td>
+          <td><span class="yield-tag medium">Medium</span></td>
+          <td>~2&ndash;5</td>
+          <td>Statement-combination</td>
+          <td>Grants-in-aid vs shareable taxes; centrally sponsored vs central sector schemes</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="info-box why">
+      <div class="label">Why This Placement</div>
+      Public finance is placed before taxation because UPSC often asks &ldquo;which instrument affects deficit?&rdquo; and expects candidates to know fiscal vocabulary first. Deficit definitions are high-elimination statement-combination components.
+    </div>
+    <div class="info-box prereq">
+      <div class="label">Prerequisites</div>
+      Unit 1 (stock/flow), Unit 2 (GDP ratios and current/constant).
+    </div>
+  </div>
+</div>
+
+<!-- UNIT 6 -->
+<div class="unit-card" id="unit6">
+  <div class="unit-header high-yield">
+    <h2>#6 &mdash; Unit 6: Taxation in India</h2>
+    <span class="unit-badge">HIGH YIELD</span>
+  </div>
+  <div class="unit-body">
+    <div class="unit-meta">
+      <span class="meta-chip"><strong>PYQ Footprint:</strong> ~15&ndash;30 questions</span>
+      <span class="meta-chip"><strong>Appearance:</strong> Institution&ndash;function matching &bull; Constitutional/statutory anchoring &bull; Statement-combination</span>
+    </div>
+    <table class="micro-table">
+      <thead>
+        <tr><th>Topic Block</th><th>Yield</th><th>PYQ Est.</th><th>Type</th><th>Key Micro-Topics</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Tax administration architecture</strong></td>
+          <td><span class="yield-tag high">High</span></td>
+          <td>~4&ndash;8</td>
+          <td>Statement-combination</td>
+          <td>Department of Revenue supervises via CBDT (direct taxes) &amp; CBIC (GST/customs/excise)</td>
+        </tr>
+        <tr>
+          <td><strong>GST Council &mdash; constitutional body &amp; decision domain</strong></td>
+          <td><span class="yield-tag high">High</span></td>
+          <td>~4&ndash;8</td>
+          <td>Statement-combination + Elimination-heavy</td>
+          <td>Composition: Union FM (chair) + MoS Revenue + state finance/tax ministers; recommends goods/services, exemptions, model laws, place of supply, thresholds, rates, special provisions</td>
+        </tr>
+        <tr>
+          <td><strong>Direct taxes vs indirect taxes</strong></td>
+          <td><span class="yield-tag medium">Medium</span></td>
+          <td>~2&ndash;5</td>
+          <td>Conceptual</td>
+          <td>Incidence vs impact; why GST is indirect; progressive vs regressive as concept</td>
+        </tr>
+        <tr>
+          <td><strong>Tax base, exemptions &amp; compliance vocabulary</strong></td>
+          <td><span class="yield-tag medium">Medium</span></td>
+          <td>~2&ndash;4</td>
+          <td>Conceptual</td>
+          <td>Turnover threshold; Input Tax Credit (ITC); tax buoyancy; &ldquo;tax expenditure&rdquo; as concept</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="info-box why">
+      <div class="label">Why This Placement</div>
+      Ranked after public finance because &ldquo;taxation&rdquo; in Prelims is frequently asked as &ldquo;institution + role + constitutional base&rdquo; and &ldquo;which tax is subsumed / levied by whom.&rdquo; Knowing fiscal aggregation terms first reduces confusion.
+    </div>
+    <div class="info-box prereq">
+      <div class="label">Prerequisites</div>
+      Unit 5 (budget and fiscal vocabulary), Unit 1 (incidence and public finance terms).
+    </div>
+  </div>
+</div>
+
+<!-- UNIT 4 -->
+<div class="unit-card" id="unit4">
+  <div class="unit-header high-yield">
+    <h2>#7 &mdash; Unit 4: Finance &amp; Financial Markets</h2>
+    <span class="unit-badge">HIGH YIELD</span>
+  </div>
+  <div class="unit-body">
+    <div class="unit-meta">
+      <span class="meta-chip"><strong>PYQ Footprint:</strong> ~25&ndash;40 questions</span>
+      <span class="meta-chip"><strong>Appearance:</strong> Direct factual + Statement-combination &bull; Heavy elimination via instrument vocabulary</span>
+    </div>
+    <table class="micro-table">
+      <thead>
+        <tr><th>Topic Block</th><th>Yield</th><th>PYQ Est.</th><th>Type</th><th>Key Micro-Topics</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Capital market vs money market; primary vs secondary</strong></td>
+          <td><span class="yield-tag high">High</span></td>
+          <td>~6&ndash;10</td>
+          <td>Direct + Statement-combination</td>
+          <td>Capital market = long-term debt &amp; equity; divided into primary (new issues) and secondary (trading of issued securities)</td>
+        </tr>
+        <tr>
+          <td><strong>Market regulator &amp; role (SEBI)</strong></td>
+          <td><span class="yield-tag high">High</span></td>
+          <td>~4&ndash;8</td>
+          <td>Statement-combination</td>
+          <td>Established under Section 3 of SEBI Act 1992; protect investor interests, promote &amp; regulate securities market</td>
+        </tr>
+        <tr>
+          <td><strong>Debt instruments &amp; bond vocabulary</strong></td>
+          <td><span class="yield-tag high">High</span></td>
+          <td>~4&ndash;8</td>
+          <td>Statement-combination + Elimination</td>
+          <td>Corporate vs govt bonds; face value vs market price; listed bonds; primary vs secondary for bonds</td>
+        </tr>
+        <tr>
+          <td><strong>Money market instruments vocabulary</strong></td>
+          <td><span class="yield-tag medium">Medium</span></td>
+          <td>~2&ndash;5</td>
+          <td>Direct factual</td>
+          <td>Treasury bills, commercial paper, certificates of deposit &mdash; which is money market?</td>
+        </tr>
+        <tr>
+          <td><strong>Derivatives basics</strong></td>
+          <td><span class="yield-tag medium">Medium</span></td>
+          <td>~2&ndash;5</td>
+          <td>Conceptual</td>
+          <td>Derivative derives value from underlying; forwards/futures/options/swaps; hedging vs speculation (definition-level)</td>
+        </tr>
+        <tr>
+          <td><strong>Risk/return &amp; bond math vocabulary</strong></td>
+          <td><span class="yield-tag medium">Medium</span></td>
+          <td>~2&ndash;5</td>
+          <td>Conceptual</td>
+          <td>Yield to maturity; duration; convexity (definition-level)</td>
+        </tr>
+        <tr>
+          <td><strong>Financial stability &amp; prudential vocabulary</strong></td>
+          <td><span class="yield-tag medium">Medium</span></td>
+          <td>~2&ndash;5</td>
+          <td>Statement-combination</td>
+          <td>Risk-weighted assets; capital adequacy; stress testing (definition-level)</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="info-box why">
+      <div class="label">Why This Placement</div>
+      Finance/markets is ranked high because UPSC uses it as an <strong>option-eliminator</strong> across economy &amp; current affairs questions. Official SEBI definitions for market segments make eliminating wrong statements far more deterministic.
+    </div>
+    <div class="info-box prereq">
+      <div class="label">Prerequisites</div>
+      Unit 1 (basic economics). Unit 3 (money market linkages) helpful but not mandatory.
+    </div>
+  </div>
+</div>
+
+<!-- UNIT 14 -->
+<div class="unit-card" id="unit14">
+  <div class="unit-header high-yield">
+    <h2>#8 &mdash; Unit 14: Trade &amp; External Sector</h2>
+    <span class="unit-badge">HIGH YIELD</span>
+  </div>
+  <div class="unit-body">
+    <div class="unit-meta">
+      <span class="meta-chip"><strong>PYQ Footprint:</strong> ~20&ndash;35 questions</span>
+      <span class="meta-chip"><strong>Appearance:</strong> Conceptual + Statement-combination &bull; Frequent elimination via definitions</span>
+    </div>
+    <table class="micro-table">
+      <thead>
+        <tr><th>Topic Block</th><th>Yield</th><th>PYQ Est.</th><th>Type</th><th>Key Micro-Topics</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Balance of Payments framework (BPM6)</strong></td>
+          <td><span class="yield-tag high">High</span></td>
+          <td>~6&ndash;10</td>
+          <td>Statement-combination</td>
+          <td>BoP = transactions between residents &amp; non-residents; current/capital/financial accounts; credits vs debits; net lending/borrowing identity</td>
+        </tr>
+        <tr>
+          <td><strong>Current account components &amp; balance logic</strong></td>
+          <td><span class="yield-tag high">High</span></td>
+          <td>~4&ndash;8</td>
+          <td>Statement-combination + Elimination-heavy</td>
+          <td>Goods/services; primary income; secondary income/transfers; CA deficit logic; remittances classification</td>
+        </tr>
+        <tr>
+          <td><strong>Capital account vs financial account boundary</strong></td>
+          <td><span class="yield-tag high">High</span></td>
+          <td>~2&ndash;6</td>
+          <td>Conceptual boundary traps</td>
+          <td>Capital transfers &amp; non-produced non-financial assets vs financial asset/liability transactions</td>
+        </tr>
+        <tr>
+          <td><strong>Exchange rate concepts</strong></td>
+          <td><span class="yield-tag high">High</span></td>
+          <td>~4&ndash;8</td>
+          <td>Statement-combination</td>
+          <td>Nominal vs real exchange rate; appreciation/depreciation intuition; trade balance effects (qualitative)</td>
+        </tr>
+        <tr>
+          <td><strong>NEER/REER &amp; external competitiveness</strong></td>
+          <td><span class="yield-tag high">High</span></td>
+          <td>~2&ndash;5</td>
+          <td>Statement-combination + Elimination-heavy</td>
+          <td>NEER = weighted average of bilateral nominal rates; REER = NEER adjusted for relative price differential; competitiveness indicator linked to PPP hypothesis</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="info-box why">
+      <div class="label">Why This Placement</div>
+      External sector is a high-yield block because UPSC repeatedly tests <strong>account classification</strong> and <strong>REER/NEER definition traps</strong>, both of which have high elimination value.
+    </div>
+    <div class="info-box prereq">
+      <div class="label">Prerequisites</div>
+      Unit 1 (resident/non-resident, stock/flow), Unit 2 (deflator/price indices logic), Unit 3 (forex operations context).
+    </div>
+  </div>
+</div>
+
+<!-- UNIT 16 -->
+<div class="unit-card" id="unit16">
+  <div class="unit-header medium-high-yield">
+    <h2>#9 &mdash; Unit 16: International Institutions</h2>
+    <span class="unit-badge">MEDIUM&ndash;HIGH YIELD</span>
+  </div>
+  <div class="unit-body">
+    <div class="unit-meta">
+      <span class="meta-chip"><strong>PYQ Footprint:</strong> ~15&ndash;25 questions</span>
+      <span class="meta-chip"><strong>Appearance:</strong> Statement-combination &bull; &ldquo;Match institution with mandate/instrument&rdquo; traps</span>
+    </div>
+    <table class="micro-table">
+      <thead>
+        <tr><th>Topic Block</th><th>Yield</th><th>PYQ Est.</th><th>Type</th><th>Key Micro-Topics</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Multilateral finance institutions (core)</strong></td>
+          <td><span class="yield-tag high">High</span></td>
+          <td>~6&ndash;10</td>
+          <td>Statement-combination + Elimination-heavy</td>
+          <td><strong>IMF:</strong> macro-stability, BoP support instruments; defines BPM6 &bull; <strong>World Bank:</strong> development finance (arms &amp; functions) &bull; <strong>WTO:</strong> rules-based trade system (agreement/institution matching)</td>
+        </tr>
+        <tr>
+          <td><strong>International standards as &ldquo;institution-like&rdquo; eliminators</strong></td>
+          <td><span class="yield-tag medium">Medium</span></td>
+          <td>~2&ndash;5</td>
+          <td>Elimination-heavy</td>
+          <td>BoP standards (IMF BPM6) used by UPSC to frame account structure questions</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="info-box why">
+      <div class="label">Why This Placement</div>
+      Even when direct economy questions are fewer, international institutions appear embedded as options across economy + current affairs. Their main value is <strong>elimination</strong>: wrong statements often misstate mandates, membership, or assistance type.
+    </div>
+    <div class="info-box prereq">
+      <div class="label">Prerequisites</div>
+      Unit 14 (BoP logic) amplifies this unit&rsquo;s scoring; otherwise none.
+    </div>
+  </div>
+</div>
+
+<!-- UNIT 10 -->
+<div class="unit-card" id="unit10">
+  <div class="unit-header medium-high-yield">
+    <h2>#10 &mdash; Unit 10: Agriculture &amp; Allied Activities</h2>
+    <span class="unit-badge">MEDIUM&ndash;HIGH YIELD</span>
+  </div>
+  <div class="unit-body">
+    <div class="unit-meta">
+      <span class="meta-chip"><strong>PYQ Footprint:</strong> ~15&ndash;30 questions</span>
+      <span class="meta-chip"><strong>Appearance:</strong> Statement-combination &bull; Policy-instrument matching &bull; Price policy traps</span>
+    </div>
+    <table class="micro-table">
+      <thead>
+        <tr><th>Topic Block</th><th>Yield</th><th>PYQ Est.</th><th>Type</th><th>Key Micro-Topics</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Agricultural price policy &amp; MSP ecosystem</strong></td>
+          <td><span class="yield-tag high">High</span></td>
+          <td>~5&ndash;10</td>
+          <td>Statement-combination + Elimination-heavy</td>
+          <td>MSP announced by Union Govt based on CACP recommendations; cost of production as key input</td>
+        </tr>
+        <tr>
+          <td><strong>Procurement, buffer stocks, food security vocabulary</strong></td>
+          <td><span class="yield-tag medium">Medium</span></td>
+          <td>~3&ndash;6</td>
+          <td>Conceptual + Statement-combination</td>
+          <td>Procurement vs procurement price; buffer stock logic; open market sale vs procurement</td>
+        </tr>
+        <tr>
+          <td><strong>Allied activities (definition boundaries)</strong></td>
+          <td><span class="yield-tag medium">Medium</span></td>
+          <td>~2&ndash;4</td>
+          <td>Direct factual</td>
+          <td>Livestock, fisheries, horticulture as allied; productivity vs area expansion; value chain concepts</td>
+        </tr>
+        <tr>
+          <td><strong>Input subsidies &amp; farm finance vocabulary</strong></td>
+          <td><span class="yield-tag medium">Medium</span></td>
+          <td>~2&ndash;5</td>
+          <td>Statement-combination</td>
+          <td>Fertilizer subsidy logic; interest subvention; KCC logic (definitional)</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="info-box why">
+      <div class="label">Why This Placement</div>
+      Agriculture&rsquo;s strongest scoring value is in <strong>policy definitions and price-policy traps</strong>. MSP ecosystem is a recurring Prelims theme and connects to inflation/fiscal subsidy logic.
+    </div>
+    <div class="info-box prereq">
+      <div class="label">Prerequisites</div>
+      Unit 1 (price/market basics). Unit 7 (inflation) improves elimination; not strictly required.
+    </div>
+  </div>
+</div>
+
+<!-- UNIT 17 -->
+<div class="unit-card" id="unit17">
+  <div class="unit-header medium-yield">
+    <h2>#11 &mdash; Unit 17: Sustainable &amp; Inclusive Growth</h2>
+    <span class="unit-badge">MEDIUM YIELD (Syllabus-Explicit)</span>
+  </div>
+  <div class="unit-body">
+    <div class="unit-meta">
+      <span class="meta-chip"><strong>PYQ Footprint:</strong> ~10&ndash;20 questions</span>
+      <span class="meta-chip"><strong>Appearance:</strong> Statement-combination &bull; Scheme/framework traps</span>
+    </div>
+    <table class="micro-table">
+      <thead>
+        <tr><th>Topic Block</th><th>Yield</th><th>PYQ Est.</th><th>Type</th><th>Key Micro-Topics</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Sustainable development in economic sense</strong></td>
+          <td><span class="yield-tag medium">Medium</span></td>
+          <td>~3&ndash;6</td>
+          <td>Conceptual</td>
+          <td>Sustainability as intergenerational resource constraint; growth vs development distinction; &ldquo;green growth&rdquo; idea</td>
+        </tr>
+        <tr>
+          <td><strong>Inclusion vocabulary (financial + social sector)</strong></td>
+          <td><span class="yield-tag medium">Medium</span></td>
+          <td>~3&ndash;6</td>
+          <td>Statement-combination</td>
+          <td>Inclusion as access to finance/services; explicitly part of GS Paper I economy syllabus phrase</td>
+        </tr>
+        <tr>
+          <td><strong>Measurement frameworks (poverty/inclusion discourse)</strong></td>
+          <td><span class="yield-tag medium">Medium</span></td>
+          <td>~2&ndash;5</td>
+          <td>Statement-combination</td>
+          <td>MPI logic (headcount + intensity); deprivation indicators; SDG target 1.2 framing</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="info-box why">
+      <div class="label">Why This Placement</div>
+      Placed before poverty/unemployment because UPSC often asks &ldquo;framework first&rdquo; (SDGs, inclusion logic) and then tests specific measurement/initiative details.
+    </div>
+    <div class="info-box prereq">
+      <div class="label">Prerequisites</div>
+      Unit 1 (growth vs development vocabulary); Units 8&ndash;9 benefit.
+    </div>
+  </div>
+</div>
+
+<!-- UNIT 9 -->
+<div class="unit-card" id="unit9">
+  <div class="unit-header medium-yield">
+    <h2>#12 &mdash; Unit 9: Poverty</h2>
+    <span class="unit-badge">MEDIUM YIELD</span>
+  </div>
+  <div class="unit-body">
+    <div class="unit-meta">
+      <span class="meta-chip"><strong>PYQ Footprint:</strong> ~10&ndash;20 questions</span>
+      <span class="meta-chip"><strong>Appearance:</strong> Statement-combination &bull; Measurement traps</span>
+    </div>
+    <table class="micro-table">
+      <thead>
+        <tr><th>Topic Block</th><th>Yield</th><th>PYQ Est.</th><th>Type</th><th>Key Micro-Topics</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Poverty measurement paradigms</strong></td>
+          <td><span class="yield-tag high">High</span></td>
+          <td>~4&ndash;8</td>
+          <td>Conceptual + Statement-combination</td>
+          <td>Absolute vs relative; consumption poverty vs multidimensional; poverty line as threshold concept</td>
+        </tr>
+        <tr>
+          <td><strong>Multidimensional Poverty Index (National MPI)</strong></td>
+          <td><span class="yield-tag medium-high">Med&ndash;High</span></td>
+          <td>~2&ndash;5</td>
+          <td>Statement-combination</td>
+          <td>12 indicators across health/education/standard of living; AF methodology; MPI = incidence &times; intensity; used for SDG 1.2 progress</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="info-box why">
+      <div class="label">Why This Placement</div>
+      UPSC increasingly frames poverty via &ldquo;index and methodology,&rdquo; then tests indicator-level statements &mdash; easiest to eliminate if the framework is clear.
+    </div>
+    <div class="info-box prereq">
+      <div class="label">Prerequisites</div>
+      Unit 17 (framework vocabulary), Unit 2 (deflators/real vs nominal for consumption/inflation linkage).
+    </div>
+  </div>
+</div>
+
+<!-- UNIT 8 -->
+<div class="unit-card" id="unit8">
+  <div class="unit-header medium-yield">
+    <h2>#13 &mdash; Unit 8: Unemployment</h2>
+    <span class="unit-badge">MEDIUM YIELD</span>
+  </div>
+  <div class="unit-body">
+    <div class="unit-meta">
+      <span class="meta-chip"><strong>PYQ Footprint:</strong> ~8&ndash;15 questions</span>
+      <span class="meta-chip"><strong>Appearance:</strong> Statement-combination &bull; Definition traps around reference period</span>
+    </div>
+    <table class="micro-table">
+      <thead>
+        <tr><th>Topic Block</th><th>Yield</th><th>PYQ Est.</th><th>Type</th><th>Key Micro-Topics</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Core labour indicators &amp; definitions</strong></td>
+          <td><span class="yield-tag high">High</span></td>
+          <td>~4&ndash;8</td>
+          <td>Statement-combination + Elimination-heavy</td>
+          <td>UR, LFPR, WPR; who is counted; denominator differences; reference period boundaries</td>
+        </tr>
+        <tr>
+          <td><strong>PLFS methodology &amp; frequency (CA sensitivity)</strong></td>
+          <td><span class="yield-tag medium">Medium</span></td>
+          <td>~1&ndash;3</td>
+          <td>Direct factual + Elimination</td>
+          <td>PLFS provides key indicators; methodology revamped from Jan 2025 for monthly &amp; quarterly indicators under CWS for rural &amp; urban India</td>
+        </tr>
+        <tr>
+          <td><strong>Types of unemployment</strong></td>
+          <td><span class="yield-tag medium">Medium</span></td>
+          <td>~1&ndash;3</td>
+          <td>Conceptual</td>
+          <td>Seasonal, frictional, structural, cyclical, disguised (definitions &amp; identification only)</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="info-box why">
+      <div class="label">Why This Placement</div>
+      Appears less frequently than monetary/fiscal blocks but has high elimination leverage because statements often swap denominators and reference periods (weekly vs usual status).
+    </div>
+    <div class="info-box prereq">
+      <div class="label">Prerequisites</div>
+      Unit 1 (basic macro vocabulary). Unit 2 (growth/employment linkage) conceptually helpful but not required.
+    </div>
+  </div>
+</div>
+
+<!-- UNIT 12 -->
+<div class="unit-card" id="unit12">
+  <div class="unit-header medium-yield">
+    <h2>#14 &mdash; Unit 12: Infrastructure &amp; Investment Models</h2>
+    <span class="unit-badge">MEDIUM YIELD (Strong Elimination)</span>
+  </div>
+  <div class="unit-body">
+    <div class="unit-meta">
+      <span class="meta-chip"><strong>PYQ Footprint:</strong> ~8&ndash;15 questions</span>
+      <span class="meta-chip"><strong>Appearance:</strong> Statement-combination &bull; &ldquo;PPP model definition&rdquo; traps</span>
+    </div>
+    <table class="micro-table">
+      <thead>
+        <tr><th>Topic Block</th><th>Yield</th><th>PYQ Est.</th><th>Type</th><th>Key Micro-Topics</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>PPP core definitions &amp; risk allocation vocabulary</strong></td>
+          <td><span class="yield-tag high">High</span></td>
+          <td>~3&ndash;6</td>
+          <td>Statement-combination + Elimination-heavy</td>
+          <td><strong>BOT:</strong> private finance/design/build/operate, user fees, transferred back &bull; <strong>Annuity (BOT):</strong> govt pays annuities, demand risk with govt &bull; <strong>BOLT:</strong> build-own-lease-transfer</td>
+        </tr>
+        <tr>
+          <td><strong>Hybrid/modern PPP vocabulary</strong></td>
+          <td><span class="yield-tag medium">Medium</span></td>
+          <td>~2&ndash;4</td>
+          <td>Statement-combination</td>
+          <td>BOT (toll) vs annuity vs hybrid; &ldquo;asset monetisation&rdquo; models (conceptual vocabulary)</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="info-box why">
+      <div class="label">Why This Placement</div>
+      Not always high question-count, but PPP terms are <strong>highly standardized</strong> and excellent for elimination. Glossary definitions are stable and often reproduced directly in UPSC statements.
+    </div>
+    <div class="info-box prereq">
+      <div class="label">Prerequisites</div>
+      Unit 1 (basic economics). Unit 5 (public finance) helps but not mandatory.
+    </div>
+  </div>
+</div>
+
+<!-- UNIT 13 -->
+<div class="unit-card" id="unit13">
+  <div class="unit-header medium-low-yield">
+    <h2>#15 &mdash; Unit 13: Services &amp; Digital Economy</h2>
+    <span class="unit-badge">MEDIUM&ndash;LOW YIELD (CA-Spike Possible)</span>
+  </div>
+  <div class="unit-body">
+    <div class="unit-meta">
+      <span class="meta-chip"><strong>PYQ Footprint:</strong> ~6&ndash;12 questions</span>
+      <span class="meta-chip"><strong>Appearance:</strong> Conceptual &bull; Current-affairs framed definitions</span>
+    </div>
+    <table class="micro-table">
+      <thead>
+        <tr><th>Topic Block</th><th>Yield</th><th>PYQ Est.</th><th>Type</th><th>Key Micro-Topics</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Services sector coverage &amp; classification</strong></td>
+          <td><span class="yield-tag medium">Medium</span></td>
+          <td>~2&ndash;4</td>
+          <td>Conceptual</td>
+          <td>What counts as services; confusion between &ldquo;services&rdquo; and &ldquo;infra&rdquo; in options</td>
+        </tr>
+        <tr>
+          <td><strong>Digital payments &amp; platform economy vocabulary</strong></td>
+          <td><span class="yield-tag medium">Medium</span></td>
+          <td>~2&ndash;4</td>
+          <td>Statement-combination</td>
+          <td>Digital payments as formalization; wallet vs bank-based; payment rails vs apps (overlaps with Unit 3)</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="info-box why">
+      <div class="label">Why This Placement</div>
+      Digital economy questions are often CA-triggered and overlap with monetary/financial units; core elimination value is lower than policy-rate and fiscal vocabulary.
+    </div>
+    <div class="info-box prereq">
+      <div class="label">Prerequisites</div>
+      Unit 3 and Unit 4 improve elimination but not strictly required.
+    </div>
+  </div>
+</div>
+
+<!-- UNIT 15 -->
+<div class="unit-card" id="unit15">
+  <div class="unit-header low-yield">
+    <h2>#16 &mdash; Unit 15: Planning &amp; Reform</h2>
+    <span class="unit-badge">LOW&ndash;MEDIUM YIELD</span>
+  </div>
+  <div class="unit-body">
+    <div class="unit-meta">
+      <span class="meta-chip"><strong>PYQ Footprint:</strong> ~5&ndash;10 questions</span>
+      <span class="meta-chip"><strong>Appearance:</strong> Conceptual &bull; Institutional vocabulary (light)</span>
+    </div>
+    <table class="micro-table">
+      <thead>
+        <tr><th>Topic Block</th><th>Yield</th><th>PYQ Est.</th><th>Type</th><th>Key Micro-Topics</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Planning vocabulary</strong></td>
+          <td><span class="yield-tag medium">Medium</span></td>
+          <td>~2&ndash;4</td>
+          <td>Conceptual</td>
+          <td>Planning vs market; indicative vs directive as historical vocabulary; reform as structural change</td>
+        </tr>
+        <tr>
+          <td><strong>Reform language in statements</strong></td>
+          <td><span class="yield-tag low-medium">Low&ndash;Med</span></td>
+          <td>~1&ndash;3</td>
+          <td>Statement-combination</td>
+          <td>Liberalization / privatization / FDI openness (definition-level only)</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="info-box why">
+      <div class="label">Why This Placement</div>
+      Lower density in direct Economy PYQs compared to monetary/fiscal. Still included because reforms frequently appear as background in other questions.
+    </div>
+    <div class="info-box prereq">
+      <div class="label">Prerequisites</div>
+      Unit 1 (basic economics), Unit 14 (open economy concepts help).
+    </div>
+  </div>
+</div>
+
+<!-- UNIT 11 -->
+<div class="unit-card" id="unit11">
+  <div class="unit-header low-yield">
+    <h2>#17 &mdash; Unit 11: Food Processing; Industry &amp; Manufacturing</h2>
+    <span class="unit-badge">LOW YIELD (Within Scope)</span>
+  </div>
+  <div class="unit-body">
+    <div class="unit-meta">
+      <span class="meta-chip"><strong>PYQ Footprint:</strong> ~4&ndash;8 questions</span>
+      <span class="meta-chip"><strong>Appearance:</strong> Direct factual / Classification-type statements</span>
+    </div>
+    <table class="micro-table">
+      <thead>
+        <tr><th>Topic Block</th><th>Yield</th><th>PYQ Est.</th><th>Type</th><th>Key Micro-Topics</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Food processing value chain vocabulary</strong></td>
+          <td><span class="yield-tag low-medium">Low&ndash;Med</span></td>
+          <td>~1&ndash;3</td>
+          <td>Direct factual</td>
+          <td>Farm-gate &rarr; processing &rarr; logistics &rarr; cold chain &rarr; retail; wastage reduction logic</td>
+        </tr>
+        <tr>
+          <td><strong>Industry/manufacturing vocabulary in GDP/IIP</strong></td>
+          <td><span class="yield-tag low-medium">Low&ndash;Med</span></td>
+          <td>~2&ndash;5</td>
+          <td>Statement-combination</td>
+          <td>Manufacturing vs construction vs utilities; organized vs unorganized; value added in manufacturing (links to Unit 2)</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="info-box why">
+      <div class="label">Why This Placement</div>
+      Lowest-density unit relative to banking/fiscal/inflation. However, industrial/manufacturing vocabulary becomes eliminator content when GDP composition questions appear (Unit 2 linkage).
+    </div>
+    <div class="info-box prereq">
+      <div class="label">Prerequisites</div>
+      Unit 2 (value added; sector classification).
+    </div>
+  </div>
+</div>
+
+<!-- CROSS-UNIT DEPENDENCY MAP -->
+<h2 class="section-title full" id="dependencies">Cross-Unit Dependency Map</h2>
+<p style="margin-bottom:16px;color:var(--text-secondary);">This mandatory prerequisite logic justifies placing some lower-count items earlier than their raw PYQ numbers.</p>
+
+<div class="dep-card">
+  <h3>Core Prerequisite Chains (Non-Negotiable for Elimination Accuracy)</h3>
+  <div class="dep-chain">
+    <strong>Unit 1</strong> <span class="arrow">&rarr;</span> <strong>Unit 2</strong> &nbsp;&nbsp;(economic vocabulary &rarr; national accounting logic)<br>
+    <strong>Unit 2</strong> <span class="arrow">&rarr;</span> <strong>Unit 5 / Unit 7 / Unit 14</strong> &nbsp;&nbsp;(deflators &amp; aggregates &rarr; fiscal ratios, inflation indices, external sector identities)<br>
+    <strong>Unit 3</strong> <span class="arrow">&harr;</span> <strong>Unit 7</strong> &nbsp;&nbsp;(policy instruments &harr; CPI-target framework)<br>
+    <strong>Unit 14</strong> <span class="arrow">&harr;</span> <strong>Unit 16</strong> &nbsp;&nbsp;(BoP framework + IMF standards; institutions appear as instruments/options)<br>
+    <strong>Unit 5</strong> <span class="arrow">&harr;</span> <strong>Unit 6</strong> &nbsp;&nbsp;(deficit vocabulary + tax architecture)<br>
+    <strong>Unit 12</strong> <span class="arrow">&larr;</span> <strong>Unit 5</strong> &nbsp;&nbsp;(PPP definitions easier after fiscal vocabulary)
+  </div>
+</div>
+
+<div class="dep-card" style="background:#e8eaf6; border-color:#3949ab;">
+  <h3 style="color:#1a237e;">High-Elimination &ldquo;Vocabulary Banks&rdquo; (Upgrade Elimination Power Across Multiple Units)</h3>
+  <table class="micro-table" style="margin-top:12px;">
+    <thead>
+      <tr><th>Vocabulary Bank</th><th>Source Unit</th><th>Cross-Unit Elimination Value</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>RBI instrument definitions</strong></td>
+        <td>Unit 3</td>
+        <td>Eliminates wrong options in monetary, banking, financial stability, and even current affairs questions</td>
+      </tr>
+      <tr>
+        <td><strong>CPI methodology &amp; base revision vocabulary</strong></td>
+        <td>Unit 7</td>
+        <td>Eliminates across inflation, national income, deflator, and fiscal ratio questions</td>
+      </tr>
+      <tr>
+        <td><strong>Primary/secondary market &amp; SEBI role</strong></td>
+        <td>Unit 4</td>
+        <td>Eliminates across capital market, bond, and financial stability statements</td>
+      </tr>
+      <tr>
+        <td><strong>PPP glossary terms</strong></td>
+        <td>Unit 12</td>
+        <td>Eliminates across infrastructure and fiscal/public finance questions</td>
+      </tr>
+      <tr>
+        <td><strong>REER/NEER competitiveness definitions</strong></td>
+        <td>Unit 14</td>
+        <td>Eliminates across trade, exchange rate, and international institution questions</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- Footer -->
+<div style="text-align:center; margin-top:60px; padding:30px 0 10px; border-top:2px solid var(--border); color:var(--text-secondary); font-size:0.88rem;">
+  <p><strong>UPSC Prelims GS Paper I &mdash; Economy: Exhaustive PYQ-Aligned Topic Dissection &amp; Priority Ranking</strong></p>
+  <p style="margin-top:4px;">17 Units &bull; Micro-Topic Maps &bull; Cross-Unit Dependencies &bull; Elimination-Optimized Study Order</p>
+</div>
+
+</div><!-- /container -->
+</body>
+</html>

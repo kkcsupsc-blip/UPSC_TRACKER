@@ -1,0 +1,1836 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UPSC Prelims GS Paper I &mdash; Geography: Exhaustive PYQ-Aligned Topic Dissection &amp; Priority Ranking</title>
+<style>
+  :root {
+    --primary: #1a1a1a;
+    --primary-light: #2d2d2d;
+    --primary-dark: #0d0d0d;
+    --gold: #d4a017;
+    --gold-light: #f0c75e;
+    --gold-dark: #b8860b;
+    --gold-dim: #c19a2a;
+    --bg: #0f0f0f;
+    --card-bg: #1a1a1a;
+    --text: #e8e0d0;
+    --text-secondary: #a89f8f;
+    --border: #333027;
+    --high: #4caf50;
+    --high-bg: rgba(76,175,80,0.12);
+    --medium: #ff9800;
+    --medium-bg: rgba(255,152,0,0.12);
+    --medium-high: #8bc34a;
+    --medium-high-bg: rgba(139,195,74,0.12);
+    --low: #78909c;
+    --low-bg: rgba(120,144,156,0.12);
+    --low-medium: #ff7043;
+    --low-medium-bg: rgba(255,112,67,0.1);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.72;
+    font-size: 15px;
+  }
+
+  /* Hero */
+  .hero {
+    background: linear-gradient(135deg, #0a0a0a 0%, #1a1200 30%, #2a1f00 55%, #1a1200 80%, #0a0a0a 100%);
+    color: #fff;
+    padding: 65px 40px 55px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    border-bottom: 3px solid var(--gold);
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -50%; left: -50%;
+    width: 200%; height: 200%;
+    background: radial-gradient(circle at 40% 60%, rgba(212,160,23,0.1) 0%, transparent 50%),
+                radial-gradient(circle at 60% 30%, rgba(240,199,94,0.05) 0%, transparent 40%);
+    pointer-events: none;
+  }
+  .hero::after {
+    content: '';
+    position: absolute;
+    bottom: -2px; left: 0; right: 0;
+    height: 40px;
+    background: var(--bg);
+    clip-path: ellipse(55% 100% at 50% 100%);
+  }
+  .hero h1 {
+    font-size: 2.3rem;
+    font-weight: 800;
+    margin-bottom: 14px;
+    letter-spacing: -0.5px;
+    position: relative;
+    color: var(--gold-light);
+    text-shadow: 0 2px 20px rgba(212,160,23,0.3);
+  }
+  .hero .subtitle {
+    font-size: 1.05rem;
+    opacity: 0.85;
+    max-width: 820px;
+    margin: 0 auto;
+    line-height: 1.6;
+    position: relative;
+    color: #c9b88a;
+  }
+  .hero .badge-row {
+    margin-top: 18px;
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    position: relative;
+  }
+  .hero .stat-badge {
+    background: rgba(212,160,23,0.15);
+    backdrop-filter: blur(6px);
+    border: 1px solid rgba(212,160,23,0.3);
+    padding: 6px 18px;
+    border-radius: 20px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--gold-light);
+  }
+
+  /* Container */
+  .container {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 30px 24px 60px;
+  }
+
+  /* Section titles */
+  .section-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--gold);
+    margin: 50px 0 20px;
+    padding-bottom: 10px;
+    border-bottom: 3px solid var(--gold-dark);
+    display: block;
+  }
+
+  /* Cards */
+  .card {
+    background: var(--card-bg);
+    border-radius: 12px;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.4);
+    padding: 28px 32px;
+    margin-bottom: 24px;
+    border-left: 5px solid var(--gold-dark);
+    transition: box-shadow 0.2s;
+  }
+  .card:hover { box-shadow: 0 4px 24px rgba(212,160,23,0.12); }
+  .card h3 {
+    font-size: 1.15rem;
+    color: var(--gold);
+    margin-bottom: 10px;
+  }
+
+  /* Unit cards */
+  .unit-card {
+    background: var(--card-bg);
+    border-radius: 14px;
+    box-shadow: 0 2px 20px rgba(0,0,0,0.5);
+    margin-bottom: 32px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+  .unit-header {
+    padding: 20px 28px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .unit-header.high-yield { background: linear-gradient(135deg, #1a3a1a, #2e5a2e); border-bottom: 2px solid #4caf50; }
+  .unit-header.medium-yield { background: linear-gradient(135deg, #3a2a00, #5a4000); border-bottom: 2px solid #ff9800; }
+  .unit-header.medium-high-yield { background: linear-gradient(135deg, #2a3a0a, #405a10); border-bottom: 2px solid #8bc34a; }
+  .unit-header.low-yield { background: linear-gradient(135deg, #2a2a2a, #3a3a3a); border-bottom: 2px solid #78909c; }
+  .unit-header.low-medium-yield { background: linear-gradient(135deg, #3a1a0a, #4a2a10); border-bottom: 2px solid #ff7043; }
+
+  .unit-header h2 {
+    color: #fff;
+    font-size: 1.22rem;
+    font-weight: 700;
+    flex: 1;
+    text-shadow: 0 1px 6px rgba(0,0,0,0.4);
+  }
+  .unit-badge {
+    background: rgba(255,255,255,0.12);
+    color: #fff;
+    padding: 4px 14px;
+    border-radius: 20px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    white-space: nowrap;
+    border: 1px solid rgba(255,255,255,0.15);
+  }
+  .unit-body { padding: 24px 28px 28px; }
+  .unit-meta {
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+  }
+  .meta-chip {
+    background: #222018;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 6px 14px;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+  }
+  .meta-chip strong { color: var(--gold-light); }
+
+  /* Tables */
+  .micro-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin: 16px 0 20px;
+    font-size: 0.92rem;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+  .micro-table thead th {
+    background: linear-gradient(135deg, #2a1f00, #3a2a00);
+    color: var(--gold-light);
+    padding: 12px 16px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 0.83rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 2px solid var(--gold-dark);
+  }
+  .micro-table tbody td {
+    padding: 12px 16px;
+    border-bottom: 1px solid #252015;
+    vertical-align: top;
+    color: var(--text);
+  }
+  .micro-table tbody tr:last-child td { border-bottom: none; }
+  .micro-table tbody tr:nth-child(even) { background: #1e1b12; }
+  .micro-table tbody tr:hover { background: #27220f; }
+
+  /* Yield tags */
+  .yield-tag {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 12px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+  .yield-tag.high { background: var(--high-bg); color: var(--high); border: 1px solid rgba(76,175,80,0.3); }
+  .yield-tag.medium { background: var(--medium-bg); color: var(--medium); border: 1px solid rgba(255,152,0,0.3); }
+  .yield-tag.medium-high { background: var(--medium-high-bg); color: var(--medium-high); border: 1px solid rgba(139,195,74,0.3); }
+  .yield-tag.low { background: var(--low-bg); color: var(--low); border: 1px solid rgba(120,144,156,0.3); }
+  .yield-tag.low-medium { background: var(--low-medium-bg); color: var(--low-medium); border: 1px solid rgba(255,112,67,0.3); }
+
+  /* Info boxes */
+  .info-box {
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin: 14px 0;
+    font-size: 0.93rem;
+    line-height: 1.65;
+  }
+  .info-box.why { background: #1a1800; border-left: 4px solid var(--gold); }
+  .info-box.pyq { background: #0d1a20; border-left: 4px solid #2196f3; }
+  .info-box.prereq { background: #1a1208; border-left: 4px solid #ff8f00; }
+  .info-box .label {
+    font-weight: 700;
+    font-size: 0.82rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+  }
+  .info-box.why .label { color: var(--gold); }
+  .info-box.pyq .label { color: #42a5f5; }
+  .info-box.prereq .label { color: #ffb300; }
+
+  /* Ranking table */
+  .ranking-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin: 20px 0;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    font-size: 0.93rem;
+  }
+  .ranking-table thead th {
+    background: linear-gradient(135deg, #1a1200, #2a1f00);
+    color: var(--gold-light);
+    padding: 14px 16px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 0.83rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 2px solid var(--gold-dark);
+  }
+  .ranking-table tbody td {
+    padding: 13px 16px;
+    border-bottom: 1px solid #252015;
+    vertical-align: middle;
+  }
+  .ranking-table tbody tr:last-child td { border-bottom: none; }
+  .ranking-table tbody tr:nth-child(even) { background: #1e1b12; }
+  .ranking-table tbody tr:hover { background: #27220f; }
+  .rank-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    font-weight: 800;
+    font-size: 0.85rem;
+    color: #fff;
+  }
+  .rank-num.top { background: linear-gradient(135deg, #4caf50, #388e3c); }
+  .rank-num.mid { background: linear-gradient(135deg, var(--gold), var(--gold-dark)); }
+  .rank-num.low-r { background: #546e7a; }
+
+  /* Skeleton grid */
+  .skeleton-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+    gap: 10px;
+    margin: 16px 0;
+  }
+  .skeleton-item {
+    background: #1e1b12;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-size: 0.91rem;
+    border-left: 4px solid var(--gold-dark);
+    color: var(--text-secondary);
+  }
+  .skeleton-item strong { color: var(--gold-light); }
+
+  /* Construct grid */
+  .construct-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 16px;
+    margin: 16px 0;
+  }
+  .construct-card {
+    background: var(--card-bg);
+    border-radius: 10px;
+    padding: 20px 24px;
+    border: 1px solid var(--border);
+    box-shadow: 0 1px 8px rgba(0,0,0,0.3);
+  }
+  .construct-card h4 {
+    color: var(--gold);
+    font-size: 0.98rem;
+    margin-bottom: 8px;
+  }
+
+  /* TOC */
+  .toc {
+    background: var(--card-bg);
+    border-radius: 14px;
+    box-shadow: 0 2px 20px rgba(0,0,0,0.5);
+    padding: 28px 32px;
+    margin: 30px 0;
+    border: 1px solid var(--border);
+    columns: 2;
+    column-gap: 32px;
+  }
+  .toc h3 {
+    font-size: 1.1rem;
+    color: var(--gold);
+    margin-bottom: 16px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--gold-dark);
+    column-span: all;
+  }
+  .toc-item {
+    break-inside: avoid;
+    padding: 5px 0;
+    font-size: 0.93rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .toc-item a {
+    color: var(--gold-dim);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .toc-item a:hover { color: var(--gold-light); text-decoration: underline; }
+  .toc-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #000;
+    background: var(--gold);
+    flex-shrink: 0;
+  }
+
+  /* Highlight stats */
+  .highlight-stat {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin: 16px 0;
+  }
+  .stat-card {
+    background: linear-gradient(135deg, #1a1200, #2a1f00);
+    color: var(--gold-light);
+    border-radius: 12px;
+    padding: 18px 24px;
+    flex: 1;
+    min-width: 200px;
+    text-align: center;
+    border: 1px solid var(--gold-dark);
+  }
+  .stat-card .num {
+    font-size: 2rem;
+    font-weight: 800;
+    line-height: 1.1;
+    color: var(--gold-light);
+  }
+  .stat-card .lbl {
+    font-size: 0.82rem;
+    opacity: 0.8;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: 4px;
+  }
+
+  /* Bullet lists */
+  .bullet-list { padding-left: 22px; margin: 10px 0; }
+  .bullet-list li { margin-bottom: 6px; line-height: 1.6; }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .hero { padding: 40px 20px 35px; }
+    .hero h1 { font-size: 1.5rem; }
+    .container { padding: 20px 14px 40px; }
+    .unit-header { padding: 16px 20px; }
+    .unit-body { padding: 18px 20px 22px; }
+    .construct-grid, .skeleton-list { grid-template-columns: 1fr; }
+    .toc { columns: 1; }
+    .ranking-table, .micro-table { font-size: 0.82rem; }
+    .ranking-table thead th, .micro-table thead th { padding: 10px 12px; }
+    .ranking-table tbody td, .micro-table tbody td { padding: 10px 12px; }
+  }
+
+  @media print {
+    body { background: #fff; color: #1a1a1a; }
+    .hero { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .unit-header { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .card, .unit-card { break-inside: avoid; }
+    body { font-size: 12px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== HERO ===== -->
+<div class="hero">
+  <h1>UPSC Prelims GS Paper I &mdash; Geography</h1>
+  <p class="subtitle">Exhaustive PYQ-Aligned Topic Dissection &amp; Priority Ranking &bull; 31 Topic Clusters &bull; Physical &middot; Indian &middot; World Geography &bull; Micro-Topic Maps &bull; Elimination Strategy</p>
+  <div class="badge-row">
+    <span class="stat-badge">31 Topic Clusters</span>
+    <span class="stat-badge">3 Units: Physical &middot; Indian &middot; World</span>
+    <span class="stat-badge">~120+ PYQs (2011&ndash;2024)</span>
+    <span class="stat-badge">Climatology = Highest Weight</span>
+  </div>
+</div>
+
+<div class="container">
+
+<!-- ===== SCOPE ===== -->
+<h2 class="section-title">Scope Boundary, Syllabus Anchor &amp; Topic Skeleton</h2>
+
+<div class="card">
+  <h3>Scope</h3>
+  <p>This document covers <strong>only UPSC Prelims GS Paper I</strong> Geography topics. All content is static-topic specific; Mains relevance, GS-II/III linkages, or answer-writing value are excluded.</p>
+  <p style="margin-top:8px;"><strong>Subject under analysis:</strong> Geography (Prelims GS Paper I only) &mdash; Physical Geography, Indian Geography &amp; World Geography</p>
+</div>
+
+<!-- Stats -->
+<div class="highlight-stat">
+  <div class="stat-card"><div class="num">~27</div><div class="lbl">Climatology PYQs (Highest)</div></div>
+  <div class="stat-card"><div class="num">~20</div><div class="lbl">Drainage Systems PYQs</div></div>
+  <div class="stat-card"><div class="num">~19</div><div class="lbl">Agriculture PYQs</div></div>
+  <div class="stat-card"><div class="num">~16</div><div class="lbl">Geomorphology PYQs</div></div>
+</div>
+
+<div class="card">
+  <h3>Topic Skeleton (Geography)</h3>
+  <div class="skeleton-list">
+    <div class="skeleton-item"><strong>Indian Climate</strong> &mdash; Zones, monsoon rhythm, rainfall distribution</div>
+    <div class="skeleton-item"><strong>Indian Monsoon</strong> &mdash; SW/NE monsoon, El Ni&ntilde;o, IOD</div>
+    <div class="skeleton-item"><strong>Drainage System</strong> &mdash; Himalayan &amp; Peninsular rivers</div>
+    <div class="skeleton-item"><strong>Agriculture</strong> &mdash; Crops, seasons, Green Revolution</div>
+    <div class="skeleton-item"><strong>Landforms</strong> &mdash; Fluvial, glacial, aeolian, coastal, karst</div>
+    <div class="skeleton-item"><strong>Mineral Resource</strong> &mdash; Coal, iron, bauxite distribution</div>
+    <div class="skeleton-item"><strong>Tectonics</strong> &mdash; Plates, seismic zones, volcanoes</div>
+    <div class="skeleton-item"><strong>Physical Divisions</strong> &mdash; Himalayas, plains, plateau, coast</div>
+    <div class="skeleton-item"><strong>Indian Soils</strong> &mdash; Alluvial, black, red, laterite</div>
+    <div class="skeleton-item"><strong>Hazards &amp; Disasters</strong> &mdash; Earthquakes, cyclones, floods</div>
+    <div class="skeleton-item"><strong>Atmosphere</strong> &mdash; Layers, circulation, greenhouse effect</div>
+    <div class="skeleton-item"><strong>Oceans</strong> &mdash; Currents, tides, coral reefs</div>
+    <div class="skeleton-item"><strong>Rocks</strong> &mdash; Rock cycle, igneous, sedimentary, metamorphic</div>
+    <div class="skeleton-item"><strong>Forests</strong> &mdash; Evergreen, deciduous, thorn, mangrove</div>
+    <div class="skeleton-item"><strong>World Geography</strong> &mdash; Climate zones, continents, economic patterns</div>
+    <div class="skeleton-item"><strong>Physical Foundations</strong> &mdash; Earth&rsquo;s structure, movements, universe</div>
+  </div>
+</div>
+
+<!-- ===== PYQ BEHAVIOUR ===== -->
+<h2 class="section-title">PYQ Behaviour Analysis</h2>
+
+<div class="construct-grid">
+  <div class="construct-card">
+    <h4>Statement-Based Elimination</h4>
+    <p>Most geography questions test elimination via correct/incorrect statement pairs. Knowing river-tributary matches, crop-soil associations, and rock-landform links enables quick rejection of distractors.</p>
+  </div>
+  <div class="construct-card">
+    <h4>Map &amp; Location Matching</h4>
+    <p>Questions frequently ask to match states/regions with rivers, minerals, physical divisions, or seismic zones. Spatial recall of India&rsquo;s map is a recurring scoring lever.</p>
+  </div>
+  <div class="construct-card">
+    <h4>Causal Chain Logic</h4>
+    <p>Climatology and monsoon questions test cause&ndash;effect: ITCZ shifts, rain-shadow origins, El Ni&ntilde;o impacts. Understanding the &ldquo;why&rdquo; behind the phenomenon aids elimination.</p>
+  </div>
+  <div class="construct-card">
+    <h4>Factual Recall + Current Affairs Overlay</h4>
+    <p>Agriculture, mineral, and disaster questions blend static facts with recent data &mdash; e.g., cyclone naming, new mineral discoveries, or crop diversification schemes.</p>
+  </div>
+</div>
+
+<!-- ===== TABLE OF CONTENTS ===== -->
+<h2 class="section-title">Table of Contents</h2>
+
+<div class="toc">
+  <h3>All 31 Topics &mdash; Ordered by Priority</h3>
+  <!-- HIGH YIELD -->
+  <div class="toc-item"><span class="toc-num">1</span> <a href="#indian-climate">Indian Climate</a> <span class="yield-tag high">High</span></div>
+  <div class="toc-item"><span class="toc-num">2</span> <a href="#indian-monsoon">Indian Monsoon</a> <span class="yield-tag high">High</span></div>
+  <div class="toc-item"><span class="toc-num">3</span> <a href="#drainage-system">Drainage System</a> <span class="yield-tag high">High</span></div>
+  <div class="toc-item"><span class="toc-num">4</span> <a href="#agriculture">Agriculture</a> <span class="yield-tag high">High</span></div>
+  <div class="toc-item"><span class="toc-num">5</span> <a href="#landforms">Landforms</a> <span class="yield-tag high">High</span></div>
+  <div class="toc-item"><span class="toc-num">6</span> <a href="#mineral-resource">Mineral Resource</a> <span class="yield-tag high">High</span></div>
+  <!-- MEDIUM-HIGH -->
+  <div class="toc-item"><span class="toc-num">7</span> <a href="#tectonics">Tectonics</a> <span class="yield-tag medium-high">Med-High</span></div>
+  <div class="toc-item"><span class="toc-num">8</span> <a href="#physical-divisions">Major Physical Divisions of India</a> <span class="yield-tag medium-high">Med-High</span></div>
+  <div class="toc-item"><span class="toc-num">9</span> <a href="#indian-soils">Indian Soils</a> <span class="yield-tag medium-high">Med-High</span></div>
+  <div class="toc-item"><span class="toc-num">10</span> <a href="#hazards-disasters">Hazards &amp; Disasters</a> <span class="yield-tag medium-high">Med-High</span></div>
+  <!-- MEDIUM -->
+  <div class="toc-item"><span class="toc-num">11</span> <a href="#atmosphere">Atmosphere</a> <span class="yield-tag medium">Medium</span></div>
+  <div class="toc-item"><span class="toc-num">12</span> <a href="#ocean-physical">Ocean (Physical Geography)</a> <span class="yield-tag medium">Medium</span></div>
+  <div class="toc-item"><span class="toc-num">13</span> <a href="#physical-setting">Physical Setting of India</a> <span class="yield-tag medium">Medium</span></div>
+  <div class="toc-item"><span class="toc-num">14</span> <a href="#forests">Forests</a> <span class="yield-tag medium">Medium</span></div>
+  <div class="toc-item"><span class="toc-num">15</span> <a href="#rocks">Rocks</a> <span class="yield-tag medium">Medium</span></div>
+  <div class="toc-item"><span class="toc-num">16</span> <a href="#soil-physical">Soil (Physical Geography)</a> <span class="yield-tag medium">Medium</span></div>
+  <div class="toc-item"><span class="toc-num">17</span> <a href="#weather-phenomenon">Weather Phenomenon</a> <span class="yield-tag medium">Medium</span></div>
+  <div class="toc-item"><span class="toc-num">18</span> <a href="#hydrological-cycle">Hydrological Cycle</a> <span class="yield-tag medium">Medium</span></div>
+  <div class="toc-item"><span class="toc-num">19</span> <a href="#earth-internal">Earth&rsquo;s Internal Structure</a> <span class="yield-tag medium">Medium</span></div>
+  <div class="toc-item"><span class="toc-num">20</span> <a href="#movement-earth">Movement of Earth</a> <span class="yield-tag medium">Medium</span></div>
+  <div class="toc-item"><span class="toc-num">21</span> <a href="#energy-resource">Energy Resource</a> <span class="yield-tag medium">Medium</span></div>
+  <div class="toc-item"><span class="toc-num">22</span> <a href="#transport">Transport</a> <span class="yield-tag medium">Medium</span></div>
+  <div class="toc-item"><span class="toc-num">23</span> <a href="#climatic-regions-world">Climatic Regions of the World</a> <span class="yield-tag medium">Medium</span></div>
+  <div class="toc-item"><span class="toc-num">24</span> <a href="#oceans-world">Oceans (World Geography)</a> <span class="yield-tag medium">Medium</span></div>
+  <!-- LOW-MEDIUM -->
+  <div class="toc-item"><span class="toc-num">25</span> <a href="#land-resource">Land Resource in India</a> <span class="yield-tag low-medium">Low-Med</span></div>
+  <!-- LOW -->
+  <div class="toc-item"><span class="toc-num">26</span> <a href="#communication">Communication</a> <span class="yield-tag low">Low</span></div>
+  <div class="toc-item"><span class="toc-num">27</span> <a href="#universe">Universe: Origin &amp; Evolution</a> <span class="yield-tag low">Low</span></div>
+  <div class="toc-item"><span class="toc-num">28</span> <a href="#population-settlement">Population &amp; Settlement</a> <span class="yield-tag low">Low</span></div>
+  <div class="toc-item"><span class="toc-num">29</span> <a href="#continents">Continents</a> <span class="yield-tag low">Low</span></div>
+  <div class="toc-item"><span class="toc-num">30</span> <a href="#world-economic">World Economic Geography</a> <span class="yield-tag low">Low</span></div>
+  <div class="toc-item"><span class="toc-num">31</span> <a href="#world-human">World Human Geography</a> <span class="yield-tag low">Low</span></div>
+</div>
+
+<!-- ===== PRIORITY RANKING TABLE ===== -->
+<h2 class="section-title">Priority Ranking Table</h2>
+
+<table class="ranking-table">
+  <thead>
+    <tr><th>#</th><th>Topic</th><th>Unit</th><th>Priority</th><th>PYQ Approx.</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><span class="rank-num top">1</span></td><td>Indian Climate</td><td>Indian Geography</td><td><span class="yield-tag high">High</span></td><td>~27 Qs</td></tr>
+    <tr><td><span class="rank-num top">2</span></td><td>Indian Monsoon</td><td>Indian Geography</td><td><span class="yield-tag high">High</span></td><td>~27 Qs</td></tr>
+    <tr><td><span class="rank-num top">3</span></td><td>Drainage System</td><td>Indian Geography</td><td><span class="yield-tag high">High</span></td><td>~20 Qs</td></tr>
+    <tr><td><span class="rank-num top">4</span></td><td>Agriculture</td><td>Indian Geography</td><td><span class="yield-tag high">High</span></td><td>~19 Qs</td></tr>
+    <tr><td><span class="rank-num top">5</span></td><td>Landforms</td><td>Physical Geography</td><td><span class="yield-tag high">High</span></td><td>~16 Qs</td></tr>
+    <tr><td><span class="rank-num top">6</span></td><td>Mineral Resource</td><td>Indian Geography</td><td><span class="yield-tag high">High</span></td><td>~9 Qs</td></tr>
+    <tr><td><span class="rank-num mid">7</span></td><td>Tectonics</td><td>Physical Geography</td><td><span class="yield-tag medium-high">Med-High</span></td><td>~16 Qs</td></tr>
+    <tr><td><span class="rank-num mid">8</span></td><td>Major Physical Divisions</td><td>Indian Geography</td><td><span class="yield-tag medium-high">Med-High</span></td><td>~7 Qs</td></tr>
+    <tr><td><span class="rank-num mid">9</span></td><td>Indian Soils</td><td>Indian Geography</td><td><span class="yield-tag medium-high">Med-High</span></td><td>~9 Qs</td></tr>
+    <tr><td><span class="rank-num mid">10</span></td><td>Hazards &amp; Disasters</td><td>Indian Geography</td><td><span class="yield-tag medium-high">Med-High</span></td><td>1&ndash;2 / year</td></tr>
+    <tr><td><span class="rank-num mid">11</span></td><td>Atmosphere</td><td>Physical Geography</td><td><span class="yield-tag medium">Medium</span></td><td>~27 Qs*</td></tr>
+    <tr><td><span class="rank-num mid">12</span></td><td>Ocean (Physical)</td><td>Physical Geography</td><td><span class="yield-tag medium">Medium</span></td><td>~12 Qs</td></tr>
+    <tr><td><span class="rank-num mid">13</span></td><td>Physical Setting of India</td><td>Indian Geography</td><td><span class="yield-tag medium">Medium</span></td><td>~9 Qs</td></tr>
+    <tr><td><span class="rank-num mid">14</span></td><td>Forests</td><td>Indian Geography</td><td><span class="yield-tag medium">Medium</span></td><td>~9 Qs</td></tr>
+    <tr><td><span class="rank-num mid">15</span></td><td>Rocks</td><td>Physical Geography</td><td><span class="yield-tag medium">Medium</span></td><td>~9 Qs</td></tr>
+    <tr><td><span class="rank-num mid">16</span></td><td>Soil (Physical)</td><td>Physical Geography</td><td><span class="yield-tag medium">Medium</span></td><td>~9 Qs</td></tr>
+    <tr><td><span class="rank-num mid">17</span></td><td>Weather Phenomenon</td><td>Physical Geography</td><td><span class="yield-tag medium">Medium</span></td><td>Part of ~27</td></tr>
+    <tr><td><span class="rank-num mid">18</span></td><td>Hydrological Cycle</td><td>Physical Geography</td><td><span class="yield-tag medium">Medium</span></td><td>Few</td></tr>
+    <tr><td><span class="rank-num mid">19</span></td><td>Earth&rsquo;s Internal Structure</td><td>Physical Geography</td><td><span class="yield-tag medium">Medium</span></td><td>Few</td></tr>
+    <tr><td><span class="rank-num mid">20</span></td><td>Movement of Earth</td><td>Physical Geography</td><td><span class="yield-tag medium">Medium</span></td><td>Few</td></tr>
+    <tr><td><span class="rank-num mid">21</span></td><td>Energy Resource</td><td>Indian Geography</td><td><span class="yield-tag medium">Medium</span></td><td>Few</td></tr>
+    <tr><td><span class="rank-num mid">22</span></td><td>Transport</td><td>Indian Geography</td><td><span class="yield-tag medium">Medium</span></td><td>~4 Qs</td></tr>
+    <tr><td><span class="rank-num mid">23</span></td><td>Climatic Regions (World)</td><td>World Geography</td><td><span class="yield-tag medium">Medium</span></td><td>Few</td></tr>
+    <tr><td><span class="rank-num mid">24</span></td><td>Oceans (World)</td><td>World Geography</td><td><span class="yield-tag medium">Medium</span></td><td>~9% of Geo Qs</td></tr>
+    <tr><td><span class="rank-num low-r">25</span></td><td>Land Resource in India</td><td>Indian Geography</td><td><span class="yield-tag low-medium">Low-Med</span></td><td>Minimal</td></tr>
+    <tr><td><span class="rank-num low-r">26</span></td><td>Communication</td><td>Indian Geography</td><td><span class="yield-tag low">Low</span></td><td>~0</td></tr>
+    <tr><td><span class="rank-num low-r">27</span></td><td>Universe: Origin &amp; Evolution</td><td>Physical Geography</td><td><span class="yield-tag low">Low</span></td><td>~0</td></tr>
+    <tr><td><span class="rank-num low-r">28</span></td><td>Population &amp; Settlement</td><td>Indian Geography</td><td><span class="yield-tag low">Low</span></td><td>Rare</td></tr>
+    <tr><td><span class="rank-num low-r">29</span></td><td>Continents</td><td>World Geography</td><td><span class="yield-tag low">Low</span></td><td>Rare</td></tr>
+    <tr><td><span class="rank-num low-r">30</span></td><td>World Economic Geography</td><td>World Geography</td><td><span class="yield-tag low">Low</span></td><td>Minimal</td></tr>
+    <tr><td><span class="rank-num low-r">31</span></td><td>World Human Geography</td><td>World Geography</td><td><span class="yield-tag low">Low</span></td><td>Rare</td></tr>
+  </tbody>
+</table>
+
+<p style="font-size:0.82rem; color:var(--text-secondary); margin-top:6px;">* Atmosphere PYQs are shared with the broader climatology bucket (~27 Qs total across climate, monsoon, atmosphere, weather).</p>
+
+
+<!-- =====================================================================
+     HIGH-YIELD TOPICS (6)
+     ===================================================================== -->
+<h2 class="section-title">High-Yield Topics</h2>
+
+<!-- #1 Indian Climate -->
+<div class="unit-card" id="indian-climate">
+  <div class="unit-header high-yield">
+    <h2>1. Indian Climate</h2>
+    <span class="unit-badge">Indian Geography</span>
+    <span class="yield-tag high">High Yield</span>
+  </div>
+  <div class="unit-body">
+    <div class="unit-meta">
+      <span class="meta-chip"><strong>~27 Qs</strong> (Climatology, 2011&ndash;2024)</span>
+      <span class="meta-chip">Foundational &amp; frequently tested</span>
+    </div>
+
+    <table class="micro-table">
+      <thead><tr><th>Micro-Topic</th><th>Key Details</th></tr></thead>
+      <tbody>
+        <tr><td>Climatic Zones &amp; Classification</td><td>Tropical, subtropical, arid, temperate regions; K&ouml;ppen zones in India</td></tr>
+        <tr><td>Influencing Factors</td><td>Latitude, altitude, relief features, land&ndash;sea distribution</td></tr>
+        <tr><td>Seasonal Patterns</td><td>SW &amp; NE monsoons, western disturbances, retreating monsoon</td></tr>
+        <tr><td>Temperature Distribution</td><td>Thermal belts, annual and diurnal ranges</td></tr>
+        <tr><td>Pressure &amp; Wind Systems</td><td>Continental high, monsoon trough, jet streams</td></tr>
+        <tr><td>Rainfall Distribution</td><td>Spatial/temporal distribution, monsoon variability, rain-shadow effect</td></tr>
+        <tr><td>Impact on Vegetation &amp; Agriculture</td><td>Tropical evergreen forests in high rainfall zones, rain-fed crops</td></tr>
+      </tbody>
+    </table>
+
+    <div class="info-box why">
+      <div class="label">Why This Ordering</div>
+      Indian Climate is placed first as it underpins all other topics. India&rsquo;s climate is &ldquo;monsoonal in rhythm and character&rdquo; and the Himalayas &ldquo;trap the monsoon winds.&rdquo; Understanding climate basics is essential for verifying statements about rainfall, temperature belts, and cropping. It provides the conceptual base for the monsoon, vegetation, and hazard patterns.
+    </div>
+
+    <div class="info-box pyq">
+      <div class="label">PYQ Pattern</div>
+      Appears in direct factual and statement-based items (e.g. rainfall patterns, effects of the Himalayas on climate). Core climatology bucket contributes ~27 Qs across 2011&ndash;2024.
+    </div>
+
+    <div class="info-box prereq">
+      <div class="label">Prerequisites</div>
+      None (basic map coordinates and seasonal concepts suffice).
+    </div>
+  </div>
+</div>
+
+<!-- #2 Indian Monsoon -->
+<div class="unit-card" id="indian-monsoon">
+  <div class="unit-header high-yield">
+    <h2>2. Indian Monsoon</h2>
+    <span class="unit-badge">Indian Geography</span>
+    <span class="yield-tag high">High Yield</span>
+  </div>
+  <div class="unit-body">
+    <div class="unit-meta">
+      <span class="meta-chip"><strong>~27 Qs</strong> (Climatology, 2011&ndash;2024)</span>
+      <span class="meta-chip">Tested every year</span>
+    </div>
+
+    <table class="micro-table">
+      <thead><tr><th>Micro-Topic</th><th>Key Details</th></tr></thead>
+      <tbody>
+        <tr><td>Onset &amp; Withdrawal</td><td>Mechanism of SW monsoon onset, retreat timeline</td></tr>
+        <tr><td>Arabian Sea &amp; Bay of Bengal Branches</td><td>Bifurcation and differential impact</td></tr>
+        <tr><td>Tibetan High &amp; Jet Streams</td><td>Role in monsoon onset</td></tr>
+        <tr><td>NE Monsoon</td><td>Retreating monsoon; Tamil Nadu winter rains</td></tr>
+        <tr><td>El Ni&ntilde;o, La Ni&ntilde;a &amp; IOD</td><td>Effects on monsoon variability</td></tr>
+        <tr><td>Rainfall Distribution</td><td>Heavy vs. scanty rainfall regions</td></tr>
+        <tr><td>Topographic Influence</td><td>Western Ghats rain-shadow, Himalayas as barrier</td></tr>
+        <tr><td>Forecasting Indicators</td><td>Recent trends in monsoon prediction</td></tr>
+      </tbody>
+    </table>
+
+    <div class="info-box why">
+      <div class="label">Why This Ordering</div>
+      Monsoon follows Indian Climate as the specific seasonal phenomenon. The Himalayas &ldquo;trap the monsoon winds, forcing them to shed their moisture.&rdquo; Mastery of monsoon details (onset dates, branch bifurcation) greatly aids in eliminating wrong options on agricultural and water resource statements. It directly leads to Drainage and Agriculture.
+    </div>
+
+    <div class="info-box pyq">
+      <div class="label">PYQ Pattern</div>
+      Frequent question types: matching rainfall patterns to monsoon phases, elimination of incorrect statements about monsoon effects. Part of the ~27Q climatology bucket.
+    </div>
+
+    <div class="info-box prereq">
+      <div class="label">Prerequisites</div>
+      Indian Climate (monsoon is a component of climate).
+    </div>
+  </div>
+</div>
+
+<!-- #3 Drainage System -->
+<div class="unit-card" id="drainage-system">
+  <div class="unit-header high-yield">
+    <h2>3. Drainage System</h2>
+    <span class="unit-badge">Indian Geography</span>
+    <span class="yield-tag high">High Yield</span>
+  </div>
+  <div class="unit-body">
+    <div class="unit-meta">
+      <span class="meta-chip"><strong>~20 Qs</strong> (2011&ndash;2024)</span>
+      <span class="meta-chip">Rivers appear almost every year</span>
+    </div>
+
+    <table class="micro-table">
+      <thead><tr><th>Micro-Topic</th><th>Key Details</th></tr></thead>
+      <tbody>
+        <tr><td>Himalayan vs. Peninsular</td><td>Young, perennial, braided vs. old, seasonal rivers</td></tr>
+        <tr><td>Himalayan Rivers</td><td>Indus, Ganga, Brahmaputra &amp; major tributaries (Jhelum, Yamuna, Kosi, Teesta)</td></tr>
+        <tr><td>Peninsular Rivers</td><td>West-flowing: Narmada, Tapi; East-flowing: Mahanadi, Godavari, Krishna, Cauvery</td></tr>
+        <tr><td>Watershed Divides</td><td>Vindhyan range, Western Ghats separating east/west flows</td></tr>
+        <tr><td>Basins &amp; Deltas</td><td>Ganga-Brahmaputra delta, Mahanadi delta</td></tr>
+        <tr><td>Endorheic Basins</td><td>Sambhar Salt Lake, Rann of Kutch</td></tr>
+        <tr><td>River Interlinking</td><td>Proposals and major irrigation/dam projects</td></tr>
+      </tbody>
+    </table>
+
+    <div class="info-box why">
+      <div class="label">Why This Ordering</div>
+      Drainage is right after monsoon, as rivers are fed by monsoon rains. It is a direct-scoring topic: e.g. knowing the Brahmaputra flows east to west in Assam eliminates wrong options. Proficiency here boosts accuracy on flood patterns and agriculture (fertile alluvium).
+    </div>
+
+    <div class="info-box pyq">
+      <div class="label">PYQ Pattern</div>
+      Common in elimination format (e.g. incorrect river-tributary match) and direct mapping (basin locations). ~20 questions across 2011&ndash;2024.
+    </div>
+
+    <div class="info-box prereq">
+      <div class="label">Prerequisites</div>
+      Major Physical Divisions of India (Himalayan vs Peninsular); Indian Monsoon (precipitation context).
+    </div>
+  </div>
+</div>
+
+<!-- #4 Agriculture -->
+<div class="unit-card" id="agriculture">
+  <div class="unit-header high-yield">
+    <h2>4. Agriculture</h2>
+    <span class="unit-badge">Indian Geography</span>
+    <span class="yield-tag high">High Yield</span>
+  </div>
+  <div class="unit-body">
+    <div class="unit-meta">
+      <span class="meta-chip"><strong>~19 Qs</strong> (2011&ndash;2024)</span>
+      <span class="meta-chip">Food security is a constant focus</span>
+    </div>
+
+    <table class="micro-table">
+      <thead><tr><th>Micro-Topic</th><th>Key Details</th></tr></thead>
+      <tbody>
+        <tr><td>Major Crops</td><td>Food crops (rice, wheat, millets, pulses); cash (cotton, sugarcane, jute); plantation (tea, coffee)</td></tr>
+        <tr><td>Cropping Seasons</td><td>Kharif (monsoon), Rabi (winter), Zaid (summer); crop calendar</td></tr>
+        <tr><td>Crop Zones</td><td>Rice in East/South, wheat in North, cotton on black soil, maize in hills</td></tr>
+        <tr><td>Irrigation Sources</td><td>Canals (Bhakra), tube wells, tanks; major networks</td></tr>
+        <tr><td>Agricultural Practices</td><td>Multiple cropping, inter-cropping, horticulture, dry vs. wet farming</td></tr>
+        <tr><td>Green Revolution</td><td>Punjab, Haryana; yield increase impacts</td></tr>
+        <tr><td>Modern Techniques</td><td>GM crops (Bt cotton), organic farming, biotechnology</td></tr>
+        <tr><td>Climate Impact</td><td>El Ni&ntilde;o effects on yield; cropping intensity zones</td></tr>
+      </tbody>
+    </table>
+
+    <div class="info-box why">
+      <div class="label">Why This Ordering</div>
+      Agriculture follows soils and climate in sequence. It is direct scoring: e.g. identifying Punjab as top wheat producer. Knowing soil/climate prerequisites streamlines elimination (e.g. sugarcane in arid Rajasthan is false). Bridges geography to economy.
+    </div>
+
+    <div class="info-box pyq">
+      <div class="label">PYQ Pattern</div>
+      Frequent formats: matching crops to states/regions, or eliminating wrong crop-location pairs. ~19 Qs across 2011&ndash;2024.
+    </div>
+
+    <div class="info-box prereq">
+      <div class="label">Prerequisites</div>
+      Indian Soils (crop-soil fertility); Indian Climate / Monsoon (water availability).
+    </div>
+  </div>
+</div>
+
+<!-- #5 Landforms -->
+<div class="unit-card" id="landforms">
+  <div class="unit-header high-yield">
+    <h2>5. Landforms</h2>
+    <span class="unit-badge">Physical Geography</span>
+    <span class="yield-tag high">High Yield</span>
+  </div>
+  <div class="unit-body">
+    <div class="unit-meta">
+      <span class="meta-chip"><strong>~16 Qs</strong> (Geomorphology, 2011&ndash;2024)</span>
+      <span class="meta-chip">Definitions frequently tested</span>
+    </div>
+
+    <table class="micro-table">
+      <thead><tr><th>Micro-Topic</th><th>Key Details</th></tr></thead>
+      <tbody>
+        <tr><td>Fluvial</td><td>V-shaped valleys, alluvial fans, oxbow lakes, deltas</td></tr>
+        <tr><td>Glacial</td><td>U-shaped valleys, cirques, aretes, moraines, drumlins, fjords</td></tr>
+        <tr><td>Aeolian</td><td>Barchan dunes, longitudinal dunes, loess, yardangs</td></tr>
+        <tr><td>Coastal</td><td>Sea cliffs, wave-cut platforms, spits, bays, coral reefs</td></tr>
+        <tr><td>Karst</td><td>Sinkholes, caves, stalactites/stalagmites (Meghalaya caves)</td></tr>
+        <tr><td>Tectonic</td><td>Rift valleys, block mountains, fault scarps</td></tr>
+        <tr><td>Plateaus &amp; Plains</td><td>Erosional vs structural plateaus; megafans, floodplains</td></tr>
+      </tbody>
+    </table>
+
+    <div class="info-box why">
+      <div class="label">Why This Ordering</div>
+      Landforms come after rocks and tectonics: it describes surface features resulting from them. It&rsquo;s a direct scoring area &mdash; e.g. matching &ldquo;U-shaped valley&rdquo; to glacial origin. Connects to drainage (river valleys) and soils (erosion products).
+    </div>
+
+    <div class="info-box pyq">
+      <div class="label">PYQ Pattern</div>
+      Tasks include identifying landforms from descriptions or images and eliminating mis-matched definitions. ~16 Qs on geomorphology.
+    </div>
+
+    <div class="info-box prereq">
+      <div class="label">Prerequisites</div>
+      Rocks; Tectonics.
+    </div>
+  </div>
+</div>
+
+<!-- #6 Mineral Resource -->
+<div class="unit-card" id="mineral-resource">
+  <div class="unit-header high-yield">
+    <h2>6. Mineral Resource</h2>
+    <span class="unit-badge">Indian Geography</span>
+    <span class="yield-tag high">High Yield</span>
+  </div>
+  <div class="unit-body">
+    <div class="unit-meta">
+      <span class="meta-chip"><strong>~9 Qs</strong> (2011&ndash;2024)</span>
+      <span class="meta-chip">Tested via matching &amp; elimination</span>
+    </div>
+
+    <table class="micro-table">
+      <thead><tr><th>Micro-Topic</th><th>Key Details</th></tr></thead>
+      <tbody>
+        <tr><td>Key Minerals</td><td>Coal (Jharia, Raniganj, Singrauli); Iron ore (Durg-Bastar, Singhbhum); Bauxite (Odisha, Gujarat); Copper (Rajasthan, Jharkhand); Gold (Kolar, Hutti)</td></tr>
+        <tr><td>Mines &amp; Plants</td><td>Iron &amp; steel (Jamshedpur, Rourkela, Bhilai); cement with limestone belts</td></tr>
+        <tr><td>Fuel Minerals</td><td>Oil (Mumbai High, Gujarat); natural gas (Tripura, Assam); uranium (Jaduguda); thorium (Kerala monazite)</td></tr>
+        <tr><td>Distribution Patterns</td><td>Proterozoic shield vs. Gondwana basins</td></tr>
+      </tbody>
+    </table>
+
+    <div class="info-box why">
+      <div class="label">Why This Ordering</div>
+      Follows soils and landforms (Gondwana rock association). It&rsquo;s a direct scoring area; knowing that Odisha has 3/4 of India&rsquo;s bauxite means you can eliminate Odisha from &ldquo;states without bauxite.&rdquo; Bridges geology with economy (steel/energy sectors).
+    </div>
+
+    <div class="info-box pyq">
+      <div class="label">PYQ Pattern</div>
+      Typical: identify state/mineral pairs or rule out mismatches (e.g. copper not in Bihar). ~9 Qs across 2011&ndash;2024.
+    </div>
+
+    <div class="info-box prereq">
+      <div class="label">Prerequisites</div>
+      Rocks of India; Major Physical Divisions of India (geological context).
+    </div>
+  </div>
+</div>
+
+
+<!-- =====================================================================
+     MEDIUM-HIGH TOPICS (4)
+     ===================================================================== -->
+<h2 class="section-title">Medium-High Yield Topics</h2>
+
+<!-- #7 Tectonics -->
+<div class="unit-card" id="tectonics">
+  <div class="unit-header medium-high-yield">
+    <h2>7. Tectonics</h2>
+    <span class="unit-badge">Physical Geography</span>
+    <span class="yield-tag medium-high">Med-High</span>
+  </div>
+  <div class="unit-body">
+    <div class="unit-meta">
+      <span class="meta-chip"><strong>~16 Qs</strong> (Geomorphology, 2011&ndash;2024)</span>
+      <span class="meta-chip">Key for earthquake/cyclone context</span>
+    </div>
+
+    <table class="micro-table">
+      <thead><tr><th>Micro-Topic</th><th>Key Details</th></tr></thead>
+      <tbody>
+        <tr><td>Plate Tectonics</td><td>Major lithospheric plates, continental drift (Wegener)</td></tr>
+        <tr><td>Plate Boundaries</td><td>Convergent (fold mountains), divergent (rifts), transform (faults)</td></tr>
+        <tr><td>Sea-Floor Spreading</td><td>Pangea breakup, mid-ocean ridges</td></tr>
+        <tr><td>Orogeny</td><td>Mountain building (Himalayan collision)</td></tr>
+        <tr><td>Earthquakes</td><td>Global seismic belts, India&rsquo;s seismic zones (Zone V etc.)</td></tr>
+        <tr><td>Volcanoes</td><td>Shield, composite types; Barren Island (India&rsquo;s only active)</td></tr>
+      </tbody>
+    </table>
+
+    <div class="info-box why">
+      <div class="label">Why This Ordering</div>
+      Tectonics follows Earth&rsquo;s structure to explain dynamic processes. Essential for direct questions (e.g. identifying the Aravalli Range). Knowing that the Himalayas result from Indo-Eurasian collision helps reject false origin theories.
+    </div>
+
+    <div class="info-box prereq">
+      <div class="label">Prerequisites</div>
+      Earth&rsquo;s Internal Structure.
+    </div>
+  </div>
+</div>
+
+<!-- #8 Major Physical Divisions of India -->
+<div class="unit-card" id="physical-divisions">
+  <div class="unit-header medium-high-yield">
+    <h2>8. Major Physical Divisions of India</h2>
+    <span class="unit-badge">Indian Geography</span>
+    <span class="yield-tag medium-high">Med-High</span>
+  </div>
+  <div class="unit-body">
+    <div class="unit-meta">
+      <span class="meta-chip"><strong>~7 Qs</strong> (2011&ndash;2024)</span>
+      <span class="meta-chip">Core conceptual structure; map-tested</span>
+    </div>
+
+    <table class="micro-table">
+      <thead><tr><th>Micro-Topic</th><th>Key Details</th></tr></thead>
+      <tbody>
+        <tr><td>Himalayas</td><td>Great Himalayas, Lesser (Himachal) Himalayas, Shivaliks; associated passes</td></tr>
+        <tr><td>Northern Plains</td><td>Punjab/Indo-Gangetic plains, Central Ganga Plains, Brahmaputra plains</td></tr>
+        <tr><td>Peninsular Plateau</td><td>Central Highlands (Vindhyas, Satpura, Chota Nagpur); Deccan Plateau (Malwa)</td></tr>
+        <tr><td>Coastal Plains</td><td>Western (Konkan, Malabar); Eastern (Coromandel, Northern Circar); Islands (Andaman/Nicobar, Lakshadweep)</td></tr>
+        <tr><td>Desert</td><td>Thar Desert (Rajasthan)</td></tr>
+      </tbody>
+    </table>
+
+    <div class="info-box why">
+      <div class="label">Why This Ordering</div>
+      These divisions define India&rsquo;s major terrain. Knowing Himalayas are the northern shield helps place major rivers. Forms the basis for rainfall patterns and resource distribution. Eliminates mismatches (e.g. state&ndash;division matching on maps).
+    </div>
+
+    <div class="info-box prereq">
+      <div class="label">Prerequisites</div>
+      Physical Setting of India (for context).
+    </div>
+  </div>
+</div>
+
+<!-- #9 Indian Soils -->
+<div class="unit-card" id="indian-soils">
+  <div class="unit-header medium-high-yield">
+    <h2>9. Indian Soils</h2>
+    <span class="unit-badge">Indian Geography</span>
+    <span class="yield-tag medium-high">Med-High</span>
+  </div>
+  <div class="unit-body">
+    <div class="unit-meta">
+      <span class="meta-chip"><strong>~9 Qs</strong> (Rock/Soil/Mineral, 2011&ndash;2024)</span>
+      <span class="meta-chip">Frequent in resource context</span>
+    </div>
+
+    <table class="micro-table">
+      <thead><tr><th>Micro-Topic</th><th>Key Details</th></tr></thead>
+      <tbody>
+        <tr><td>Major Soil Types</td><td>Alluvial, Black (Regur), Red, Laterite, Arid, Forest, Saline/alkaline, Peaty</td></tr>
+        <tr><td>Distribution</td><td>Black soils in Deccan (Maratha/Malwa plateaus); alluvial in Indo-Gangetic plain; laterite in Western Ghats; arid in Rajasthan</td></tr>
+        <tr><td>Characteristics</td><td>Alluvium fertile; black moisture-retentive; laterite leached</td></tr>
+        <tr><td>Soil Erosion</td><td>Himalayan (water erosion) vs. Thar (wind erosion); conservation: bunding, terracing</td></tr>
+        <tr><td>Soil Classification</td><td>ICAR classification vs. older groups</td></tr>
+      </tbody>
+    </table>
+
+    <div class="info-box why">
+      <div class="label">Why This Ordering</div>
+      Follows physical divisions: e.g. identifying black soils on lava plateaus. A scoring area: knowing red soil requires alternate wet/dry climate eliminates errors. Links to agriculture (soil&ndash;crop suitability) and land use.
+    </div>
+
+    <div class="info-box prereq">
+      <div class="label">Prerequisites</div>
+      Major Physical Divisions of India (terrain context); Soil (formation concepts).
+    </div>
+  </div>
+</div>
+
+<!-- #10 Hazards & Disasters -->
+<div class="unit-card" id="hazards-disasters">
+  <div class="unit-header medium-high-yield">
+    <h2>10. Hazards &amp; Disasters</h2>
+    <span class="unit-badge">Indian Geography</span>
+    <span class="yield-tag medium-high">Med-High</span>
+  </div>
+  <div class="unit-body">
+    <div class="unit-meta">
+      <span class="meta-chip"><strong>1&ndash;2 Qs / year</strong></span>
+      <span class="meta-chip">Seismic &amp; cyclone maps key</span>
+    </div>
+
+    <table class="micro-table">
+      <thead><tr><th>Micro-Topic</th><th>Key Details</th></tr></thead>
+      <tbody>
+        <tr><td>Earthquakes</td><td>Himalayan seismic zones (IV&ndash;V); frequent epicenters (Assam, Himalayas)</td></tr>
+        <tr><td>Volcanoes</td><td>Barren Island (only active in India); extinct volcanoes</td></tr>
+        <tr><td>Tsunami</td><td>2004 Indian Ocean event; coastal vulnerability (Andamans, Tamil Nadu)</td></tr>
+        <tr><td>Cyclones</td><td>Bay of Bengal (Apr&ndash;Jun, Oct&ndash;Dec) vs. Arabian Sea (May&ndash;Jun, Sept); typical tracks</td></tr>
+        <tr><td>Floods</td><td>Brahmaputra&ndash;Ganges floodplain; central India; western India flash floods</td></tr>
+        <tr><td>Droughts</td><td>Rain-shadow &amp; interior plains; El Ni&ntilde;o effects</td></tr>
+        <tr><td>Landslides &amp; Avalanches</td><td>Himalayan (rain/snow-triggered)</td></tr>
+        <tr><td>Disaster Management</td><td>NDRF, early warning systems</td></tr>
+      </tbody>
+    </table>
+
+    <div class="info-box why">
+      <div class="label">Why This Ordering</div>
+      Integrates earlier topics: Himalayan tectonics (earthquakes) and monsoon (floods/droughts). Exception-heavy (specific zones, agencies) so helps focus eliminations. Mastery prevents errors like &ldquo;cyclones in NE India.&rdquo;
+    </div>
+
+    <div class="info-box prereq">
+      <div class="label">Prerequisites</div>
+      Tectonics (earthquakes, volcanoes); Indian Monsoon / Drainage (floods, droughts).
+    </div>
+  </div>
+</div>
+
+
+<!-- =====================================================================
+     MEDIUM YIELD TOPICS (14)
+     ===================================================================== -->
+<h2 class="section-title">Medium Yield Topics</h2>
+
+<!-- #11 Atmosphere -->
+<div class="unit-card" id="atmosphere">
+  <div class="unit-header medium-yield">
+    <h2>11. Atmosphere</h2>
+    <span class="unit-badge">Physical Geography</span>
+    <span class="yield-tag medium">Medium</span>
+  </div>
+  <div class="unit-body">
+    <div class="unit-meta">
+      <span class="meta-chip">Part of <strong>~27 Qs</strong> (Climatology)</span>
+      <span class="meta-chip">Important for climate chain</span>
+    </div>
+
+    <table class="micro-table">
+      <thead><tr><th>Micro-Topic</th><th>Key Details</th></tr></thead>
+      <tbody>
+        <tr><td>Composition</td><td>N&#8322;, O&#8322;, trace gases; role of ozone, greenhouse gases</td></tr>
+        <tr><td>Layers</td><td>Troposphere (weather), stratosphere (ozone), mesosphere, thermosphere</td></tr>
+        <tr><td>Solar Radiation</td><td>Insolation, albedo, energy balance</td></tr>
+        <tr><td>General Circulation</td><td>Hadley-Ferrel-Polar cells; jet streams</td></tr>
+        <tr><td>Key Phenomena</td><td>Ozone depletion, greenhouse effect, global warming basics</td></tr>
+      </tbody>
+    </table>
+
+    <div class="info-box why">
+      <div class="label">Why This Ordering</div>
+      Essential to connect to climate systems (greenhouse gases trap heat). Knowing layers aids elimination (e.g. correct placement of ionosphere). Enriches understanding of climate change questions.
+    </div>
+
+    <div class="info-box prereq">
+      <div class="label">Prerequisites</div>
+      None.
+    </div>
+  </div>
+</div>
+
+<!-- #12 Ocean (Physical Geography) -->
+<div class="unit-card" id="ocean-physical">
+  <div class="unit-header medium-yield">
+    <h2>12. Ocean (Physical Geography)</h2>
+    <span class="unit-badge">Physical Geography</span>
+    <span class="yield-tag medium">Medium</span>
+  </div>
+  <div class="unit-body">
+    <div class="unit-meta">
+      <span class="meta-chip"><strong>~12 Qs</strong> (2011&ndash;2024)</span>
+      <span class="meta-chip">Currents &amp; tides occasionally asked</span>
+    </div>
+
+    <table class="micro-table">
+      <thead><tr><th>Micro-Topic</th><th>Key Details</th></tr></thead>
+      <tbody>
+        <tr><td>Ocean Distribution</td><td>Pacific, Atlantic, Indian (area, bordering continents)</td></tr>
+        <tr><td>Currents</td><td>Warm (Gulf Stream, Kuroshio); cold (California, Benguela); upwelling zones</td></tr>
+        <tr><td>Tides</td><td>Spring vs. neap; gravitational causes</td></tr>
+        <tr><td>Marine Resources</td><td>Fisheries, undersea minerals, tidal energy</td></tr>
+        <tr><td>Coral Reefs</td><td>Growth conditions, coral bleaching threats</td></tr>
+      </tbody>
+    </table>
+
+    <div class="info-box why">
+      <div class="label">Why This Ordering</div>
+      Oceanography follows climate: explains how oceans regulate climate. Knowing cold Labrador Current helps reject its influence on Europe&rsquo;s temperature. Connects to weather (cyclone paths) and environment (marine resource management).
+    </div>
+
+    <div class="info-box prereq">
+      <div class="label">Prerequisites</div>
+      Hydrological Cycle.
+    </div>
+  </div>
+</div>
+
+<!-- #13 Physical Setting of India -->
+<div class="unit-card" id="physical-setting">
+  <div class="unit-header medium-yield">
+    <h2>13. Physical Setting of India</h2>
+    <span class="unit-badge">Indian Geography</span>
+    <span class="yield-tag medium">Medium</span>
+  </div>
+  <div class="unit-body">
+    <div class="unit-meta">
+      <span class="meta-chip"><strong>~9 Qs</strong> (Climate/Location, 2011&ndash;2024)</span>
+      <span class="meta-chip">Basic facts; occasional map questions</span>
+    </div>
+
+    <table class="micro-table">
+      <thead><tr><th>Micro-Topic</th><th>Key Details</th></tr></thead>
+      <tbody>
+        <tr><td>Geographical Coordinates</td><td>8&deg;4&rsquo;N &ndash; 37&deg;6&rsquo;N latitude; 68&deg;7&rsquo;E &ndash; 97&deg;25&rsquo;E longitude</td></tr>
+        <tr><td>Neighbors</td><td>Adjacent countries (China, Pakistan, etc.); maritime boundaries</td></tr>
+        <tr><td>Relief Overview</td><td>Northern Himalayas; southern peninsular block</td></tr>
+        <tr><td>Key Features</td><td>Western Ghats, Eastern Ghats, Northern Plains, Deccan Plateau, Islands</td></tr>
+        <tr><td>Time &amp; Map Data</td><td>IST meridian (82&deg;30&rsquo;E), time zone</td></tr>
+        <tr><td>Maritime Zones</td><td>EEZ extents (basic)</td></tr>
+      </tbody>
+    </table>
+
+    <div class="info-box why">
+      <div class="label">Why This Ordering</div>
+      Introductory Indian geography. India is &ldquo;located in the south-central part of Asia, bordering the Indian Ocean.&rdquo; Sets the stage for all topics: e.g. Tropic of Cancer traversing India explains climate zones. Aids rejection of impossible coordinates.
+    </div>
+
+    <div class="info-box prereq">
+      <div class="label">Prerequisites</div>
+      None (basic atlas/map-reading skills).
+    </div>
+  </div>
+</div>
+
+<!-- #14 Forests -->
+<div class="unit-card" id="forests">
+  <div class="unit-header medium-yield">
+    <h2>14. Forests</h2>
+    <span class="unit-badge">Indian Geography</span>
+    <span class="yield-tag medium">Medium</span>
+  </div>
+  <div class="unit-body">
+    <div class="unit-meta">
+      <span class="meta-chip"><strong>~9 Qs</strong> (Location/Climate/Forests, 2011&ndash;2024)</span>
+      <span class="meta-chip">Often tied to climate/monsoon</span>
+    </div>
+
+    <table class="micro-table">
+      <thead><tr><th>Micro-Topic</th><th>Key Details</th></tr></thead>
+      <tbody>
+        <tr><td>Major Forest Types</td><td>Tropical evergreen (Western Ghats, NE); tropical deciduous (Sal, Teak); thorn (Aravalli); montane (Himalayan); mangrove (Sunderbans)</td></tr>
+        <tr><td>Distribution</td><td>Dense: Andaman, Western Ghats, NE Hills; Sparse: Rajasthan, Gujarat</td></tr>
+        <tr><td>Forest Cover</td><td>India ~24% land; fragmentation issues</td></tr>
+        <tr><td>Conservation</td><td>Protected area networks, deforestation trends</td></tr>
+      </tbody>
+    </table>
+
+    <div class="info-box why">
+      <div class="label">Why This Ordering</div>
+      Sequenced after monsoon/climate: heavy rain areas have evergreen forests. Knowing Western Ghats and Sundarbans have evergreen forests aids elimination. Ties climate and ecology. No mangroves in desert!
+    </div>
+
+    <div class="info-box prereq">
+      <div class="label">Prerequisites</div>
+      Indian Monsoon; Indian Climate.
+    </div>
+  </div>
+</div>
+
+<!-- #15 Rocks -->
+<div class="unit-card" id="rocks">
+  <div class="unit-header medium-yield">
+    <h2>15. Rocks</h2>
+    <span class="unit-badge">Physical Geography</span>
+    <span class="yield-tag medium">Medium</span>
+  </div>
+  <div class="unit-body">
+    <div class="unit-meta">
+      <span class="meta-chip"><strong>~9 Qs</strong> (Rocks/Soil/Mineral, 2011&ndash;2024)</span>
+      <span class="meta-chip">Foundational geology</span>
+    </div>
+
+    <table class="micro-table">
+      <thead><tr><th>Micro-Topic</th><th>Key Details</th></tr></thead>
+      <tbody>
+        <tr><td>Rock Cycle</td><td>Processes linking igneous, sedimentary, metamorphic</td></tr>
+        <tr><td>Types</td><td>Igneous (granite, basalt); sedimentary (sandstone, limestone); metamorphic (gneiss, schist)</td></tr>
+        <tr><td>Distribution in India</td><td>Himalayas (sedimentary); Peninsular shield (igneous/metamorphic); Deccan traps (basalt)</td></tr>
+        <tr><td>Economic Use</td><td>Building materials (granite, marble), reservoir rocks for minerals</td></tr>
+        <tr><td>Weathering Products</td><td>Role in soil formation</td></tr>
+      </tbody>
+    </table>
+
+    <div class="info-box why">
+      <div class="label">Why This Ordering</div>
+      Placed before landforms: rocks form Earth&rsquo;s crust framework. Knowing Deccan trap basalt is igneous helps eliminate claims that Kerala has sedimentary terrain. Base for mineral resource topics.
+    </div>
+
+    <div class="info-box prereq">
+      <div class="label">Prerequisites</div>
+      Earth&rsquo;s Internal Structure (context for rock formation).
+    </div>
+  </div>
+</div>
+
+<!-- #16 Soil (Physical Geography) -->
+<div class="unit-card" id="soil-physical">
+  <div class="unit-header medium-yield">
+    <h2>16. Soil (Physical Geography)</h2>
+    <span class="unit-badge">Physical Geography</span>
+    <span class="yield-tag medium">Medium</span>
+  </div>
+  <div class="unit-body">
+    <div class="unit-meta">
+      <span class="meta-chip">Part of <strong>~9 Qs</strong> (Rock/Soil/Mineral)</span>
+      <span class="meta-chip">Groundwork for Indian soils</span>
+    </div>
+
+    <table class="micro-table">
+      <thead><tr><th>Micro-Topic</th><th>Key Details</th></tr></thead>
+      <tbody>
+        <tr><td>Formation</td><td>Parent rock, climate, organisms, topography, time</td></tr>
+        <tr><td>Soil Profile</td><td>Horizons: A-topsoil, B-subsoil, C-parent material</td></tr>
+        <tr><td>Classification</td><td>By texture (sandy, silty, clayey) and formation (laterite, alluvial)</td></tr>
+        <tr><td>Properties</td><td>Organic content, fertility (N, P, pH)</td></tr>
+        <tr><td>Soil Erosion</td><td>Agents (water, wind); conservation (contouring, afforestation)</td></tr>
+      </tbody>
+    </table>
+
+    <div class="info-box why">
+      <div class="label">Why This Ordering</div>
+      Soil fundamentals are listed before Indian soils. Explains how specific soils form (e.g. laterite in high-rain, plateau areas). Helps eliminate errors (e.g. tropical rainforest soil in deserts). Supports resource geography.
+    </div>
+
+    <div class="info-box prereq">
+      <div class="label">Prerequisites</div>
+      Rocks (parent material); Atmosphere / Climate (weathering process).
+    </div>
+  </div>
+</div>
+
+<!-- #17 Weather Phenomenon -->
+<div class="unit-card" id="weather-phenomenon">
+  <div class="unit-header medium-yield">
+    <h2>17. Weather Phenomenon</h2>
+    <span class="unit-badge">Physical Geography</span>
+    <span class="yield-tag medium">Medium</span>
+  </div>
+  <div class="unit-body">
+    <div class="unit-meta">
+      <span class="meta-chip">Part of <strong>~27 Qs</strong> (Climatology)</span>
+      <span class="meta-chip">Often elimination-based</span>
+    </div>
+
+    <table class="micro-table">
+      <thead><tr><th>Micro-Topic</th><th>Key Details</th></tr></thead>
+      <tbody>
+        <tr><td>Pressure Belts</td><td>Equatorial low, subtropical highs, polar lows; trade winds, westerlies</td></tr>
+        <tr><td>Cyclones</td><td>Tropical (Bay &amp; Arabian Sea) vs. temperate cyclones</td></tr>
+        <tr><td>Fronts</td><td>Cold front, warm front; basics of front formation</td></tr>
+        <tr><td>Jet Streams</td><td>Polar and subtropical jets; effect on weather</td></tr>
+        <tr><td>Local Events</td><td>Tornadoes, hailstorms, dust storms (general awareness)</td></tr>
+        <tr><td>Weather Maps</td><td>Reading isobars / pressure patterns (basic)</td></tr>
+      </tbody>
+    </table>
+
+    <div class="info-box why">
+      <div class="label">Why This Ordering</div>
+      Placed after monsoon/hydrology to detail specific phenomena. Knowing tropical cyclones circulate anticlockwise in the Bay aids elimination. Applies climate theory to events (e.g. why Mt. Abu has extreme cold in January). Bridge to disaster questions.
+    </div>
+
+    <div class="info-box prereq">
+      <div class="label">Prerequisites</div>
+      Atmosphere; Indian Monsoon.
+    </div>
+  </div>
+</div>
+
+<!-- #18 Hydrological Cycle -->
+<div class="unit-card" id="hydrological-cycle">
+  <div class="unit-header medium-yield">
+    <h2>18. Hydrological Cycle</h2>
+    <span class="unit-badge">Physical Geography</span>
+    <span class="yield-tag medium">Medium</span>
+  </div>
+  <div class="unit-body">
+    <div class="unit-meta">
+      <span class="meta-chip">Few direct Qs</span>
+      <span class="meta-chip">Conceptual bridge</span>
+    </div>
+
+    <table class="micro-table">
+      <thead><tr><th>Micro-Topic</th><th>Key Details</th></tr></thead>
+      <tbody>
+        <tr><td>Components</td><td>Evaporation, transpiration, condensation, precipitation, runoff</td></tr>
+        <tr><td>Cloud Formation</td><td>Condensation nuclei, cloud types (cirrus, cumulus)</td></tr>
+        <tr><td>Groundwater</td><td>Aquifers, water table, recharge</td></tr>
+        <tr><td>Water Bodies</td><td>Role of oceans in evaporation; freshwater distribution</td></tr>
+        <tr><td>Watershed Concept</td><td>Catchment areas, drainage basins</td></tr>
+      </tbody>
+    </table>
+
+    <div class="info-box why">
+      <div class="label">Why This Ordering</div>
+      Links air and water. Explains how monsoon rain originates and why some regions have groundwater recharge. Conceptual bridge to agriculture (irrigation sources) and climatology.
+    </div>
+
+    <div class="info-box prereq">
+      <div class="label">Prerequisites</div>
+      Atmosphere (for precipitation processes).
+    </div>
+  </div>
+</div>
+
+<!-- #19 Earth's Internal Structure -->
+<div class="unit-card" id="earth-internal">
+  <div class="unit-header medium-yield">
+    <h2>19. Earth&rsquo;s Internal Structure</h2>
+    <span class="unit-badge">Physical Geography</span>
+    <span class="yield-tag medium">Medium</span>
+  </div>
+  <div class="unit-body">
+    <div class="unit-meta">
+      <span class="meta-chip">Few direct Qs</span>
+      <span class="meta-chip">Conceptual foundation for tectonics</span>
+    </div>
+
+    <table class="micro-table">
+      <thead><tr><th>Micro-Topic</th><th>Key Details</th></tr></thead>
+      <tbody>
+        <tr><td>Earth&rsquo;s Layers</td><td>Crust (continental/oceanic), mantle (upper/lower), core (outer/inner)</td></tr>
+        <tr><td>Seismic Evidence</td><td>P-wave and S-wave travel behaviour</td></tr>
+        <tr><td>Lithosphere vs. Asthenosphere</td><td>Rigid plate vs. plastic mantle</td></tr>
+        <tr><td>Continental Drift</td><td>Matching geology across oceans</td></tr>
+      </tbody>
+    </table>
+
+    <div class="info-box why">
+      <div class="label">Why This Ordering</div>
+      Precedes tectonics: provides rationale (mantle convection) for plate motion. Mostly conceptual; mastering it aids understanding seismic activity. Critical for understanding why tectonics happen.
+    </div>
+
+    <div class="info-box prereq">
+      <div class="label">Prerequisites</div>
+      None.
+    </div>
+  </div>
+</div>
+
+<!-- #20 Movement of Earth -->
+<div class="unit-card" id="movement-earth">
+  <div class="unit-header medium-yield">
+    <h2>20. Movement of Earth</h2>
+    <span class="unit-badge">Physical Geography</span>
+    <span class="yield-tag medium">Medium</span>
+  </div>
+  <div class="unit-body">
+    <div class="unit-meta">
+      <span class="meta-chip">Low direct testing</span>
+      <span class="meta-chip">Seasonal context foundational</span>
+    </div>
+
+    <table class="micro-table">
+      <thead><tr><th>Micro-Topic</th><th>Key Details</th></tr></thead>
+      <tbody>
+        <tr><td>Rotation</td><td>Day/night cycle, axis tilt, Coriolis effect</td></tr>
+        <tr><td>Revolution</td><td>Seasons (equinoxes, solstices)</td></tr>
+        <tr><td>Coordinate System</td><td>Latitude/longitude, standard meridians, time zones, IDL</td></tr>
+        <tr><td>Solar/Lunar Eclipses</td><td>Basic concepts (general awareness)</td></tr>
+      </tbody>
+    </table>
+
+    <div class="info-box why">
+      <div class="label">Why This Ordering</div>
+      Foundational. Rotation explains diurnal variation, revolution explains seasons (important for monsoon). Helps eliminate incorrect season-related statements (e.g. attributing winter to Earth&rsquo;s proximity to Sun).
+    </div>
+
+    <div class="info-box prereq">
+      <div class="label">Prerequisites</div>
+      None.
+    </div>
+  </div>
+</div>
+
+<!-- #21 Energy Resource -->
+<div class="unit-card" id="energy-resource">
+  <div class="unit-header medium-yield">
+    <h2>21. Energy Resource</h2>
+    <span class="unit-badge">Indian Geography</span>
+    <span class="yield-tag medium">Medium</span>
+  </div>
+  <div class="unit-body">
+    <div class="unit-meta">
+      <span class="meta-chip">Few direct Qs</span>
+      <span class="meta-chip">Overlaps with mineral/oil topics</span>
+    </div>
+
+    <table class="micro-table">
+      <thead><tr><th>Micro-Topic</th><th>Key Details</th></tr></thead>
+      <tbody>
+        <tr><td>Conventional</td><td>Coal (thermal plants), petroleum (Mumbai High, KG-D6, Assam), hydroelectric (Tehri, Srisailam)</td></tr>
+        <tr><td>Nuclear</td><td>Uranium (Jaduguda); nuclear plants (Tarapur, Kaiga)</td></tr>
+        <tr><td>Renewable</td><td>Solar parks (Karnataka, Rajasthan), wind (Tamil Nadu coast), biomass, small hydro</td></tr>
+        <tr><td>Energy Usage</td><td>Source shares in total power; oil import dependency</td></tr>
+      </tbody>
+    </table>
+
+    <div class="info-box why">
+      <div class="label">Why This Ordering</div>
+      Follows mineral resources (coalfields). Connects geography with economy and environment (coal pollution vs solar potential). Geographic knowledge helps eliminate false statements.
+    </div>
+
+    <div class="info-box prereq">
+      <div class="label">Prerequisites</div>
+      Mineral Resource; Landforms (for hydropower sources).
+    </div>
+  </div>
+</div>
+
+<!-- #22 Transport -->
+<div class="unit-card" id="transport">
+  <div class="unit-header medium-yield">
+    <h2>22. Transport</h2>
+    <span class="unit-badge">Indian Geography</span>
+    <span class="yield-tag medium">Medium</span>
+  </div>
+  <div class="unit-body">
+    <div class="unit-meta">
+      <span class="meta-chip"><strong>~4 Qs</strong> (2011&ndash;2024)</span>
+      <span class="meta-chip">Highways / ports matching</span>
+    </div>
+
+    <table class="micro-table">
+      <thead><tr><th>Micro-Topic</th><th>Key Details</th></tr></thead>
+      <tbody>
+        <tr><td>Roads</td><td>Golden Quadrilateral, NS-EW Corridor, Expressways, NH numbering</td></tr>
+        <tr><td>Railways</td><td>Major zones, trunk routes (Howrah&ndash;Delhi)</td></tr>
+        <tr><td>Airports</td><td>Major international; UDAN scheme</td></tr>
+        <tr><td>Seaports</td><td>JNPT, Mumbai, Kolkata, Chennai, Vishakhapatnam, Kandla</td></tr>
+        <tr><td>Inland Waterways</td><td>National Waterways (Ganga&ndash;Brahmaputra)</td></tr>
+        <tr><td>Recent Projects</td><td>Bharatmala (roads), Sagarmala (ports)</td></tr>
+      </tbody>
+    </table>
+
+    <div class="info-box why">
+      <div class="label">Why This Ordering</div>
+      Follows industry topics; relates to economic geography. Moderately scoring: e.g. knowing NH-19 vs NH-44. Eliminations include false endpoints of highways. Mainly factual.
+    </div>
+
+    <div class="info-box prereq">
+      <div class="label">Prerequisites</div>
+      None (general factual).
+    </div>
+  </div>
+</div>
+
+<!-- #23 Climatic Regions of the World -->
+<div class="unit-card" id="climatic-regions-world">
+  <div class="unit-header medium-yield">
+    <h2>23. Climatic Regions of the World</h2>
+    <span class="unit-badge">World Geography</span>
+    <span class="yield-tag medium">Medium</span>
+  </div>
+  <div class="unit-body">
+    <div class="unit-meta">
+      <span class="meta-chip">Occasional Qs</span>
+      <span class="meta-chip">Applied in global context</span>
+    </div>
+
+    <table class="micro-table">
+      <thead><tr><th>Micro-Topic</th><th>Key Details</th></tr></thead>
+      <tbody>
+        <tr><td>Global Climate Zones</td><td>Equatorial, tropical monsoon, savanna, desert, Mediterranean, temperate, polar</td></tr>
+        <tr><td>K&ouml;ppen Classification</td><td>Af, Am (tropical); BWh, BWk (arid); etc.</td></tr>
+        <tr><td>Monsoon Regions</td><td>South/East Asia, parts of Africa; shifting ITCZ</td></tr>
+        <tr><td>Oceanic vs. Continental</td><td>Western Europe vs. Siberia</td></tr>
+        <tr><td>Climate Change</td><td>Greenhouse effect impact on world zones</td></tr>
+      </tbody>
+    </table>
+
+    <div class="info-box why">
+      <div class="label">Why This Ordering</div>
+      Extends Indian climate concepts globally. Improves elimination in global statements (misplacing deserts, mislabeling climate maps).
+    </div>
+
+    <div class="info-box prereq">
+      <div class="label">Prerequisites</div>
+      None.
+    </div>
+  </div>
+</div>
+
+<!-- #24 Oceans (World Geography) -->
+<div class="unit-card" id="oceans-world">
+  <div class="unit-header medium-yield">
+    <h2>24. Oceans (World Geography)</h2>
+    <span class="unit-badge">World Geography</span>
+    <span class="yield-tag medium">Medium</span>
+  </div>
+  <div class="unit-body">
+    <div class="unit-meta">
+      <span class="meta-chip"><strong>~9%</strong> of Geography Qs</span>
+      <span class="meta-chip">Currents / climate context</span>
+    </div>
+
+    <table class="micro-table">
+      <thead><tr><th>Micro-Topic</th><th>Key Details</th></tr></thead>
+      <tbody>
+        <tr><td>Ocean Bodies</td><td>Pacific, Atlantic, Indian, Arctic, Southern</td></tr>
+        <tr><td>Major Currents</td><td>Humboldt, Gulf Stream, Kuroshio, Antarctic Circumpolar</td></tr>
+        <tr><td>Oceanic Phenomena</td><td>Upwelling (Peru), El Ni&ntilde;o / La Ni&ntilde;a global effects</td></tr>
+        <tr><td>Strategic Straits</td><td>Suez, Panama, Malacca, Hormuz</td></tr>
+        <tr><td>Marine Resources</td><td>Fishing zones, seabed minerals (manganese nodules)</td></tr>
+      </tbody>
+    </table>
+
+    <div class="info-box why">
+      <div class="label">Why This Ordering</div>
+      Follows climatic zones: oceans regulate global climate (Gulf Stream warming Europe). Useful for eliminating false claims (e.g. cooler Japan current warming South Asia). Bridges physical and economic geography.
+    </div>
+
+    <div class="info-box prereq">
+      <div class="label">Prerequisites</div>
+      Oceanography basics (currents, tides).
+    </div>
+  </div>
+</div>
+
+
+<!-- =====================================================================
+     LOW-MEDIUM YIELD (1)
+     ===================================================================== -->
+<h2 class="section-title">Low-Medium Yield Topics</h2>
+
+<!-- #25 Land Resource in India -->
+<div class="unit-card" id="land-resource">
+  <div class="unit-header low-medium-yield">
+    <h2>25. Land Resource in India</h2>
+    <span class="unit-badge">Indian Geography</span>
+    <span class="yield-tag low-medium">Low-Med</span>
+  </div>
+  <div class="unit-body">
+    <div class="unit-meta">
+      <span class="meta-chip">Minimal direct testing</span>
+      <span class="meta-chip">Background data</span>
+    </div>
+
+    <table class="micro-table">
+      <thead><tr><th>Micro-Topic</th><th>Key Details</th></tr></thead>
+      <tbody>
+        <tr><td>Land Use Statistics</td><td>Total geographical area; net sown area, forests, wastelands, fallow</td></tr>
+        <tr><td>Land Reforms</td><td>Ceiling acts, abolishment of zamindari (more GS2)</td></tr>
+        <tr><td>Degradation</td><td>Desertification, salinity/alkalinity in irrigated areas, soil erosion</td></tr>
+        <tr><td>Reclamation</td><td>Drought-prone area programmes, watershed management</td></tr>
+      </tbody>
+    </table>
+
+    <div class="info-box why">
+      <div class="label">Why This Ordering</div>
+      Comes after soils/agriculture: covers how land is utilized. Peripheral in Prelims; however, understanding percentages (e.g. only ~33% under cultivation) can eliminate wrong statements. Connects to environmental degradation.
+    </div>
+
+    <div class="info-box prereq">
+      <div class="label">Prerequisites</div>
+      Indian Soils; Agriculture.
+    </div>
+  </div>
+</div>
+
+
+<!-- =====================================================================
+     LOW YIELD TOPICS (6)
+     ===================================================================== -->
+<h2 class="section-title">Low Yield Topics</h2>
+
+<!-- #26 Communication -->
+<div class="unit-card" id="communication">
+  <div class="unit-header low-yield">
+    <h2>26. Communication</h2>
+    <span class="unit-badge">Indian Geography</span>
+    <span class="yield-tag low">Low</span>
+  </div>
+  <div class="unit-body">
+    <div class="unit-meta">
+      <span class="meta-chip">Almost never tested in GS1</span>
+    </div>
+
+    <table class="micro-table">
+      <thead><tr><th>Micro-Topic</th><th>Key Details</th></tr></thead>
+      <tbody>
+        <tr><td>Telecom</td><td>Mobile (4G/5G), satellite communication (INSAT)</td></tr>
+        <tr><td>Internet</td><td>Digital India, VSAT networks</td></tr>
+        <tr><td>Broadcast</td><td>AIR, DD FreeDish</td></tr>
+        <tr><td>Space</td><td>INSAT/GSAT uses (weather, GPS)</td></tr>
+      </tbody>
+    </table>
+
+    <div class="info-box why">
+      <div class="label">Why This Ordering</div>
+      Support the economy but yield little directly for Prelims. Basic knowledge can rule out clearly wrong statements. Not a focus area.
+    </div>
+
+    <div class="info-box prereq">
+      <div class="label">Prerequisites</div>
+      None.
+    </div>
+  </div>
+</div>
+
+<!-- #27 Universe: Origin & Evolution -->
+<div class="unit-card" id="universe">
+  <div class="unit-header low-yield">
+    <h2>27. Universe: Origin &amp; Evolution</h2>
+    <span class="unit-badge">Physical Geography</span>
+    <span class="yield-tag low">Low</span>
+  </div>
+  <div class="unit-body">
+    <div class="unit-meta">
+      <span class="meta-chip">Virtually no direct Prelims Qs</span>
+    </div>
+
+    <table class="micro-table">
+      <thead><tr><th>Micro-Topic</th><th>Key Details</th></tr></thead>
+      <tbody>
+        <tr><td>Big Bang Theory</td><td>Expansion of universe; Hubble&rsquo;s law</td></tr>
+        <tr><td>Solar System</td><td>Nebular hypothesis</td></tr>
+        <tr><td>Stars &amp; Galaxies</td><td>Age of Universe/Earth</td></tr>
+        <tr><td>Recent Discoveries</td><td>Exoplanets, astronomical events (current affairs)</td></tr>
+      </tbody>
+    </table>
+
+    <div class="info-box why">
+      <div class="label">Why This Ordering</div>
+      Background context only. Negligible direct scoring impact. General awareness (e.g. age of Earth ~4.5 billion years) can help dismiss erroneous claims.
+    </div>
+
+    <div class="info-box prereq">
+      <div class="label">Prerequisites</div>
+      None.
+    </div>
+  </div>
+</div>
+
+<!-- #28 Population & Settlement -->
+<div class="unit-card" id="population-settlement">
+  <div class="unit-header low-yield">
+    <h2>28. Population &amp; Settlement</h2>
+    <span class="unit-badge">Indian Geography</span>
+    <span class="yield-tag low">Low</span>
+  </div>
+  <div class="unit-body">
+    <div class="unit-meta">
+      <span class="meta-chip">Rare in Prelims GS1</span>
+      <span class="meta-chip">More GS2 / Sociology</span>
+    </div>
+
+    <table class="micro-table">
+      <thead><tr><th>Micro-Topic</th><th>Key Details</th></tr></thead>
+      <tbody>
+        <tr><td>Population</td><td>Density patterns (Indo-Gangetic belt high, NE low); growth rates</td></tr>
+        <tr><td>Demographics</td><td>Sex ratio, literacy, urban vs. rural</td></tr>
+        <tr><td>Migration</td><td>Rural&ndash;urban, inter-state (Bihar to Delhi)</td></tr>
+        <tr><td>Urbanization</td><td>Primate city concept (Mumbai, Delhi); megacities</td></tr>
+        <tr><td>Settlements</td><td>Rural (compact, linear) vs. urban (core-periphery)</td></tr>
+      </tbody>
+    </table>
+
+    <div class="info-box why">
+      <div class="label">Why This Ordering</div>
+      Placed late as human geography: seldom tested except in environment/context. Knowing urban agglomerations helps eliminate statements. Not a direct scoring focus.
+    </div>
+
+    <div class="info-box prereq">
+      <div class="label">Prerequisites</div>
+      None.
+    </div>
+  </div>
+</div>
+
+<!-- #29 Continents -->
+<div class="unit-card" id="continents">
+  <div class="unit-header low-yield">
+    <h2>29. Continents</h2>
+    <span class="unit-badge">World Geography</span>
+    <span class="yield-tag low">Low</span>
+  </div>
+  <div class="unit-body">
+    <div class="unit-meta">
+      <span class="meta-chip">Very low PYQ footprint</span>
+    </div>
+
+    <table class="micro-table">
+      <thead><tr><th>Micro-Topic</th><th>Key Details</th></tr></thead>
+      <tbody>
+        <tr><td>Landmasses</td><td>Asia, Africa, Americas, Europe, Australia, Antarctica</td></tr>
+        <tr><td>Major Features</td><td>Sahara, Andes, Great Rift Valley, Ural Mountains, Great Lakes</td></tr>
+        <tr><td>Climate by Continent</td><td>Mediterranean in South Europe, monsoon in Asia</td></tr>
+      </tbody>
+    </table>
+
+    <div class="info-box why">
+      <div class="label">Why This Ordering</div>
+      Listed for completeness. Prelims might include map tasks (identify continent). Knowing continental outlines assists in verifying geographic statements but isn&rsquo;t a high-yield area.
+    </div>
+
+    <div class="info-box prereq">
+      <div class="label">Prerequisites</div>
+      None.
+    </div>
+  </div>
+</div>
+
+<!-- #30 World Economic Geography -->
+<div class="unit-card" id="world-economic">
+  <div class="unit-header low-yield">
+    <h2>30. World Economic Geography</h2>
+    <span class="unit-badge">World Geography</span>
+    <span class="yield-tag low">Low</span>
+  </div>
+  <div class="unit-body">
+    <div class="unit-meta">
+      <span class="meta-chip">Minimal PYQ impact</span>
+    </div>
+
+    <table class="micro-table">
+      <thead><tr><th>Micro-Topic</th><th>Key Details</th></tr></thead>
+      <tbody>
+        <tr><td>Resource Distribution</td><td>Oil (Middle East, Russia), coal (USA, China), minerals (Africa)</td></tr>
+        <tr><td>Industry</td><td>Ruhr, Silicon Valley, Tokyo-Yokohama</td></tr>
+        <tr><td>Trade Patterns</td><td>OPEC, ASEAN trade; major shipping routes</td></tr>
+        <tr><td>Agricultural Belts</td><td>Wheat (N. America), rice (Asia), coffee (Brazil)</td></tr>
+      </tbody>
+    </table>
+
+    <div class="info-box why">
+      <div class="label">Why This Ordering</div>
+      About human-economic patterns. Rarely explicit in Prelims GS1. Provides context to differentiate countries but is not core for scoring.
+    </div>
+
+    <div class="info-box prereq">
+      <div class="label">Prerequisites</div>
+      None.
+    </div>
+  </div>
+</div>
+
+<!-- #31 World Human Geography -->
+<div class="unit-card" id="world-human">
+  <div class="unit-header low-yield">
+    <h2>31. World Human Geography</h2>
+    <span class="unit-badge">World Geography</span>
+    <span class="yield-tag low">Low</span>
+  </div>
+  <div class="unit-body">
+    <div class="unit-meta">
+      <span class="meta-chip">Rare in Prelims GS1</span>
+      <span class="meta-chip">Supports optional / Mains</span>
+    </div>
+
+    <table class="micro-table">
+      <thead><tr><th>Micro-Topic</th><th>Key Details</th></tr></thead>
+      <tbody>
+        <tr><td>Population</td><td>Dense East Asia vs. sparse deserts; growth rates</td></tr>
+        <tr><td>Urbanization</td><td>Megacities (Tokyo, Delhi); primate cities</td></tr>
+        <tr><td>Migration</td><td>Middle East labour; African&ndash;European refugees; remittance corridors</td></tr>
+        <tr><td>Cultural Regions</td><td>Language families, religion geography</td></tr>
+        <tr><td>Development Indices</td><td>HDI disparities, literacy rates</td></tr>
+      </tbody>
+    </table>
+
+    <div class="info-box why">
+      <div class="label">Why This Ordering</div>
+      Last topic: global human patterns. Minimal direct Prelims application. Awareness helps eliminate unrealistic claims (e.g. &ldquo;Nile is world&rsquo;s longest river in South America&rdquo;). Primarily supports optional/Mains.
+    </div>
+
+    <div class="info-box prereq">
+      <div class="label">Prerequisites</div>
+      None.
+    </div>
+  </div>
+</div>
+
+<!-- ===== Manufacturing & Services (bonus low) ===== -->
+<div class="unit-card" id="manufacturing-services" style="margin-top:-8px;">
+  <div class="unit-header low-yield">
+    <h2>&#8226; Manufacturing &amp; Services</h2>
+    <span class="unit-badge">Indian Geography</span>
+    <span class="yield-tag low">Low</span>
+  </div>
+  <div class="unit-body">
+    <div class="unit-meta">
+      <span class="meta-chip">Virtually none in Prelims GS1</span>
+      <span class="meta-chip">Mainly GS2 / Economy</span>
+    </div>
+
+    <table class="micro-table">
+      <thead><tr><th>Micro-Topic</th><th>Key Details</th></tr></thead>
+      <tbody>
+        <tr><td>Major Industries</td><td>Steel (Jamshedpur, Pune), IT (Bengaluru, Hyderabad), textile hubs</td></tr>
+        <tr><td>Industrial Regions</td><td>India&rsquo;s belts; global (Ruhr, Silicon Valley)</td></tr>
+        <tr><td>SEZs &amp; Corridors</td><td>DMIC (Delhi&ndash;Mumbai Industrial Corridor)</td></tr>
+        <tr><td>Service Sector</td><td>IT/ITES clusters; call center hubs</td></tr>
+      </tbody>
+    </table>
+
+    <div class="info-box why">
+      <div class="label">Why This Ordering</div>
+      Last Indian geography topic. Prelims expects minimal specifics. Can help discard obviously incorrect choices (e.g. major steel plant in Kerala). Connects to economy, but peripheral in Prelims.
+    </div>
+
+    <div class="info-box prereq">
+      <div class="label">Prerequisites</div>
+      None.
+    </div>
+  </div>
+</div>
+
+</div><!-- /container -->
+</body>
+</html>

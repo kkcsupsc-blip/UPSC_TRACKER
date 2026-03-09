@@ -1,0 +1,39 @@
+# Virtual environments
+.venv/
+venv/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Flask secret
+.flask_secret
+
+# User data (contains personal study progress)
+data/tracker_data.json
+
+# Uploaded files (user-generated reports)
+uploads/
+
+# Standalone HTML files (external/generated, not part of app)
+/Chatgpt_UPSC_Ranking.html
+/UPSC_MAINS_RANKING.html
+/index.html
+
+# PDFs
+*.pdf
+
+# Test/debug scripts
+test_optionc.py
+_test_*.py
+_debug*.py
+_verify*.py
+
+# OS files
+Thumbs.db
+.DS_Store
+
+# IDE
+.vscode/
+*.code-workspace
