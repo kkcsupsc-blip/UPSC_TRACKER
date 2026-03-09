@@ -467,9 +467,17 @@ async function renderDashboard() {
   if (tb) {
     const pct = tb.utilization;
     const barColor = tb.overloaded ? 'var(--red)' : pct > 80 ? 'var(--yellow)' : 'var(--green)';
+    const spillover = tb.spilloverHours || 0;
+    const spillItems = tb.spilloverItems || [];
     const statusText = tb.overloaded
-      ? `<span style="color:var(--red); font-weight:600;">OVERLOADED by ${tb.overloadHours}h — consider rescheduling</span>`
+      ? `<span style="color:var(--red); font-weight:600;">OVERLOADED by ${tb.overloadHours}h</span>`
       : `<span style="color:var(--green);">${tb.remaining}h free</span>`;
+    const spillDetail = spillItems.map(s => `${s.label} ${s.hours}h`).join(', ');
+    const spilloverText = spillover > 0
+      ? `<div style="margin-top:8px; padding:6px 10px; background:rgba(255,165,0,0.1); border-left:3px solid var(--orange, orange); border-radius:4px; font-size:11px; color:var(--text2);">
+          ↪ <strong>${spillover}h</strong> spills to tomorrow: ${spillDetail}
+        </div>`
+      : '';
 
     document.getElementById('dash-time-budget').innerHTML = `
       <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:10px; margin-bottom:12px;">
@@ -484,6 +492,7 @@ async function renderDashboard() {
         <div style="text-align:center; padding:8px; background:var(--bg); border-radius:6px;">
           <div style="font-size:10px; color:var(--text3); text-transform:uppercase;">Learning</div>
           <div style="font-size:18px; font-weight:700; color:var(--accent2);">${tb.learningHours}h</div>
+          ${spillover > 0 ? `<div style="font-size:9px; color:orange;">+${spillover}h tmrw</div>` : ''}
         </div>
         <div style="text-align:center; padding:8px; background:var(--bg); border-radius:6px;">
           <div style="font-size:10px; color:var(--text3); text-transform:uppercase;">Cumulative</div>
@@ -497,6 +506,7 @@ async function renderDashboard() {
         <span>${tb.totalHours}h / ${tb.budget}h used (${pct}%)</span>
         ${statusText}
       </div>
+      ${spilloverText}
       ${tb.activities && tb.activities.length > 0 ? renderTimeBudgetActivities(tb.activities) : ''}
     `;
   }
@@ -747,6 +757,7 @@ async function renderToday() {
   if (tb) {
     const pct = tb.utilization;
     const barColor = tb.overloaded ? 'var(--red)' : pct > 80 ? 'var(--yellow)' : 'var(--green)';
+    const tpSpillover = tb.spilloverHours || 0;
     timeSummaryHtml = `
       <div style="background:var(--bg2); border-radius:8px; padding:12px; margin-bottom:16px; border-left:4px solid ${barColor};">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
@@ -763,6 +774,7 @@ async function renderToday() {
           <span>📖 Learning: ${tb.learningHours}h</span>
           <span>🔄 Cumulative: ${tb.cumulativeHours}h</span>
         </div>
+        ${tpSpillover > 0 ? `<div style="margin-top:8px; padding:6px 10px; background:rgba(255,165,0,0.1); border-left:3px solid orange; border-radius:4px; font-size:11px; color:var(--text2);">↪ <strong>${tpSpillover}h</strong> spills to tomorrow: ${(tb.spilloverItems||[]).map(s => s.label + ' ' + s.hours + 'h').join(', ')}</div>` : ''}
       </div>`;
   }
 
@@ -1056,6 +1068,7 @@ async function showCalDay(dateStr, skipHighlight = false) {
       + '<div style="height:100%; width:' + Math.min(100, pct) + '%; background:' + barColor + '; border-radius:4px;"></div>'
       + '</div>'
       + '<div style="font-size:10px; color:var(--text3); text-align:center;">' + tb.totalHours + 'h / ' + tb.budget + 'h used (' + pct + '%)</div>'
+      + ((tb.spilloverHours || 0) > 0 ? '<div style="margin-top:6px; padding:5px 8px; background:rgba(255,165,0,0.1); border-left:3px solid orange; border-radius:4px; font-size:10px; color:var(--text2);">↪ <strong>' + tb.spilloverHours + 'h</strong> spills to next day: ' + (tb.spilloverItems||[]).map(function(s){return s.label+' '+s.hours+'h'}).join(', ') + '</div>' : '')
       + (tb.activities && tb.activities.length > 0 ? renderTimeBudgetActivities(tb.activities) : '')
       + '</div>';
   }

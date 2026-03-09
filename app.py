@@ -588,21 +588,31 @@ def day_diff(d1_str, d2_str):
 def compute_daily_load(data, date_str, include_overdue=False, resolved_schedules=None):
     """Compute all scheduled activities and total hours for a given date.
 
-    Returns a dict with budget, total hours, activities breakdown,
-    utilisation percentage, and overload info.
+    Uses priority-based budget allocation:
+      Revision (R1>R3>R7>R30) > Learning > MN > MCQ,PYQ,ERA,MCQA,CA > MVA,MAINS > Cumulative
+    Items that don't fit the daily budget are marked as spillover.
     """
+    # Priority map: lower number = higher priority = stays on today
+    ACTIVITY_PRIORITY = {
+        "R1": 10, "R3": 11, "R7": 12, "R30": 13,
+        "learning": 20,
+        "MN": 30,
+        "PYQ": 40, "ERA": 40, "MCQ": 40, "MCQA": 40, "CA": 40,
+        "MVA": 50, "MAINS": 50,
+        "cumulative_sectional": 60, "cumulative_subject": 60,
+    }
+
     settings = data["settings"]
     act_hrs = get_activity_hours(settings)
     wknd = is_weekend(date_str)
     budget = settings.get("weekendHours", 12) if wknd else settings.get("weekdayHours", 6)
     today = today_str()
 
-    # Use budget-aware resolved schedules (compute once if not provided)
     if resolved_schedules is None:
         resolved_schedules, _ = resolve_all_revision_schedules(data)
 
-    activities = []
-    total_hours = 0.0
+    done_activities = []    # completed revisions (display only, no budget)
+    pending_demands = []    # all uncompleted items with full hours + priority
 
     # ── 1. Revision tasks from completed/mastered topics ────────────────
     for subj in data["subjects"]:
@@ -619,7 +629,6 @@ def compute_daily_load(data, date_str, include_overdue=False, resolved_schedules
                 rev_key = f"{topic['id']}_{rev['type']}"
                 done = rev_key in data["completedRevisions"]
 
-                # Include if: (a) matches the date, or (b) overdue and we want overdue on today
                 is_overdue = target_date < today and not done
                 show = (target_date == date_str) or (
                     include_overdue and date_str == today and is_overdue
@@ -628,7 +637,7 @@ def compute_daily_load(data, date_str, include_overdue=False, resolved_schedules
                     continue
 
                 hrs = act_hrs.get(rev["type"], 1.0)
-                activities.append({
+                item = {
                     "category": "revision",
                     "revType": rev["type"],
                     "topicId": topic["id"],
@@ -637,9 +646,12 @@ def compute_daily_load(data, date_str, include_overdue=False, resolved_schedules
                     "hours": hrs,
                     "done": done,
                     "overdue": is_overdue,
-                })
-                if not done:
-                    total_hours += hrs
+                    "priority": ACTIVITY_PRIORITY.get(rev["type"], 50),
+                }
+                if done:
+                    done_activities.append(item)
+                else:
+                    pending_demands.append(item)
 
     # ── 2. Learning activities (topics currently in learning status) ────
     for subj in data["subjects"]:
@@ -648,23 +660,18 @@ def compute_daily_load(data, date_str, include_overdue=False, resolved_schedules
                 continue
             start = topic.get("startDate") or today
             est_hours = topic.get("estimatedHours", 7.5)
-            # Estimate end date: assume ~2.5h/weekday learning
             est_days = max(1, int(est_hours / 2.5) + 1)
             est_end = add_days(start, est_days)
             if start <= date_str <= est_end:
-                # How many hours to show for this day: up to remaining budget or est_hours
-                day_learn = min(est_hours, budget - total_hours) if total_hours < budget else 0
-                day_learn = max(0, round(day_learn, 1))
-                if day_learn > 0:
-                    activities.append({
-                        "category": "learning",
-                        "topicId": topic["id"],
-                        "topicName": topic["name"],
-                        "subjectName": subj["name"],
-                        "hours": day_learn,
-                        "done": False,
-                    })
-                    total_hours += day_learn
+                pending_demands.append({
+                    "category": "learning",
+                    "topicId": topic["id"],
+                    "topicName": topic["name"],
+                    "subjectName": subj["name"],
+                    "hours": est_hours,
+                    "done": False,
+                    "priority": ACTIVITY_PRIORITY["learning"],
+                })
 
     # ── 3. Cumulative sessions ──────────────────────────────────────────
     cum = data.get("cumulativeRevisions", {})
@@ -672,57 +679,91 @@ def compute_daily_load(data, date_str, include_overdue=False, resolved_schedules
         for sess in batch["sessions"]:
             if sess["completed"]:
                 continue
-            # Sectional batch = 12h spread over Sat + Sun
             sat = sess["scheduledDate"]
             sun = add_days(sat, 1)
             batch_day_hrs = act_hrs.get("sectionalBatch", 12) / 2
             if date_str in (sat, sun):
-                activities.append({
+                pending_demands.append({
                     "category": "cumulative_sectional",
                     "batchId": batch["id"],
                     "round": sess["round"],
                     "topicCount": len(batch.get("topicIds", [])),
                     "hours": batch_day_hrs,
                     "done": False,
+                    "priority": ACTIVITY_PRIORITY["cumulative_sectional"],
                 })
-                total_hours += batch_day_hrs
 
     for sr in cum.get("subjectRevisions", []):
         for sess in sr["sessions"]:
             if sess["completed"]:
                 continue
-            # Subject revision = 24h spread over 2 weekends (4 days)
             sat = sess["scheduledDate"]
             sun = add_days(sat, 1)
             subj_day_hrs = act_hrs.get("subjectRevision", 24) / 4
-            # Second weekend
             sat2 = add_days(sat, 7)
             sun2 = add_days(sat, 8)
             if date_str in (sat, sun, sat2, sun2):
-                activities.append({
+                pending_demands.append({
                     "category": "cumulative_subject",
                     "subjectId": sr["subjectId"],
                     "subjectName": sr["subjectName"],
                     "round": sess["round"],
                     "hours": subj_day_hrs,
                     "done": False,
+                    "priority": ACTIVITY_PRIORITY["cumulative_subject"],
                 })
-                total_hours += subj_day_hrs
+
+    # ── 4. Priority-based budget allocation ─────────────────────────────
+    pending_demands.sort(key=lambda a: a["priority"])
+
+    activities = list(done_activities)   # done items always appear (display only)
+    total_hours = 0.0
+    spillover_hours = 0.0
+    total_demand = round(sum(a["hours"] for a in pending_demands), 1)
+    spillover_items = []   # items (or partial) that didn't fit
+
+    for item in pending_demands:
+        if total_hours + item["hours"] <= budget + 0.01:
+            # Fits entirely
+            activities.append(item)
+            total_hours += item["hours"]
+        elif total_hours < budget:
+            # Partially fits — split: today gets what fits, rest spills
+            fits = round(budget - total_hours, 1)
+            spills = round(item["hours"] - fits, 1)
+            today_item = dict(item, hours=fits)
+            activities.append(today_item)
+            total_hours += fits
+            spillover_hours += spills
+            spill_label = item.get("revType") or item["category"]
+            spillover_items.append({"label": spill_label, "hours": spills})
+        else:
+            # Doesn't fit at all — full spillover
+            spillover_hours += item["hours"]
+            spill_label = item.get("revType") or item["category"]
+            spillover_items.append({"label": spill_label, "hours": item["hours"]})
 
     total_hours = round(total_hours, 1)
+    spillover_hours = round(spillover_hours, 1)
+    rev_hrs = round(sum(a["hours"] for a in activities if a["category"] == "revision" and not a["done"]), 1)
+    learn_hrs = round(sum(a["hours"] for a in activities if a["category"] == "learning"), 1)
+    cum_hrs = round(sum(a["hours"] for a in activities if a["category"].startswith("cumulative")), 1)
     return {
         "date": date_str,
         "isWeekend": wknd,
         "budget": budget,
         "totalHours": total_hours,
+        "totalDemand": total_demand,
         "remaining": round(max(0, budget - total_hours), 1),
-        "overloaded": total_hours > budget,
-        "overloadHours": round(max(0, total_hours - budget), 1),
+        "overloaded": total_demand > budget,
+        "overloadHours": round(max(0, total_demand - budget), 1),
+        "spilloverHours": spillover_hours,
+        "spilloverItems": spillover_items,
         "activities": activities,
         "utilization": round(min(100, total_hours / budget * 100)) if budget > 0 else 0,
-        "revisionHours": round(sum(a["hours"] for a in activities if a["category"] == "revision" and not a["done"]), 1),
-        "learningHours": round(sum(a["hours"] for a in activities if a["category"] == "learning"), 1),
-        "cumulativeHours": round(sum(a["hours"] for a in activities if a["category"].startswith("cumulative")), 1),
+        "revisionHours": rev_hrs,
+        "learningHours": learn_hrs,
+        "cumulativeHours": cum_hrs,
     }
 
 
