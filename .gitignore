@@ -10,10 +10,10 @@ __pycache__/
 # Flask secret
 .flask_secret
 
-# User data (contains personal study progress)
+# User data (synced via GitHub API, not via git commits)
 data/tracker_data.json
 
-# Uploaded files (user-generated reports)
+# Uploaded files
 uploads/
 
 # Standalone HTML files (external/generated, not part of app)

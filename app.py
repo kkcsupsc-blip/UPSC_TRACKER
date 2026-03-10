@@ -9,6 +9,7 @@ import time
 import math
 import uuid
 import threading
+import base64
 import urllib.request
 import urllib.error
 from datetime import datetime, timedelta, timezone
@@ -58,6 +59,78 @@ ALLOWED_EXTENSIONS = {".html", ".htm"}
 
 
 # =============================================================================
+#  GITHUB SYNC — persist data across Render free-tier deploys
+# =============================================================================
+# Set these env vars on Render:
+#   GITHUB_TOKEN  — personal access token (repo scope)
+#   GITHUB_REPO   — e.g. "kisho/UPSC_TRACKER"
+#   GITHUB_BRANCH — default "main"
+
+GITHUB_TOKEN  = os.environ.get("GITHUB_TOKEN", "")
+GITHUB_REPO   = os.environ.get("GITHUB_REPO", "")
+GITHUB_BRANCH = os.environ.get("GITHUB_BRANCH", "main")
+_GITHUB_FILE_PATH = "data/tracker_data.json"  # path inside the repo
+
+
+def _gh_api(endpoint, method="GET", body=None):
+    """Call GitHub REST API. Returns parsed JSON or None on failure."""
+    if not GITHUB_TOKEN or not GITHUB_REPO:
+        return None
+    url = f"https://api.github.com/repos/{GITHUB_REPO}/{endpoint}"
+    headers = {
+        "Authorization": f"token {GITHUB_TOKEN}",
+        "Accept": "application/vnd.github.v3+json",
+        "User-Agent": "UPSC-Tracker",
+    }
+    data_bytes = json.dumps(body).encode() if body else None
+    req = urllib.request.Request(url, data=data_bytes, headers=headers, method=method)
+    if body:
+        req.add_header("Content-Type", "application/json")
+    try:
+        with urllib.request.urlopen(req, timeout=15) as resp:
+            return json.loads(resp.read().decode())
+    except Exception as e:
+        print(f"[GitHub Sync] API error ({method} {endpoint}): {e}")
+        return None
+
+
+def _gh_fetch_data():
+    """Download tracker_data.json from GitHub. Returns (dict, sha) or (None, None)."""
+    result = _gh_api(f"contents/{_GITHUB_FILE_PATH}?ref={GITHUB_BRANCH}")
+    if not result or "content" not in result:
+        return None, None
+    content = base64.b64decode(result["content"]).decode("utf-8")
+    return json.loads(content), result["sha"]
+
+
+def _gh_push_data(data_dict):
+    """Push tracker_data.json to GitHub (create or update)."""
+    if not GITHUB_TOKEN or not GITHUB_REPO:
+        return
+    # Get current SHA (needed for update)
+    existing = _gh_api(f"contents/{_GITHUB_FILE_PATH}?ref={GITHUB_BRANCH}")
+    sha = existing.get("sha") if existing and "sha" in existing else None
+
+    content_b64 = base64.b64encode(
+        json.dumps(data_dict, indent=2, ensure_ascii=False).encode("utf-8")
+    ).decode("ascii")
+
+    body = {
+        "message": f"Auto-sync tracker data ({datetime.now(IST).strftime('%Y-%m-%d %H:%M IST')})",
+        "content": content_b64,
+        "branch": GITHUB_BRANCH,
+    }
+    if sha:
+        body["sha"] = sha
+    _gh_api(f"contents/{_GITHUB_FILE_PATH}", method="PUT", body=body)
+
+
+def _gh_push_async(data_dict):
+    """Push to GitHub in a background thread so save_data stays fast."""
+    threading.Thread(target=_gh_push_data, args=(data_dict,), daemon=True).start()
+
+
+# =============================================================================
 #  DATA LAYER
 # =============================================================================
 
@@ -90,9 +163,18 @@ def default_data():
 
 def load_data():
     if not os.path.exists(DATA_FILE):
-        data = default_data()
-        save_data(data)
-        return data
+        # Fresh deploy — try fetching latest data from GitHub
+        gh_data, _ = _gh_fetch_data()
+        if gh_data and gh_data.get("subjects"):
+            print("[GitHub Sync] Restored data from GitHub")
+            os.makedirs(DATA_DIR, exist_ok=True)
+            with open(DATA_FILE, "w", encoding="utf-8") as f:
+                json.dump(gh_data, f, indent=2, ensure_ascii=False)
+            # Fall through to normal load logic below
+        else:
+            data = default_data()
+            save_data(data)
+            return data
     try:
         with open(DATA_FILE, "r", encoding="utf-8") as f:
             data = json.load(f)
@@ -172,6 +254,8 @@ def _fix_mastery_status(data):
 def save_data(data):
     with open(DATA_FILE, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=2, ensure_ascii=False)
+    # Push to GitHub in background so live progress survives redeploys
+    _gh_push_async(data)
 
 
 def gen_id():
@@ -585,6 +669,120 @@ def day_diff(d1_str, d2_str):
     return (dt2 - dt1).days
 
 
+def _simulate_learning_for_date(data, target_date, resolved_schedules=None):
+    """Simulate day-by-day learning allocation up to target_date.
+
+    Learning topics consume ALL available budget (after non-learning tasks),
+    distributed proportionally by remaining hours.  Topics finish as fast as
+    the daily budget allows — no artificial 2.5 h/day cap.
+
+    Returns {topicId: {"hours": float, "topicId", "topicName", "subjectName",
+                        "subjectId", "remaining": float}}
+    """
+    settings = data["settings"]
+    act_hrs = get_activity_hours(settings)
+    wkday_budget = settings.get("weekdayHours", 6)
+    wkend_budget = settings.get("weekendHours", 12)
+    today = today_str()
+
+    if resolved_schedules is None:
+        resolved_schedules, _ = resolve_all_revision_schedules(data)
+
+    # --- Pre-build non-learning demand map (date → hours) ---------------
+    non_learn_map = {}
+    completed_revs = data.get("completedRevisions", {})
+    for subj in data["subjects"]:
+        for topic in subj["topics"]:
+            if topic["status"] not in ("completed", "mastered"):
+                continue
+            sched = resolved_schedules.get(topic["id"])
+            if not sched:
+                continue
+            for _key, rev in sched.items():
+                d = rev["date"]
+                rev_key = f"{topic['id']}_{rev['type']}"
+                if rev_key not in completed_revs:
+                    non_learn_map[d] = non_learn_map.get(d, 0) + act_hrs.get(rev["type"], 1.0)
+
+    cum = data.get("cumulativeRevisions", {})
+    for batch in cum.get("sectionalBatches", []):
+        for sess in batch["sessions"]:
+            if sess["completed"]:
+                continue
+            sat = sess["scheduledDate"]
+            batch_day_hrs = act_hrs.get("sectionalBatch", 12) / 2
+            for d in (sat, add_days(sat, 1)):
+                non_learn_map[d] = non_learn_map.get(d, 0) + batch_day_hrs
+    for sr in cum.get("subjectRevisions", []):
+        for sess in sr["sessions"]:
+            if sess["completed"]:
+                continue
+            sat = sess["scheduledDate"]
+            subj_day_hrs = act_hrs.get("subjectRevision", 24) / 4
+            for d in (sat, add_days(sat, 1), add_days(sat, 7), add_days(sat, 8)):
+                non_learn_map[d] = non_learn_map.get(d, 0) + subj_day_hrs
+
+    # --- Collect learning topics ----------------------------------------
+    learning_items = []
+    earliest_start = None
+    for subj in data["subjects"]:
+        for topic in subj["topics"]:
+            if topic["status"] != "learning":
+                continue
+            start = topic.get("startDate") or today
+            learning_items.append({
+                "topicId": topic["id"],
+                "topicName": topic["name"],
+                "subjectName": subj["name"],
+                "subjectId": subj["id"],
+                "start": start,
+                "remaining": topic.get("estimatedHours", 7.5),
+            })
+            if earliest_start is None or start < earliest_start:
+                earliest_start = start
+
+    if not learning_items or earliest_start > target_date:
+        return {}
+
+    # --- Day-by-day simulation ------------------------------------------
+    allocations = {}
+    current = earliest_start
+    for _ in range(365):                     # safety cap
+        if current > target_date:
+            break
+
+        budget = wkend_budget if is_weekend(current) else wkday_budget
+        non_learn = non_learn_map.get(current, 0)
+        available = max(0, budget - non_learn)
+
+        active = [lt for lt in learning_items
+                  if lt["start"] <= current and lt["remaining"] > 0.01]
+        if not active:
+            current = add_days(current, 1)
+            continue
+
+        total_remaining = sum(lt["remaining"] for lt in active)
+        to_allocate = min(available, total_remaining)
+
+        if to_allocate > 0.01:
+            for lt in active:
+                share = (lt["remaining"] / total_remaining) * to_allocate
+                lt["remaining"] = round(lt["remaining"] - share, 2)
+                if current == target_date:
+                    allocations[lt["topicId"]] = {
+                        "hours": round(share, 1),
+                        "topicId": lt["topicId"],
+                        "topicName": lt["topicName"],
+                        "subjectName": lt["subjectName"],
+                        "subjectId": lt["subjectId"],
+                        "remaining": round(lt["remaining"], 1),
+                    }
+
+        current = add_days(current, 1)
+
+    return allocations
+
+
 def compute_daily_load(data, date_str, include_overdue=False, resolved_schedules=None):
     """Compute all scheduled activities and total hours for a given date.
 
@@ -654,24 +852,19 @@ def compute_daily_load(data, date_str, include_overdue=False, resolved_schedules
                     pending_demands.append(item)
 
     # ── 2. Learning activities (topics currently in learning status) ────
-    for subj in data["subjects"]:
-        for topic in subj["topics"]:
-            if topic["status"] != "learning":
-                continue
-            start = topic.get("startDate") or today
-            est_hours = topic.get("estimatedHours", 7.5)
-            est_days = max(1, int(est_hours / 2.5) + 1)
-            est_end = add_days(start, est_days)
-            if start <= date_str <= est_end:
-                pending_demands.append({
-                    "category": "learning",
-                    "topicId": topic["id"],
-                    "topicName": topic["name"],
-                    "subjectName": subj["name"],
-                    "hours": est_hours,
-                    "done": False,
-                    "priority": ACTIVITY_PRIORITY["learning"],
-                })
+    #    Simulates day-by-day from start dates so ALL free budget goes to
+    #    learning, distributed proportionally by remaining hours.
+    learning_allocs = _simulate_learning_for_date(data, date_str, resolved_schedules)
+    for alloc in learning_allocs.values():
+        pending_demands.append({
+            "category": "learning",
+            "topicId": alloc["topicId"],
+            "topicName": alloc["topicName"],
+            "subjectName": alloc["subjectName"],
+            "hours": alloc["hours"],
+            "done": False,
+            "priority": ACTIVITY_PRIORITY["learning"],
+        })
 
     # ── 3. Cumulative sessions ──────────────────────────────────────────
     cum = data.get("cumulativeRevisions", {})
