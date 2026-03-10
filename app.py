@@ -15,6 +15,7 @@ import urllib.error
 from datetime import datetime, timedelta, timezone
 import hashlib
 import secrets
+import atexit
 
 # Indian Standard Time (UTC+5:30)
 IST = timezone(timedelta(hours=5, minutes=30))
@@ -125,9 +126,22 @@ def _gh_push_data(data_dict):
     _gh_api(f"contents/{_GITHUB_FILE_PATH}", method="PUT", body=body)
 
 
+_pending_push = None  # track the latest push thread
+
 def _gh_push_async(data_dict):
     """Push to GitHub in a background thread so save_data stays fast."""
-    threading.Thread(target=_gh_push_data, args=(data_dict,), daemon=True).start()
+    global _pending_push
+    t = threading.Thread(target=_gh_push_data, args=(data_dict,), daemon=True)
+    _pending_push = t
+    t.start()
+
+
+@atexit.register
+def _wait_for_pending_push():
+    """On shutdown, wait for the last GitHub push to finish so no data is lost."""
+    if _pending_push and _pending_push.is_alive():
+        print("[GitHub Sync] Waiting for final push to complete...")
+        _pending_push.join(timeout=20)
 
 
 # =============================================================================
