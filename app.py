@@ -17,6 +17,10 @@ import hashlib
 import secrets
 import atexit
 
+x= 5
+y = 8
+z=x+y
+
 # Indian Standard Time (UTC+5:30)
 IST = timezone(timedelta(hours=5, minutes=30))
 from flask import (Flask, render_template, request, jsonify, send_file,
