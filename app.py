@@ -17,13 +17,6 @@ import hashlib
 import secrets
 import atexit
 
-
-#This is for Testing Purpose Only...
-
-x = 10
-y = 0
-
-z = x+y
 # Indian Standard Time (UTC+5:30)
 IST = timezone(timedelta(hours=5, minutes=30))
 from flask import (Flask, render_template, request, jsonify, send_file,
@@ -182,20 +175,30 @@ def default_data():
     }
 
 
+_first_load = True  # Track first load after process start (fresh deploy)
+
 def load_data():
-    if not os.path.exists(DATA_FILE):
-        # Fresh deploy — try fetching latest data from GitHub
+    global _first_load
+    # On first load after startup, ALWAYS fetch from GitHub API.
+    # This is critical because git clone brings the old committed JSON,
+    # but the API has the latest data pushed by the previous instance.
+    if _first_load and GITHUB_TOKEN and GITHUB_REPO:
+        _first_load = False
         gh_data, _ = _gh_fetch_data()
         if gh_data and gh_data.get("subjects"):
-            print("[GitHub Sync] Restored data from GitHub")
+            print("[GitHub Sync] Restored latest data from GitHub API")
             os.makedirs(DATA_DIR, exist_ok=True)
             with open(DATA_FILE, "w", encoding="utf-8") as f:
                 json.dump(gh_data, f, indent=2, ensure_ascii=False)
-            # Fall through to normal load logic below
+            # Fall through to normal load + migration logic below
         else:
-            data = default_data()
-            save_data(data)
-            return data
+            print("[GitHub Sync] Could not fetch from API, using local file")
+    _first_load = False
+
+    if not os.path.exists(DATA_FILE):
+        data = default_data()
+        save_data(data)
+        return data
     try:
         with open(DATA_FILE, "r", encoding="utf-8") as f:
             data = json.load(f)
