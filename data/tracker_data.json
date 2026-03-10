@@ -422,8 +422,8 @@
           "estimatedDays": 1,
           "roi": "very-high",
           "notes": "",
-          "status": "learning",
-          "startDate": "2026-03-10",
+          "status": "not-started",
+          "startDate": null,
           "completionDate": null,
           "createdAt": "2026-03-06",
           "estimatedHours": 2.5
