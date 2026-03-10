@@ -65,11 +65,11 @@ ALLOWED_EXTENSIONS = {".html", ".htm"}
 # Set these env vars on Render:
 #   GITHUB_TOKEN  — personal access token (repo scope)
 #   GITHUB_REPO   — e.g. "kisho/UPSC_TRACKER"
-#   GITHUB_BRANCH — default "main"
+#   GITHUB_BRANCH — default "data" (NOT main, to avoid triggering Render auto-deploy)
 
 GITHUB_TOKEN  = os.environ.get("GITHUB_TOKEN", "")
 GITHUB_REPO   = os.environ.get("GITHUB_REPO", "")
-GITHUB_BRANCH = os.environ.get("GITHUB_BRANCH", "main")
+GITHUB_BRANCH = os.environ.get("GITHUB_BRANCH", "data")
 _GITHUB_FILE_PATH = "data/tracker_data.json"  # path inside the repo
 
 
