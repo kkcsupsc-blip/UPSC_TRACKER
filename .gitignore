@@ -11,7 +11,7 @@ __pycache__/
 .flask_secret
 
 # User data (synced via GitHub API, not via git commits)
-data/tracker_data.json
+# data/tracker_data.json  # tracked for Render persistence
 
 # Uploaded files
 uploads/
