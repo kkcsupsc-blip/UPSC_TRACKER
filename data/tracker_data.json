@@ -978,7 +978,9 @@
       "server": "https://ntfy.sh"
     }
   },
-  "completedRevisions": {},
+  "completedRevisions": {
+    "2b2b41f6c33d_R1": 1773428394437
+  },
   "completedPractice": {},
   "version": 2,
   "cumulativeRevisions": {
