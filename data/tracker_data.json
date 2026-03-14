@@ -946,7 +946,7 @@
     }
   ],
   "settings": {
-    "weekdayHours": 6,
+    "weekdayHours": 12,
     "weekendHours": 12,
     "revisionMins": 60,
     "weekendRevHrs": 3,
