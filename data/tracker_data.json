@@ -231,9 +231,9 @@
           "estimatedDays": 2,
           "roi": "very-high",
           "notes": "",
-          "status": "completed",
-          "startDate": "2026-03-15",
-          "completionDate": "2026-03-15",
+          "status": "not-started",
+          "startDate": null,
+          "completionDate": null,
           "createdAt": "2026-03-06",
           "estimatedHours": 5.0
         },
