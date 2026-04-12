@@ -166,6 +166,7 @@ def default_data():
         },
         "completedRevisions": {},
         "completedPractice": {},
+        "holidays": [],
         "cumulativeRevisions": {
             "sectionalBatches": [],
             "subjectRevisions": [],
@@ -218,6 +219,8 @@ def load_data():
                     data["settings"]["activityHours"][k] = v
         if "completedRevisions" not in data:
             data["completedRevisions"] = {}
+        if "holidays" not in data:
+            data["holidays"] = []
         if "completedPractice" not in data:
             data["completedPractice"] = {}
         if "cumulativeRevisions" not in data:
@@ -310,9 +313,13 @@ def get_next_sunday(date_str):
     return d.strftime("%Y-%m-%d")
 
 
-def is_weekend(date_str):
+def is_weekend(date_str, holidays=None):
     d = datetime.strptime(date_str, "%Y-%m-%d")
-    return d.weekday() in (5, 6)  # Sat=5, Sun=6
+    if d.weekday() in (5, 6):  # Sat=5, Sun=6
+        return True
+    if holidays and date_str in holidays:
+        return True
+    return False
 
 
 def get_next_saturday(date_str):
@@ -768,6 +775,8 @@ def _simulate_learning_for_date(data, target_date, resolved_schedules=None):
     if not learning_items or earliest_start > target_date:
         return {}
 
+    holidays = set(data.get("holidays", []))
+
     # --- Day-by-day simulation ------------------------------------------
     allocations = {}
     current = earliest_start
@@ -775,7 +784,7 @@ def _simulate_learning_for_date(data, target_date, resolved_schedules=None):
         if current > target_date:
             break
 
-        budget = wkend_budget if is_weekend(current) else wkday_budget
+        budget = wkend_budget if is_weekend(current, holidays) else wkday_budget
         non_learn = non_learn_map.get(current, 0)
         available = max(0, budget - non_learn)
 
@@ -826,7 +835,8 @@ def compute_daily_load(data, date_str, include_overdue=False, resolved_schedules
 
     settings = data["settings"]
     act_hrs = get_activity_hours(settings)
-    wknd = is_weekend(date_str)
+    holidays = set(data.get("holidays", []))
+    wknd = is_weekend(date_str, holidays)
     budget = settings.get("weekendHours", 12) if wknd else settings.get("weekdayHours", 6)
     today = today_str()
 
@@ -1016,6 +1026,7 @@ def estimate_all_timelines(data):
     act_hrs = get_activity_hours(settings)
     weekday_budget = settings.get("weekdayHours", 6)
     weekend_budget = settings.get("weekendHours", 12)
+    holidays = set(data.get("holidays", []))
     roi_order = {"very-high": 0, "high": 1, "medium": 2, "low": 3}
 
     # ── Collect all topics ────────────────────────────────────────────────
@@ -1129,7 +1140,7 @@ def estimate_all_timelines(data):
 
     for day_offset in range(max_days):
         current_date = add_days(today, day_offset)
-        wknd = is_weekend(current_date)
+        wknd = is_weekend(current_date, holidays)
         budget = weekend_budget if wknd else weekday_budget
 
         # Total revision load for this day (dynamic scheduler keeps daily_used current)
@@ -1156,6 +1167,7 @@ def estimate_all_timelines(data):
                     schedule = calculate_revision_schedule_dynamic(
                         completion_date, intervals, act_hrs,
                         daily_used, weekday_budget, weekend_budget,
+                        holidays=holidays,
                     )
                     mastery_date = schedule["r30"]["date"]
 
@@ -1207,6 +1219,7 @@ def estimate_all_timelines(data):
                 schedule = calculate_revision_schedule_dynamic(
                     completion_date, intervals, act_hrs,
                     daily_used, weekday_budget, weekend_budget,
+                    holidays=holidays,
                 )
                 mains_date = schedule["r30"]["date"]
 
@@ -1355,7 +1368,8 @@ def calculate_revision_schedule(completion_date, intervals):
 
 
 def calculate_revision_schedule_dynamic(completion_date, intervals, act_hrs,
-                                        daily_used, weekday_budget, weekend_budget):
+                                        daily_used, weekday_budget, weekend_budget,
+                                        holidays=None):
     """Budget-aware two-phase revision scheduling (used by timeline estimator).
 
     Phase 1 — RIGID stages placed first (spaced repetition integrity):
@@ -1371,8 +1385,10 @@ def calculate_revision_schedule_dynamic(completion_date, intervals, act_hrs,
       • Flexible clusters are atomic — the whole cluster fits or moves to next day
       • daily_used is modified in-place (shared budget map)
     """
+    _holidays = set(holidays) if holidays else set()
+
     def _budget(d):
-        return weekend_budget if is_weekend(d) else weekday_budget
+        return weekend_budget if is_weekend(d, _holidays) else weekday_budget
 
     def _avail(d):
         return _budget(d) - daily_used.get(d, 0)
@@ -1476,9 +1492,10 @@ def resolve_all_revision_schedules(data):
     act_hrs = get_activity_hours(settings)
     weekday_budget = settings.get("weekdayHours", 6)
     weekend_budget = settings.get("weekendHours", 12)
+    holidays = set(data.get("holidays", []))
 
     def _budget(d):
-        return weekend_budget if is_weekend(d) else weekday_budget
+        return weekend_budget if is_weekend(d, holidays) else weekday_budget
 
     def _avail(d):
         return _budget(d) - daily_used.get(d, 0)
@@ -2299,6 +2316,30 @@ def api_save_settings():
     return jsonify({"ok": True})
 
 
+@app.route("/api/holidays/toggle", methods=["POST"])
+def api_toggle_holiday():
+    """Toggle a weekday as a 12-hour day (paid leave / holiday)."""
+    body = request.get_json(force=True)
+    date_str = body.get("date", "")
+    try:
+        d = datetime.strptime(date_str, "%Y-%m-%d")
+    except (ValueError, TypeError):
+        return jsonify({"error": "Invalid date"}), 400
+    if d.weekday() in (5, 6):
+        return jsonify({"error": "Weekends are already 12-hour days"}), 400
+    data = load_data()
+    holidays = data.get("holidays", [])
+    if date_str in holidays:
+        holidays.remove(date_str)
+        active = False
+    else:
+        holidays.append(date_str)
+        active = True
+    data["holidays"] = holidays
+    save_data(data)
+    return jsonify({"ok": True, "date": date_str, "isHoliday": active})
+
+
 # ---- Dashboard helpers ----
 
 @app.route("/api/dashboard", methods=["GET"])
@@ -2366,9 +2407,11 @@ def api_dashboard():
                     })
     cum_upcoming.sort(key=lambda x: x["date"])
 
+    holidays = data.get("holidays", [])
     return jsonify({
         "today": today,
-        "isWeekend": is_weekend(today),
+        "isWeekend": is_weekend(today, holidays),
+        "isHoliday": today in holidays,
         "stats": {
             "totalTopics": total_topics,
             "learning": learning,
@@ -2463,10 +2506,13 @@ def api_today():
                     "overdue": True,
                 })
 
+    holidays = data.get("holidays", [])
+
     return jsonify({
         "today": today,
         "dayOfWeek": d.weekday(),  # Mon=0, Sun=6
-        "isWeekend": is_weekend(today),
+        "isWeekend": is_weekend(today, holidays),
+        "isHoliday": today in holidays,
         "settings": data["settings"],
         "todayTasks": get_tasks_for_date(data, today),
         "overdueTasks": get_overdue_tasks(data),
@@ -2521,10 +2567,13 @@ def api_calendar_day(date_str):
     # Time budget for this day
     tb = compute_daily_load(data, date_str, include_overdue=is_today)
 
+    holidays = data.get("holidays", [])
+
     return jsonify({
         "date": date_str,
         "dayName": day_names[d.weekday()],
-        "isWeekend": d.weekday() in (5, 6),
+        "isWeekend": is_weekend(date_str, holidays),
+        "isHoliday": date_str in holidays,
         "isToday": is_today,
         "isPast": is_past,
         "isFuture": is_future,

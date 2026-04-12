@@ -259,6 +259,13 @@ async function toggleRevision(topicId, type) {
   renderAll();
 }
 
+async function toggleHoliday(dateStr) {
+  const result = await api('/api/holidays/toggle', 'POST', { date: dateStr });
+  if (result.error) { showToast(result.error, 'warning'); return; }
+  showToast(result.isHoliday ? `${dateStr} → 12hr day` : `${dateStr} → back to normal`, result.isHoliday ? 'success' : 'warning');
+  renderAll();
+}
+
 async function markRevisionDone(topicId, type) {
   await api('/api/revisions/mark', 'POST', { topicId, type });
   showToast(`${type} revision done!`);
@@ -445,10 +452,12 @@ async function renderDashboard() {
   const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
   const dow = parseDate(today).getDay();
   const dayType = data.isWeekend;
+  const dashHoliday = data.isHoliday;
+  const dashLabel = dashHoliday ? '12HR DAY - Extended Session' : dayType ? 'WEEKEND - Extended Session' : 'WEEKDAY';
 
   document.getElementById('dash-day-type').innerHTML = `
     <span>${dayNames[dow]}, ${formatDate(today)}</span>
-    <span class="day-type-badge ${dayType ? 'weekend-badge' : 'weekday-badge'}">${dayType ? 'WEEKEND - Extended Session' : 'WEEKDAY'}</span>
+    <span class="day-type-badge ${dayType ? 'weekend-badge' : 'weekday-badge'}">${dashLabel}</span>
   `;
 
   const s = data.stats;
@@ -778,9 +787,13 @@ async function renderToday() {
       </div>`;
   }
 
+  const isHoliday = data.isHoliday;
+  const isNaturalWeekend = jsDow === 0 || jsDow === 6;
+
   document.getElementById('today-day-type').innerHTML = `
     <span>${jsDayNames[jsDow]}, ${formatDate(today)}</span>
-    <span class="day-type-badge ${weekend ? 'weekend-badge' : 'weekday-badge'}">${weekend ? 'WEEKEND' : 'WEEKDAY'}</span>
+    <span class="day-type-badge ${weekend ? 'weekend-badge' : 'weekday-badge'}">${weekend ? (isHoliday ? '12HR DAY' : 'WEEKEND') : 'WEEKDAY'}</span>
+    ${!isNaturalWeekend ? `<button onclick="toggleHoliday('${today}')" style="margin-left:8px; padding:2px 10px; font-size:11px; border-radius:6px; border:1px solid ${isHoliday ? 'var(--red)' : 'var(--accent)'}; background:${isHoliday ? 'rgba(255,70,70,0.15)' : 'rgba(100,180,255,0.1)'}; color:${isHoliday ? 'var(--red)' : 'var(--accent)'}; cursor:pointer;">${isHoliday ? '✕ Remove 12hr' : '⏫ Make 12hr day'}</button>` : ''}
     <span style="margin-left: auto; font-size:12px; color:var(--text2);">Total: ${weekend ? settings.weekendHours : settings.weekdayHours}h available</span>
   `;
 
@@ -1015,10 +1028,13 @@ async function showCalDay(dateStr, skipHighlight = false) {
 
   // Date header
   const dateLabel = `${data.dayName}, ${formatDate(dateStr)}`;
+  const isNaturalWknd = data.dayName === 'Saturday' || data.dayName === 'Sunday';
   let headerHtml = dateLabel;
   if (data.isToday) headerHtml += ' <span class="badge badge-accent" style="font-size:10px;margin-left:6px;">TODAY</span>';
-  if (data.isWeekend) headerHtml += ' <span class="badge badge-yellow" style="font-size:10px;margin-left:4px;">WEEKEND</span>';
+  if (data.isWeekend && !data.isHoliday) headerHtml += ' <span class="badge badge-yellow" style="font-size:10px;margin-left:4px;">WEEKEND</span>';
+  if (data.isHoliday) headerHtml += ' <span class="badge badge-green" style="font-size:10px;margin-left:4px;">12HR DAY</span>';
   if (data.isPast && !data.isToday) headerHtml += ' <span class="badge badge-red" style="font-size:10px;margin-left:4px;">PAST</span>';
+  if (!isNaturalWknd) headerHtml += ` <button onclick="toggleHoliday('${dateStr}')" style="margin-left:8px; padding:2px 8px; font-size:10px; border-radius:5px; border:1px solid ${data.isHoliday ? 'var(--red)' : 'var(--accent)'}; background:${data.isHoliday ? 'rgba(255,70,70,0.15)' : 'rgba(100,180,255,0.1)'}; color:${data.isHoliday ? 'var(--red)' : 'var(--accent)'}; cursor:pointer;">${data.isHoliday ? '✕ Remove 12hr' : '⏫ 12hr day'}</button>`;
   document.getElementById('cal-detail-date').innerHTML = headerHtml;
 
   // Stats
