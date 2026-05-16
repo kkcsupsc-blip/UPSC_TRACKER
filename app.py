@@ -763,7 +763,7 @@ def check_topic_mastery(data, topic_id):
 #  PROGRESSIVE TIME ESTIMATOR
 # =============================================================================
 
-MAX_PARALLEL_TOPICS = 2  # Max topics being learned simultaneously
+MAX_PARALLEL_TOPICS = 3  # Max topics being learned simultaneously
 MIN_STAGGER_DAYS = 1     # Min days between new topic starts (prevents revision wave sync)
 
 # =============================================================================
