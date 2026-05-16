@@ -219,9 +219,9 @@
           "estimatedDays": 4,
           "roi": "very-high",
           "notes": "",
-          "status": "completed",
-          "startDate": "2026-05-16",
-          "completionDate": "2026-05-16",
+          "status": "not-started",
+          "startDate": null,
+          "completionDate": null,
           "createdAt": "2026-03-06",
           "estimatedHours": 10.0
         },
@@ -978,12 +978,7 @@
       "server": "https://ntfy.sh"
     }
   },
-  "completedRevisions": {
-    "b13be257893b_ERA": {
-      "completedAt": 1778930349694,
-      "confidence": 2
-    }
-  },
+  "completedRevisions": {},
   "completedPractice": {},
   "version": 2,
   "cumulativeRevisions": {

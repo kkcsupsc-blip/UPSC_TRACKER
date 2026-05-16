@@ -792,6 +792,43 @@ def get_activity_hours(settings):
     return {**DEFAULT_ACTIVITY_HOURS, **settings.get("activityHours", {})}
 
 
+def get_topic_scaled_hours(act_hrs, estimated_hours):
+    """Scale revision-stage hours by topic depth (estimated learning hours).
+
+    Only spaced-repetition recall stages and note-making scale.
+    Practice / writing stages stay fixed — they are time-boxed tasks,
+    not proportional to content volume.
+
+    Reference point: 5h learning = standard topic (multiplier = 1.0)
+
+    R1, R3, R7, R30 — sqrt scaling (recall grows sub-linearly with depth)
+                       floor 0.5h  |  cap 2.5h
+    MN              — linear scaling (notes directly proportional to content)
+                       floor 0.75h |  cap 3.0h
+    PYQ, ERA, MCQ, MCQA, CA, MVA, MAINS — unchanged (task-based)
+    """
+    ref = 5.0
+    est = max(estimated_hours or ref, 0.5)
+    sqrt_scale  = math.sqrt(est / ref)
+    linear_scale = est / ref
+
+    scaled = dict(act_hrs)
+
+    # Recall stages: sqrt scaling (diminishing returns on larger topics)
+    for key, default, cap in [
+        ("R1",  1.5, 2.5),
+        ("R3",  1.0, 2.5),
+        ("R7",  1.5, 2.5),
+        ("R30", 1.0, 2.0),
+    ]:
+        scaled[key] = round(max(0.5, min(cap, act_hrs.get(key, default) * sqrt_scale)), 1)
+
+    # Note making: linear scaling (more content = proportionally more notes)
+    scaled["MN"] = round(max(0.75, min(3.0, act_hrs.get("MN", 1.5) * linear_scale)), 1)
+
+    return scaled
+
+
 def day_diff(d1_str, d2_str):
     """Return integer days between two YYYY-MM-DD strings (d2 - d1)."""
     dt1 = datetime.strptime(d1_str, "%Y-%m-%d")
@@ -1268,6 +1305,7 @@ def estimate_all_timelines(data):
                         completion_date, intervals, act_hrs,
                         daily_used, weekday_budget, weekend_budget,
                         holidays=holidays,
+                        estimated_hours=lt.get("estimatedHours", 5.0),
                     )
                     mastery_date = schedule["r30"]["date"]
 
@@ -1324,6 +1362,7 @@ def estimate_all_timelines(data):
                     completion_date, intervals, act_hrs,
                     daily_used, weekday_budget, weekend_budget,
                     holidays=holidays,
+                    estimated_hours=lt.get("estimatedHours", 5.0),
                 )
                 mains_date = schedule["r30"]["date"]
 
@@ -1473,7 +1512,7 @@ def calculate_revision_schedule(completion_date, intervals):
 
 def calculate_revision_schedule_dynamic(completion_date, intervals, act_hrs,
                                         daily_used, weekday_budget, weekend_budget,
-                                        holidays=None):
+                                        holidays=None, estimated_hours=5.0):
     """Budget-aware two-phase revision scheduling (used by timeline estimator).
 
     Phase 1 — RIGID stages placed first (spaced repetition integrity):
@@ -1488,7 +1527,10 @@ def calculate_revision_schedule_dynamic(completion_date, intervals, act_hrs,
       • MN never shares a day with other stages of this topic
       • Flexible clusters are atomic — the whole cluster fits or moves to next day
       • daily_used is modified in-place (shared budget map)
+      • Recall/note stages are scaled by topic depth via estimated_hours
     """
+    # Scale recall + note stages by topic depth; practice stages stay fixed
+    act_hrs = get_topic_scaled_hours(act_hrs, estimated_hours)
     _holidays = set(holidays) if holidays else set()
 
     def _budget(d):
@@ -1641,21 +1683,24 @@ def resolve_all_revision_schedules(data):
         r3_mult = _get_conf_mult(tid, "R3")
         r7_mult = _get_conf_mult(tid, "R7")
 
-        r1 = _fit(add_days(cd, intervals["r1"]), act_hrs.get("R1", 1.5))
-        _commit(r1, act_hrs.get("R1", 1.5))
+        # Scale recall/note hours by this topic's depth; practice stages unchanged
+        t_hrs = get_topic_scaled_hours(act_hrs, t.get("estimatedHours", 5.0))
+
+        r1 = _fit(add_days(cd, intervals["r1"]), t_hrs.get("R1", 1.5))
+        _commit(r1, t_hrs.get("R1", 1.5))
 
         r3_days = max(round(intervals["r3"] * r1_mult), 1)
         r3_e = max(add_days(cd, r3_days), add_days(r1, 1))
-        r3 = _fit(r3_e, act_hrs.get("R3", 1.0))
-        _commit(r3, act_hrs.get("R3", 1.0))
+        r3 = _fit(r3_e, t_hrs.get("R3", 1.0))
+        _commit(r3, t_hrs.get("R3", 1.0))
 
-        mn = _fit(add_days(r3, 1), act_hrs.get("MN", 1.5))
-        _commit(mn, act_hrs.get("MN", 1.5))
+        mn = _fit(add_days(r3, 1), t_hrs.get("MN", 1.5))
+        _commit(mn, t_hrs.get("MN", 1.5))
 
         r7_days = max(round(intervals["r7"] * r3_mult), 1)
         r7_e = max(add_days(cd, r7_days), add_days(mn, 5))
-        r7 = _fit(r7_e, act_hrs.get("R7", 1.5), weekend_only=True)
-        _commit(r7, act_hrs.get("R7", 1.5))
+        r7 = _fit(r7_e, t_hrs.get("R7", 1.5), weekend_only=True)
+        _commit(r7, t_hrs.get("R7", 1.5))
 
         if exam_type != "prelims":  # both + mains have MVA and MAINS
             mva = _fit(add_days(r7, 7), act_hrs.get("MVA", 1.0))
@@ -1670,8 +1715,8 @@ def resolve_all_revision_schedules(data):
 
         r30_days = max(round(intervals["r30"] * r7_mult), 1)
         r30_e = max(add_days(cd, r30_days), add_days(r30_anchor, 7))
-        r30 = _fit(r30_e, act_hrs.get("R30", 1.0))
-        _commit(r30, act_hrs.get("R30", 1.0))
+        r30 = _fit(r30_e, t_hrs.get("R30", 1.0))
+        _commit(r30, t_hrs.get("R30", 1.0))
 
         rigid[tid] = {
             "r1": r1, "r3": r3, "mn": mn, "r7": r7,
