@@ -128,6 +128,7 @@ async function addTopic() {
     name,
     estimatedHours: parseFloat(document.getElementById('topic-days').value) || 7.5,
     roi: document.getElementById('topic-roi').value,
+    examType: document.getElementById('topic-exam-type').value,
     notes: document.getElementById('topic-notes').value.trim(),
   });
   closeModal('add-topic');
@@ -152,12 +153,13 @@ async function editTopic(subjId, topicId) {
   const currentName = topic.name;
   const currentHours = topic.estimatedHours || 7.5;
   const currentRoi = topic.roi || 'medium';
+  const currentExamType = topic.examType || 'both';
 
   const statusMap = {
     'not-started': { badge: 'badge-accent', text: 'Not Started' },
     'learning': { badge: 'badge-yellow', text: 'Currently Learning' },
     'completed': { badge: 'badge-green', text: 'Completed — Revision Active' },
-    'mastered': { badge: 'badge-cyan', text: 'Mastered' }
+    'pipeline-complete': { badge: 'badge-cyan', text: 'Pipeline Complete' }
   };
   const st = statusMap[topic.status] || statusMap['not-started'];
 
@@ -165,6 +167,14 @@ async function editTopic(subjId, topicId) {
   const roiLabels = { 'very-high': 'Very High ROI', 'high': 'High ROI', 'medium': 'Medium ROI', 'low': 'Low ROI' };
   const optionsHtml = roiOptions.map(r =>
     `<option value="${r}" ${r === currentRoi ? 'selected' : ''}>${roiLabels[r]}</option>`
+  ).join('');
+  const examTypeOptions = [
+    { v: 'both',    l: 'Both (Prelims + Mains)' },
+    { v: 'prelims', l: 'Prelims Only — skip MVA & MAINS' },
+    { v: 'mains',   l: 'Mains Only — skip MCQ & MCQA' },
+  ];
+  const examTypeHtml = examTypeOptions.map(o =>
+    `<option value="${o.v}" ${o.v === currentExamType ? 'selected' : ''}>${o.l}</option>`
   ).join('');
 
   let html = '';
@@ -193,6 +203,10 @@ async function editTopic(subjId, topicId) {
           <select class="form-select" id="edit-topic-roi">${optionsHtml}</select>
         </div>
       </div>
+      <div class="form-group" style="margin-bottom:12px;">
+        <label class="form-label">Exam Type</label>
+        <select class="form-select" id="edit-topic-exam-type">${examTypeHtml}</select>
+      </div>
       <div style="display:flex; gap:8px;">
         <button class="btn btn-primary btn-sm" onclick="saveTopicEdit('${subjId}','${topicId}')">Save</button>
         <button class="btn btn-sm" onclick="showTopicDetail('${subjId}','${topicId}')">Cancel</button>
@@ -211,8 +225,9 @@ async function saveTopicEdit(subjId, topicId) {
   const name = document.getElementById('edit-topic-name').value.trim();
   const hours = parseFloat(document.getElementById('edit-topic-days').value) || 7.5;
   const roi = document.getElementById('edit-topic-roi').value;
+  const examType = document.getElementById('edit-topic-exam-type').value;
   if (!name) { showToast('Name cannot be empty', 'warning'); return; }
-  await api(`/api/subjects/${subjId}/topics/${topicId}`, 'PUT', { name, estimatedHours: hours, roi });
+  await api(`/api/subjects/${subjId}/topics/${topicId}`, 'PUT', { name, estimatedHours: hours, roi, examType });
   showToast('Topic updated!');
   showTopicDetail(subjId, topicId);
   renderPage('subjects');
@@ -246,17 +261,70 @@ async function resetTopic(subjId, topicId) {
   renderPage('subjects');
 }
 
+// ===== CONFIDENCE PICKER =====
+function showConfidencePicker(type, onPick, onCancel) {
+  document.getElementById('conf-picker')?.remove();
+  document.getElementById('conf-backdrop')?.remove();
+
+  const backdrop = document.createElement('div');
+  backdrop.id = 'conf-backdrop';
+  backdrop.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9998';
+
+  const picker = document.createElement('div');
+  picker.id = 'conf-picker';
+  picker.style.cssText = [
+    'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%)',
+    'background:var(--card);border:1px solid var(--border);border-radius:14px',
+    'padding:22px 24px;z-index:9999;text-align:center',
+    'box-shadow:0 8px 32px rgba(0,0,0,.35);min-width:270px',
+  ].join(';');
+  picker.innerHTML = `
+    <div style="font-size:15px;font-weight:700;margin-bottom:4px;color:var(--text1)">${type} — How was it?</div>
+    <div style="font-size:11px;color:var(--text3);margin-bottom:18px">Rate your recall to tune the next review interval</div>
+    <div style="display:flex;gap:10px;justify-content:center">
+      <button id="conf-hard" style="padding:9px 16px;border-radius:9px;border:none;background:#c0392b;color:#fff;cursor:pointer;font-size:13px;font-weight:700">😰 Hard</button>
+      <button id="conf-okay" style="padding:9px 16px;border-radius:9px;border:none;background:#d68910;color:#fff;cursor:pointer;font-size:13px;font-weight:700">😐 Okay</button>
+      <button id="conf-easy" style="padding:9px 16px;border-radius:9px;border:none;background:#1e8449;color:#fff;cursor:pointer;font-size:13px;font-weight:700">😊 Easy</button>
+    </div>
+    <div style="margin-top:12px;font-size:10px;color:var(--text3)">Hard → shorter interval · Easy → longer interval</div>
+  `;
+
+  const cleanup = () => {
+    document.getElementById('conf-picker')?.remove();
+    document.getElementById('conf-backdrop')?.remove();
+  };
+
+  picker.querySelector('#conf-hard').onclick = () => { cleanup(); onPick(1); };
+  picker.querySelector('#conf-okay').onclick = () => { cleanup(); onPick(2); };
+  picker.querySelector('#conf-easy').onclick = () => { cleanup(); onPick(3); };
+  backdrop.onclick = () => { cleanup(); if (onCancel) onCancel(); };
+
+  document.body.appendChild(backdrop);
+  document.body.appendChild(picker);
+}
+
 // ===== REVISION TOGGLE =====
 async function toggleRevision(topicId, type) {
   const data = await api('/api/data');
   const key = `${topicId}_${type}`;
   if (data.completedRevisions && data.completedRevisions[key]) {
     await api('/api/revisions/unmark', 'POST', { topicId, type });
+    renderAll();
   } else {
-    await api('/api/revisions/mark', 'POST', { topicId, type });
-    showToast(`${type} revision done!`);
+    const ratesConfidence = ['R1', 'R3', 'R7'].includes(type);
+    if (ratesConfidence) {
+      showConfidencePicker(type, async (confidence) => {
+        await api('/api/revisions/mark', 'POST', { topicId, type, confidence });
+        const label = confidence === 1 ? 'Hard' : confidence === 3 ? 'Easy' : 'Okay';
+        showToast(`${type} done! (${label})`);
+        renderAll();
+      });
+    } else {
+      await api('/api/revisions/mark', 'POST', { topicId, type, confidence: 2 });
+      showToast(`${type} marked done!`);
+      renderAll();
+    }
   }
-  renderAll();
 }
 
 async function toggleHoliday(dateStr) {
@@ -267,8 +335,19 @@ async function toggleHoliday(dateStr) {
 }
 
 async function markRevisionDone(topicId, type) {
-  await api('/api/revisions/mark', 'POST', { topicId, type });
-  showToast(`${type} revision done!`);
+  const ratesConfidence = ['R1', 'R3', 'R7'].includes(type);
+  if (ratesConfidence) {
+    showConfidencePicker(type, async (confidence) => {
+      await api('/api/revisions/mark', 'POST', { topicId, type, confidence });
+      const label = confidence === 1 ? 'Hard' : confidence === 3 ? 'Easy' : 'Okay';
+      showToast(`${type} done! (${label})`);
+      renderAll();
+    });
+  } else {
+    await api('/api/revisions/mark', 'POST', { topicId, type, confidence: 2 });
+    showToast(`${type} marked done!`);
+    renderAll();
+  }
 }
 
 // ===== SHOW TOPIC DETAIL / TIMELINE =====
@@ -289,7 +368,7 @@ async function showTopicDetail(subjId, topicId) {
     'not-started': { badge: 'badge-accent', text: 'Not Started' },
     'learning': { badge: 'badge-yellow', text: 'Currently Learning' },
     'completed': { badge: 'badge-green', text: 'Completed — Revision Active' },
-    'mastered': { badge: 'badge-cyan', text: 'Mastered' }
+    'pipeline-complete': { badge: 'badge-cyan', text: 'Pipeline Complete' }
   };
   const st = statusMap[topic.status];
   html += `<div style="margin-bottom: 14px;">
@@ -654,13 +733,13 @@ async function renderSubjects() {
 
   container.innerHTML = sorted.map(subj => {
     const topicsSorted = [...subj.topics].sort((a, b) => roiOrder[a.roi] - roiOrder[b.roi]);
-    const completed = subj.topics.filter(t => t.status === 'completed' || t.status === 'mastered').length;
-    const mastered = subj.topics.filter(t => t.status === 'mastered').length;
+    const completed = subj.topics.filter(t => t.status === 'completed' || t.status === 'pipeline-complete').length;
+    const mastered = subj.topics.filter(t => t.status === 'pipeline-complete').length;
     const total = subj.topics.length;
     const pct = total > 0 ? Math.round(completed / total * 100) : 0;
     const masteryPct = total > 0 ? Math.round(mastered / total * 100) : 0;
     const hmTopics = subj.topics.filter(t => t.roi === 'very-high' || t.roi === 'high' || t.roi === 'medium');
-    const hmMastered = hmTopics.filter(t => t.status === 'mastered').length;
+    const hmMastered = hmTopics.filter(t => t.status === 'pipeline-complete').length;
 
     return `<div class="subject-card">
       <div class="subject-header" onclick="this.parentElement.querySelector('.subject-body').classList.toggle('hide')">
@@ -668,7 +747,7 @@ async function renderSubjects() {
           <div style="width:4px; height:28px; border-radius:2px; background:${subj.color};"></div>
           <div>
             <div class="subject-name">${subj.name}</div>
-            <div style="font-size:11px; color:var(--text3);">${total} topics · ${completed} completed · ${mastered} mastered · <span class="badge badge-${roiBadgeClass(subj.roi)}" style="font-size:10px">${roiEmoji(subj.roi)} ${subj.roi.toUpperCase()} ROI</span>${subj.ntfyTopic ? ` · <span class="badge badge-cyan" style="font-size:10px">${subj.ntfyTopic}</span>` : ''}${hmTopics.length > 0 ? ` · <span style="font-size:10px;color:${hmMastered === hmTopics.length && hmTopics.length > 0 ? 'var(--green)' : 'var(--text3)'};">VH+H+M: ${hmMastered}/${hmTopics.length}</span>` : ''}</div>
+            <div style="font-size:11px; color:var(--text3);">${total} topics · ${completed} completed · ${mastered} pipeline-complete · <span class="badge badge-${roiBadgeClass(subj.roi)}" style="font-size:10px">${roiEmoji(subj.roi)} ${subj.roi.toUpperCase()} ROI</span>${subj.ntfyTopic ? ` · <span class="badge badge-cyan" style="font-size:10px">${subj.ntfyTopic}</span>` : ''}${hmTopics.length > 0 ? ` · <span style="font-size:10px;color:${hmMastered === hmTopics.length && hmTopics.length > 0 ? 'var(--green)' : 'var(--text3)'};">VH+H+M: ${hmMastered}/${hmTopics.length}</span>` : ''}</div>
             ${subj.notes ? `<div style="font-size:11px; color:var(--text2); margin-top:4px; max-width:420px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="${subj.notes.replace(/"/g, '&quot;')}">📝 ${subj.notes}</div>` : ''}
           </div>
         </div>
@@ -692,7 +771,7 @@ async function renderSubjects() {
                 'not-started': '<span class="badge badge-accent">Not Started</span>',
                 'learning': '<span class="badge badge-yellow">Learning</span>',
                 'completed': '<span class="badge badge-green">Revising</span>',
-                'mastered': '<span class="badge badge-cyan">Mastered</span>'
+                'pipeline-complete': '<span class="badge badge-cyan">Pipeline Complete</span>'
               }[t.status];
               const roiBadge = `<span class="badge badge-${roiBadgeClass(t.roi)}">${roiEmoji(t.roi)} ${t.roi}</span>`;
               let actions = `<button class="btn btn-sm" onclick="event.stopPropagation();editTopic('${subj.id}','${t.id}')" title="Edit topic">✏️</button> `;
@@ -706,8 +785,8 @@ async function renderSubjects() {
               const est = estimates[t.id];
               let estHtml = `<span style="color:var(--text3);">${t.estimatedHours || '?'}h</span>`;
               if (est) {
-                if (t.status === 'mastered') {
-                  estHtml = '<span style="color:var(--green);font-weight:600;">✓ Mastered</span>';
+                if (t.status === 'pipeline-complete') {
+                  estHtml = '<span style="color:var(--green);font-weight:600;">✓ Pipeline Complete</span>';
                 } else if (t.status === 'completed') {
                   estHtml = `<div style="font-size:11px;line-height:1.5;">
                     <span style="color:var(--green);">Mastery</span><br>
@@ -1152,11 +1231,15 @@ async function calToggleRevision(topicId, type, dateStr) {
   const key = `${topicId}_${type}`;
   if (data.completedRevisions && data.completedRevisions[key]) {
     await api('/api/revisions/unmark', 'POST', { topicId, type });
+    renderCalendar();
   } else {
-    await api('/api/revisions/mark', 'POST', { topicId, type });
-    showToast(`${type} revision done!`);
+    showConfidencePicker(type, async (confidence) => {
+      await api('/api/revisions/mark', 'POST', { topicId, type, confidence });
+      const label = confidence === 1 ? 'Hard' : confidence === 3 ? 'Easy' : 'Okay';
+      showToast(`${type} done! (${label})`);
+      renderCalendar();
+    });
   }
-  renderCalendar();
 }
 
 function closeCalDetail() {
@@ -1454,14 +1537,14 @@ async function renderCumulative() {
   // Pending topics
   document.getElementById('cum-pending-count').textContent = data.stats.pendingCount;
   if (data.pendingTopics.length === 0) {
-    document.getElementById('cum-pending-list').innerHTML = '<div style="font-size: 12px; color: var(--text3); text-align: center; padding: 16px;">No mastered topics waiting. Complete all 8 stages for a topic to add it here.</div>';
+    document.getElementById('cum-pending-list').innerHTML = '<div style="font-size: 12px; color: var(--text3); text-align: center; padding: 16px;">No pipeline-complete topics waiting. Complete all revision stages for a topic to add it here.</div>';
   } else {
     document.getElementById('cum-pending-list').innerHTML = data.pendingTopics.map(t => {
       const roiBadge = `<span class="badge badge-${roiBadgeClass(t.roi)}" style="font-size:10px">${roiEmoji(t.roi)} ${t.roi.toUpperCase()}</span>`;
       return `<div class="task-item" style="cursor:default;">
         <div class="task-info">
           <div class="task-name">${t.topicName}</div>
-          <div class="task-meta">${t.subjectName} · Mastered ${formatDateShort(t.masteredAt)}</div>
+          <div class="task-meta">${t.subjectName} · Pipeline-complete ${formatDateShort(t.masteredAt)}</div>
         </div>
         ${roiBadge}
       </div>`;
@@ -1470,7 +1553,7 @@ async function renderCumulative() {
 
   // Sectional batches
   if (data.sectionalBatches.length === 0) {
-    document.getElementById('cum-batches-list').innerHTML = '<div class="card"><div class="empty-state" style="padding: 20px 0;"><div class="empty-state-text">No sectional batches yet. Batches are auto-created when 5+ topics are mastered.</div></div></div>';
+    document.getElementById('cum-batches-list').innerHTML = '<div class="card"><div class="empty-state" style="padding: 20px 0;"><div class="empty-state-text">No sectional batches yet. Batches are auto-created when 5+ topics are pipeline-complete.</div></div></div>';
   } else {
     document.getElementById('cum-batches-list').innerHTML = data.sectionalBatches.map(batch => {
       const completedSessions = batch.sessions.filter(s => s.completed).length;
@@ -1633,7 +1716,7 @@ async function renderTimeline() {
     for (const [subjName, info] of Object.entries(bySubject)) {
       const subjTopics = info.topics;
       const latestMastery = subjTopics.reduce((max, t) => t.masteryDate > max ? t.masteryDate : max, '');
-      const completed = subjTopics.filter(t => t.status === 'mastered').length;
+      const completed = subjTopics.filter(t => t.status === 'pipeline-complete').length;
       const total = subjTopics.length;
       const pct = total > 0 ? Math.round(completed / total * 100) : 0;
 
@@ -1643,12 +1726,12 @@ async function renderTimeline() {
             <span style="width:8px; height:8px; border-radius:2px; background:${info.color}; display:inline-block;"></span>
             ${subjName}
           </span>
-          <span style="font-size:11px; color:var(--text3);">${completed}/${total} mastered · Finish ~${latestMastery ? formatDateShort(latestMastery) : '?'}</span>
+          <span style="font-size:11px; color:var(--text3);">${completed}/${total} pipeline-complete · Finish ~${latestMastery ? formatDateShort(latestMastery) : '?'}</span>
         </div>
         <div class="progress-bar"><div class="progress-fill" style="width:${pct}%; background:${info.color};"></div></div>
         <div style="display:flex; flex-wrap:wrap; gap:4px; margin-top:6px;">
           ${subjTopics.map(t => {
-            const statusColor = t.status === 'mastered' ? 'var(--green)' : t.status === 'completed' ? 'var(--cyan)' : t.status === 'learning' ? 'var(--yellow)' : 'var(--text3)';
+            const statusColor = t.status === 'pipeline-complete' ? 'var(--green)' : t.status === 'completed' ? 'var(--cyan)' : t.status === 'learning' ? 'var(--yellow)' : 'var(--text3)';
             return `<span style="font-size:10px; padding:2px 6px; border-radius:3px; background:var(--bg); border-left:3px solid ${statusColor};" title="${t.topicName}: Mastery ~${t.masteryDate}">${t.topicName.slice(0, 15)}${t.topicName.length > 15 ? '…' : ''}</span>`;
           }).join('')}
         </div>
@@ -1675,7 +1758,7 @@ async function renderTimeline() {
         'not-started': '<span class="badge badge-accent" style="font-size:10px">Queued</span>',
         'learning': '<span class="badge badge-yellow" style="font-size:10px">Learning</span>',
         'completed': '<span class="badge badge-green" style="font-size:10px">Revising</span>',
-        'mastered': '<span class="badge badge-cyan" style="font-size:10px">Mastered</span>',
+        'pipeline-complete': '<span class="badge badge-cyan" style="font-size:10px">Pipeline Complete</span>',
       }[e.status] || '';
       const daysLeft = daysBetween(today, e.masteryDate);
       const isEstimate = e.isEstimate;
@@ -1690,8 +1773,8 @@ async function renderTimeline() {
         <td>${statusBadge}</td>
         <td style="font-size:11px;color:var(--text2);">${tilde}${formatDateShort(e.startDate)}</td>
         <td style="font-size:11px;color:var(--text2);">${tilde}${formatDateShort(e.completionDate)}</td>
-        <td style="font-size:11px;font-weight:600;color:${e.status === 'mastered' ? 'var(--green)' : 'var(--accent2)'};">${tilde}${formatDateShort(e.masteryDate)}</td>
-        <td style="font-size:11px;color:${daysLeft <= 0 ? 'var(--green)' : daysLeft <= 7 ? 'var(--yellow)' : 'var(--text3)'};">${e.status === 'mastered' ? '✓' : daysLeft + 'd'}</td>
+        <td style="font-size:11px;font-weight:600;color:${e.status === 'pipeline-complete' ? 'var(--green)' : 'var(--accent2)'};">${tilde}${formatDateShort(e.masteryDate)}</td>
+        <td style="font-size:11px;color:${daysLeft <= 0 ? 'var(--green)' : daysLeft <= 7 ? 'var(--yellow)' : 'var(--text3)'};">${e.status === 'pipeline-complete' ? '✓' : daysLeft + 'd'}</td>
       </tr>`;
     });
 

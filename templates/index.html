@@ -112,7 +112,7 @@
       </div>
       <div class="card" id="dash-cumulative-card" style="margin-top: 16px; display: none; border-left: 4px solid var(--accent);">
         <div class="card-header"><span class="card-title">🔄 Cumulative Revision Sessions</span></div>
-        <div style="font-size: 11px; color: var(--text2); margin-bottom: 10px;">Weekend consolidation sessions for mastered topics — scientifically spaced.</div>
+        <div style="font-size: 11px; color: var(--text2); margin-bottom: 10px;">Weekend consolidation sessions for pipeline-complete topics — scientifically spaced.</div>
         <div id="dash-cumulative-list"></div>
       </div>
       <div class="card" id="dash-timeline-card" style="margin-top: 16px; display: none; border-left: 4px solid var(--accent2);">
@@ -231,11 +231,11 @@
           <div>
             <div style="font-weight: 600; font-size: 14px; margin-bottom: 6px;">Scientific Spaced Repetition — Cumulative Level</div>
             <div style="font-size: 12px; color: var(--text2); line-height: 1.7;">
-              <strong>Sectional Batches</strong> (5-10 mastered topics, cross-subject interleaving):<br>
+              <strong>Sectional Batches</strong> (5-10 pipeline-complete topics, cross-subject interleaving):<br>
               • Round 1: Next weekend after batch forms — initial consolidation<br>
               • Round 2: 3 weeks later — intermediate spacing<br>
               • Round 3: 8 weeks later — long-term embedding<br><br>
-              <strong>Subject-Level Revisions</strong> (triggered when all Very High+High+Medium ROI topics mastered):<br>
+              <strong>Subject-Level Revisions</strong> (triggered when all Very High+High+Medium ROI topics are pipeline-complete):<br>
               • Round 1: 2 weeks → Round 2: 6 weeks → Round 3: 14 weeks → Round 4: 24 weeks<br>
               All sessions scheduled on <strong>Saturdays</strong> (2-day weekend blocks).
             </div>
@@ -259,7 +259,7 @@
           <span class="badge badge-yellow" id="cum-pending-count">0</span>
         </div>
         <div style="font-size: 11px; color: var(--text2); margin-bottom: 10px;">
-          Topics that have completed all 12 revision stages (mastered). A batch is auto-created when 5+ topics accumulate.
+          Topics that have completed all revision stages (pipeline-complete). A batch is auto-created when 5+ topics accumulate.
         </div>
         <div id="cum-pending-list"></div>
       </div>
@@ -326,7 +326,7 @@
               <option value="not-started" selected>Not Started</option>
               <option value="learning">Learning</option>
               <option value="completed">Revising</option>
-              <option value="mastered">Mastered</option>
+              <option value="pipeline-complete">Pipeline Complete</option>
             </select>
           </div>
         </div>
@@ -757,7 +757,7 @@
         <div style="font-size:13px; color:var(--text2); line-height:1.8; padding:4px 0;">
           The estimator on the <strong>Timeline</strong> page runs a day-by-day simulation up to 400 days:
           <ol style="margin:10px 0 0 20px;">
-            <li><strong>Step 1 — Real data:</strong> Already completed/mastered topics use their actual dates.</li>
+            <li><strong>Step 1 — Real data:</strong> Already completed/pipeline-complete topics use their actual dates.</li>
             <li><strong>Step 2 — Build budget map:</strong> All pending revisions + cumulative sessions are loaded into a daily-hours map.</li>
             <li><strong>Step 3 — Queue topics:</strong> Not-started topics are sorted by ROI priority, then addition order.</li>
             <li><strong>Step 4 — Simulate each day:</strong>
@@ -797,12 +797,12 @@
       <div class="card" style="margin-bottom:16px; border-left:4px solid var(--accent2);">
         <div class="card-header"><span class="card-title">🔄 Cumulative Revision System</span></div>
         <div style="font-size:13px; color:var(--text2); line-height:1.8; padding:4px 0;">
-          After a topic reaches <strong>Mastered</strong> status (all 12 stages done), it enters the
+          After a topic reaches <strong>Pipeline Complete</strong> status (all stages done), it enters the
           <strong>Cumulative Revision</strong> system:
           <ul style="margin:8px 0 0 20px;">
-            <li><strong>Sectional Batches:</strong> Every 5–10 mastered topics form a cross-subject batch.
+            <li><strong>Sectional Batches:</strong> Every 5–10 pipeline-complete topics form a cross-subject batch.
                 3 revision rounds at increasing intervals (0, 21, 56 days).</li>
-            <li><strong>Subject Revisions:</strong> When all high-ROI topics in a subject are mastered,
+            <li><strong>Subject Revisions:</strong> When all high-ROI topics in a subject are pipeline-complete,
                 4 rounds of full-subject revision (14, 42, 98, 168 days).</li>
             <li>Both are scheduled on <strong>Saturdays</strong> for 2-day weekend blocks.</li>
           </ul>
@@ -880,6 +880,14 @@
         <option value="high">High ROI</option>
         <option value="medium">Medium ROI</option>
         <option value="low">Low ROI (Learn Later)</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Exam Type</label>
+      <select class="form-select" id="topic-exam-type">
+        <option value="both">Both (Prelims + Mains) — all 12 stages</option>
+        <option value="prelims">Prelims Only — skip MVA &amp; MAINS</option>
+        <option value="mains">Mains Only — skip MCQ &amp; MCQA</option>
       </select>
     </div>
     <div class="form-group">

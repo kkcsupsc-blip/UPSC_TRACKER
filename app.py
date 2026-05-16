@@ -243,7 +243,7 @@ def load_data():
 
 
 def _fix_mastery_status(data):
-    """Auto-correct topics that have all 12 revisions done but status != mastered.
+    """Auto-correct topics that have all 12 revisions done but status != pipeline-complete.
     This handles race conditions from rapid concurrent marking."""
     types = ["R1", "PYQ", "ERA", "R3", "MN", "CA", "MCQ", "MCQA", "R7", "MVA", "MAINS", "R30"]
     fixed = False
@@ -255,7 +255,7 @@ def _fix_mastery_status(data):
                     for t in types
                 )
                 if all_done:
-                    topic["status"] = "mastered"
+                    topic["status"] = "pipeline-complete"
                     # Ensure it's in pendingTopics for cumulative revision
                     cum = data.get("cumulativeRevisions", {})
                     pending = cum.get("pendingTopics", [])
@@ -332,6 +332,17 @@ def get_next_saturday(date_str):
     if days_until_sat == 0:
         days_until_sat = 7
     d += timedelta(days=days_until_sat)
+    return d.strftime("%Y-%m-%d")
+
+
+def get_next_weekend_day(date_str):
+    """Get the nearest Saturday or Sunday on or after the given date.
+    Prefers Saturday — if already on a weekend day, returns as-is."""
+    d = datetime.strptime(date_str, "%Y-%m-%d")
+    if d.weekday() in (5, 6):  # Already Sat(5) or Sun(6)
+        return date_str
+    days_until_saturday = 5 - d.weekday()
+    d += timedelta(days=days_until_saturday)
     return d.strftime("%Y-%m-%d")
 
 
@@ -460,7 +471,7 @@ def schedule_subject_revision(subject_id, subject_name, trigger_date, occupied=N
 
 
 def check_and_create_batches(data):
-    """Check if pending mastered topics can form a sectional batch.
+    """Check if pending pipeline-complete topics can form a sectional batch.
     Auto-creates batches when >= MIN_BATCH_SIZE topics are pending.
     Also checks for subject-level revision triggers.
     Respects weekend capacity limits — max 1 cumulative session per weekend.
@@ -472,12 +483,28 @@ def check_and_create_batches(data):
     # Build a map of already-occupied weekends
     occupied = get_occupied_weekends(data)
 
-    # Auto-batch when enough topics accumulate
+    # Auto-batch with subject diversity (max 2 topics per subject per batch)
+    MAX_PER_SUBJECT_PER_BATCH = 2
     while len(pending) >= MIN_BATCH_SIZE:
-        batch_size = min(len(pending), MAX_BATCH_SIZE)
-        batch_topics = pending[:batch_size]
-        cum["pendingTopics"] = pending[batch_size:]
-        pending = cum["pendingTopics"]
+        # Build a diverse batch: prefer at most MAX_PER_SUBJECT_PER_BATCH per subject
+        subject_counts = {}
+        batch_topics = []
+        remaining = []
+        for topic in pending:
+            sid = topic["subjectId"]
+            if (subject_counts.get(sid, 0) < MAX_PER_SUBJECT_PER_BATCH
+                    and len(batch_topics) < MAX_BATCH_SIZE):
+                batch_topics.append(topic)
+                subject_counts[sid] = subject_counts.get(sid, 0) + 1
+            else:
+                remaining.append(topic)
+        if len(batch_topics) < MIN_BATCH_SIZE:
+            # Diversity impossible with current pending — fall back to first-N
+            batch_size = min(len(pending), MAX_BATCH_SIZE)
+            batch_topics = pending[:batch_size]
+            remaining = pending[batch_size:]
+        cum["pendingTopics"] = remaining
+        pending = remaining
 
         batch = schedule_sectional_batch(today_str(), batch_topics, occupied)
         cum["sectionalBatches"].append(batch)
@@ -487,7 +514,7 @@ def check_and_create_batches(data):
         topic_names = [t["topicName"] for t in batch_topics]
         send_ntfy(
             "Sectional Revision Batch Created!",
-            f"A new batch of {len(batch_topics)} mastered topics\n"
+            f"A new batch of {len(batch_topics)} pipeline-complete topics\n"
             f"is ready for cumulative revision!\n"
             f"━━━━━━━━━━━━━━━━━━\n"
             f"Topics: {', '.join(topic_names[:5])}{'...' if len(topic_names) > 5 else ''}\n"
@@ -501,26 +528,60 @@ def check_and_create_batches(data):
         )
 
     # Check subject-level triggers
+    MINI_SUBJECT_TRIGGER_N = 5  # mini revision every N mastered topics per subject
+
     for subj in data["subjects"]:
-        # Skip if already has a subject revision
-        existing = [sr for sr in cum["subjectRevisions"] if sr["subjectId"] == subj["id"]]
-        if existing:
+        mastered_in_subj = [t for t in subj["topics"] if t["status"] == "pipeline-complete"]
+        mastered_count = len(mastered_in_subj)
+        if mastered_count == 0:
             continue
 
-        # Check if all very-high+high+medium ROI topics are mastered
+        existing = [sr for sr in cum["subjectRevisions"] if sr["subjectId"] == subj["id"]]
+        # Treat legacy entries (no "type" field) as "full" for backwards compat
+        existing_mini = [sr for sr in existing if sr.get("type") == "mini"]
+        existing_full = [sr for sr in existing if sr.get("type", "full") == "full"]
+
+        # ── Progressive mini-revision: fire at every N-mastered milestone ──
+        next_milestone = (len(existing_mini) + 1) * MINI_SUBJECT_TRIGGER_N
+        while mastered_count >= next_milestone:
+            sr = schedule_subject_revision(subj["id"], subj["name"], today_str(), occupied)
+            sr["type"] = "mini"
+            sr["milestoneMastered"] = next_milestone
+            cum["subjectRevisions"].append(sr)
+            existing_mini.append(sr)
+            changed = True
+            send_ntfy(
+                f"Mini Subject Revision: {subj['name']} ({next_milestone} pipeline-complete)!",
+                f"{next_milestone} topics pipeline-complete in {subj['name']}.\n"
+                f"Progressive consolidation sessions scheduled:\n"
+                f"━━━━━━━━━━━━━━━━━━\n"
+                + '\n'.join(f"  Round {s['round']}: {s['scheduledDate']}" for s in sr["sessions"])
+                + f"\n━━━━━━━━━━━━━━━━━━\n"
+                f"Keep going — consolidating while you learn!",
+                tags=["books", "calendar"],
+                priority=3,
+                subject_topic=subj.get("ntfyTopic") or None,
+            )
+            next_milestone = (len(existing_mini) + 1) * MINI_SUBJECT_TRIGGER_N
+
+        # ── Full subject revision: fire once when ALL high+med ROI mastered ─
+        if existing_full:
+            continue
+
         hm_topics = [t for t in subj["topics"] if t.get("roi") in ("very-high", "high", "medium")]
         if len(hm_topics) == 0:
             continue
-        all_mastered = all(t["status"] == "mastered" for t in hm_topics)
+        all_mastered = all(t["status"] == "pipeline-complete" for t in hm_topics)
         if all_mastered:
             sr = schedule_subject_revision(subj["id"], subj["name"], today_str(), occupied)
+            sr["type"] = "full"
             cum["subjectRevisions"].append(sr)
             changed = True
 
             send_ntfy(
                 f"Subject Revision Triggered: {subj['name']}!",
                 f"All VERY HIGH + HIGH + MEDIUM ROI topics in {subj['name']}\n"
-                f"are now MASTERED!\n"
+                f"are now PIPELINE COMPLETE!\n"
                 f"━━━━━━━━━━━━━━━━━━\n"
                 f"Full subject revision sessions scheduled:\n"
                 + '\n'.join(f"  Round {s['round']}: {s['scheduledDate']}" for s in sr["sessions"])
@@ -586,7 +647,7 @@ def reschedule_conflicting_sessions(data):
 
 
 def add_topic_to_pending(data, topic_id, topic_name, subj_id, subj_name, roi):
-    """Add a mastered topic to the pending pool for cumulative revision."""
+    """Add a pipeline-complete topic to the pending pool for cumulative revision."""
     cum = data["cumulativeRevisions"]
     # Avoid duplicates
     if any(p["topicId"] == topic_id for p in cum["pendingTopics"]):
@@ -654,11 +715,48 @@ def send_ntfy(title, message, tags=None, priority=3, click=None, subject_topic=N
     threading.Thread(target=_send, daemon=True).start()
 
 
+def get_active_stages(exam_type):
+    """Return ordered list of revision stages for a topic's exam type.
+
+    prelims → skip MVA, MAINS (no long-form answer writing)
+    mains   → skip MCQ, MCQA  (no multiple-choice practice)
+    both    → all 12 stages
+    """
+    if exam_type == "prelims":
+        return ["R1", "PYQ", "ERA", "R3", "MN", "CA", "MCQ", "MCQA", "R7", "R30"]
+    elif exam_type == "mains":
+        return ["R1", "PYQ", "ERA", "R3", "MN", "CA", "R7", "MVA", "MAINS", "R30"]
+    else:  # both
+        return ["R1", "PYQ", "ERA", "R3", "MN", "CA", "MCQ", "MCQA", "R7", "MVA", "MAINS", "R30"]
+
+
+def get_confidence_multiplier(data, topic_id, stage):
+    """Return SRS interval multiplier from user's confidence rating on a stage.
+
+    Hard(1) → 0.75 (review sooner)
+    Okay(2) → 1.00 (normal interval)
+    Easy(3) → 1.25 (review later)
+
+    Old entries (plain int, no confidence field) default to 1.0.
+    """
+    val = data.get("completedRevisions", {}).get(f"{topic_id}_{stage}")
+    if isinstance(val, dict):
+        conf = val.get("confidence", 2)
+    else:
+        return 1.0  # backward compat: no rating stored
+    return {1: 0.75, 2: 1.0, 3: 1.25}.get(conf, 1.0)
+
+
 def check_topic_mastery(data, topic_id):
-    """Check if all 12 revision stages are done for a topic → mastered!"""
-    types = ["R1", "PYQ", "ERA", "R3", "MN", "CA", "MCQ", "MCQA", "R7", "MVA", "MAINS", "R30"]
-    all_done = all(f"{topic_id}_{t}" in data["completedRevisions"] for t in types)
-    return all_done
+    """Check if all active revision stages are done for a topic → pipeline-complete!"""
+    exam_type = "both"
+    for _s in data["subjects"]:
+        for _t in _s["topics"]:
+            if _t["id"] == topic_id:
+                exam_type = _t.get("examType", "both")
+                break
+    active = get_active_stages(exam_type)
+    return all(f"{topic_id}_{st}" in data["completedRevisions"] for st in active)
 
 
 # =============================================================================
@@ -666,6 +764,7 @@ def check_topic_mastery(data, topic_id):
 # =============================================================================
 
 MAX_PARALLEL_TOPICS = 2  # Max topics being learned simultaneously
+MIN_STAGGER_DAYS = 3     # Min days between new topic starts (prevents revision wave sync)
 
 # =============================================================================
 #  ACTIVITY DURATION DEFAULTS (hours)
@@ -675,7 +774,7 @@ DEFAULT_ACTIVITY_HOURS = {
     "PYQ": 1.0,               # PYQ Practice
     "ERA": 1.0,               # Error Analysis
     "R3": 1.0,                # 2nd Revision (Active Recall)
-    "MN": 1.0,                # Micro Note Making
+    "MN": 1.5,                # Micro Note Making
     "CA": 1.0,                # Current Affairs + Mapping
     "MCQ": 0.5,               # MCQ Practice (30 min)
     "MCQA": 0.5,              # MCQ Analysis (30 min)
@@ -724,7 +823,7 @@ def _simulate_learning_for_date(data, target_date, resolved_schedules=None):
     completed_revs = data.get("completedRevisions", {})
     for subj in data["subjects"]:
         for topic in subj["topics"]:
-            if topic["status"] not in ("completed", "mastered"):
+            if topic["status"] not in ("completed", "pipeline-complete"):
                 continue
             sched = resolved_schedules.get(topic["id"])
             if not sched:
@@ -846,10 +945,10 @@ def compute_daily_load(data, date_str, include_overdue=False, resolved_schedules
     done_activities = []    # completed revisions (display only, no budget)
     pending_demands = []    # all uncompleted items with full hours + priority
 
-    # ── 1. Revision tasks from completed/mastered topics ────────────────
+    # ── 1. Revision tasks from completed/pipeline-complete topics ───────
     for subj in data["subjects"]:
         for topic in subj["topics"]:
-            if topic["status"] not in ("completed", "mastered"):
+            if topic["status"] not in ("completed", "pipeline-complete"):
                 continue
             if not topic.get("completionDate"):
                 continue
@@ -1056,7 +1155,7 @@ def estimate_all_timelines(data):
 
     estimates = {}
     for t in all_topics:
-        if t["status"] in ("completed", "mastered") and t["completionDate"]:
+        if t["status"] in ("completed", "pipeline-complete") and t["completionDate"]:
             schedule = resolved_schedules.get(t["id"])
             if not schedule:
                 continue
@@ -1137,6 +1236,7 @@ def estimate_all_timelines(data):
     # ── Step 4: Day-by-day simulation ────────────────────────────────────
     max_days = 400  # simulate up to ~13 months
     completed_ids = set()
+    last_topic_start_date = None  # stagger tracker — prevents revision wave synchronization
 
     for day_offset in range(max_days):
         current_date = add_days(today, day_offset)
@@ -1192,10 +1292,14 @@ def estimate_all_timelines(data):
         active_learning = [lt for lt in active_learning if lt["id"] not in completed_ids]
 
         # Start new topics from waiting queue
+        # MIN_STAGGER_DAYS gap between starts prevents revision pipeline wave synchronization
         while (len(active_learning) < MAX_PARALLEL_TOPICS
                and waiting_queue
-               and available > 0):
+               and available > 0
+               and (last_topic_start_date is None
+                    or day_diff(last_topic_start_date, current_date) >= MIN_STAGGER_DAYS)):
             new_t = waiting_queue.pop(0)
+            last_topic_start_date = current_date
             est_hrs = new_t.get("estimatedHours", 7.5)
             lt = {
                 "id": new_t["id"], "name": new_t["name"],
@@ -1321,7 +1425,7 @@ def calculate_revision_schedule(completion_date, intervals):
       Phase 1 — RIGID stages (spaced repetition + deep work, get their own slots):
         R1, R3, MN, R7, MVA, MAINS, R30
       Phase 2 — FLEXIBLE clusters (practice & analysis, packed atomically):
-        [PYQ + ERA]       on R1 day (recall + immediate practice)
+        [PYQ + ERA]       on R3 day (test under forgetting, errors inform MN notes)
         [CA + MCQ + MCQA] day after MN (applied practice cluster)
 
     MN is standalone — never shares a day with other stage types of the same topic.
@@ -1339,7 +1443,7 @@ def calculate_revision_schedule(completion_date, intervals):
     mcqa_date = ca_date
 
     r7_raw = add_days(completion_date, intervals["r7"])
-    r7 = get_next_sunday(max(r7_raw, add_days(mcqa_date, 5)))
+    r7 = get_next_weekend_day(max(r7_raw, add_days(mcqa_date, 5)))
 
     mva_date = add_days(r7, 7)
     mains_date = add_days(mva_date, 1)
@@ -1348,8 +1452,8 @@ def calculate_revision_schedule(completion_date, intervals):
     r30 = max(r30_raw, add_days(mains_date, 14))
 
     # ── Phase 2: Flexible clusters on rigid days ────────────────────
-    pyq_date = r1                                  # same day as R1
-    era_date = r1
+    pyq_date = r3                                  # same day as R3 (test under forgetting)
+    era_date = r3
 
     return {
         "r1":    {"date": r1,         "type": "R1",    "label": "1st Revision (Recall)"},
@@ -1377,7 +1481,7 @@ def calculate_revision_schedule_dynamic(completion_date, intervals, act_hrs,
       Each respects minimum neurological gaps and anchored intervals.
 
     Phase 2 — FLEXIBLE clusters packed into available budget gaps:
-      [PYQ + ERA]       → atomic cluster, earliest slot from R1 day
+      [PYQ + ERA]       → atomic cluster, earliest slot from R3 day (forgetting has occurred)
       [CA + MCQ + MCQA] → atomic cluster, earliest slot from day after MN
 
     Key rules:
@@ -1393,14 +1497,14 @@ def calculate_revision_schedule_dynamic(completion_date, intervals, act_hrs,
     def _avail(d):
         return _budget(d) - daily_used.get(d, 0)
 
-    def _fit(earliest, hrs, sunday_only=False):
-        c = get_next_sunday(earliest) if sunday_only else earliest
+    def _fit(earliest, hrs, weekend_only=False):
+        c = get_next_weekend_day(earliest) if weekend_only else earliest
         for _ in range(120):
             if _avail(c) >= hrs - 0.01:
                 return c
             c = add_days(c, 1)
-            if sunday_only:
-                c = get_next_sunday(c)
+            if weekend_only:
+                c = get_next_weekend_day(c)
         return c
 
     def _commit(d, hrs):
@@ -1415,11 +1519,11 @@ def calculate_revision_schedule_dynamic(completion_date, intervals, act_hrs,
     _commit(r3, act_hrs.get("R3", 1.0))
 
     # MN — standalone: must not share day with this topic's other stages
-    mn = _fit(add_days(r3, 1), act_hrs.get("MN", 2.0))
-    _commit(mn, act_hrs.get("MN", 2.0))
+    mn = _fit(add_days(r3, 1), act_hrs.get("MN", 1.5))
+    _commit(mn, act_hrs.get("MN", 1.5))
 
     r7_earliest = max(add_days(completion_date, intervals["r7"]), add_days(mn, 5))
-    r7 = _fit(r7_earliest, act_hrs.get("R7", 1.5), sunday_only=True)
+    r7 = _fit(r7_earliest, act_hrs.get("R7", 1.5), weekend_only=True)
     _commit(r7, act_hrs.get("R7", 1.5))
 
     mva = _fit(add_days(r7, 7), act_hrs.get("MVA", 1.0))
@@ -1433,9 +1537,9 @@ def calculate_revision_schedule_dynamic(completion_date, intervals, act_hrs,
     _commit(r30, act_hrs.get("R30", 1.0))
 
     # ── Phase 2: Flexible clusters ──────────────────────────────────
-    # [PYQ + ERA]: atomic, try R1 day first, skip this topic's MN day
+    # [PYQ + ERA]: atomic, try R3 day first, skip this topic's MN day
     cluster_a = act_hrs.get("PYQ", 0.5) + act_hrs.get("ERA", 0.5)
-    cand = r1
+    cand = r3
     for _ in range(120):
         if cand != mn and _avail(cand) >= cluster_a - 0.01:
             break
@@ -1500,24 +1604,27 @@ def resolve_all_revision_schedules(data):
     def _avail(d):
         return _budget(d) - daily_used.get(d, 0)
 
-    def _fit(earliest, hrs, sunday_only=False):
-        c = get_next_sunday(earliest) if sunday_only else earliest
+    def _fit(earliest, hrs, weekend_only=False):
+        c = get_next_weekend_day(earliest) if weekend_only else earliest
         for _ in range(120):
             if _avail(c) >= hrs - 0.01:
                 return c
             c = add_days(c, 1)
-            if sunday_only:
-                c = get_next_sunday(c)
+            if weekend_only:
+                c = get_next_weekend_day(c)
         return c
 
     def _commit(d, hrs):
         daily_used[d] = daily_used.get(d, 0) + hrs
 
-    # Collect all completed/mastered topics, sorted by completion date
+    def _get_conf_mult(tid, stage):
+        return get_confidence_multiplier(data, tid, stage)
+
+    # Collect all completed/pipeline-complete topics, sorted by completion date
     topics = []
     for subj in data["subjects"]:
         for topic in subj["topics"]:
-            if topic["status"] in ("completed", "mastered") and topic.get("completionDate"):
+            if topic["status"] in ("completed", "pipeline-complete") and topic.get("completionDate"):
                 topics.append(topic)
     topics.sort(key=lambda t: t["completionDate"])
 
@@ -1529,33 +1636,47 @@ def resolve_all_revision_schedules(data):
         cd = t["completionDate"]
         tid = t["id"]
 
+        exam_type = t.get("examType", "both")
+        r1_mult = _get_conf_mult(tid, "R1")
+        r3_mult = _get_conf_mult(tid, "R3")
+        r7_mult = _get_conf_mult(tid, "R7")
+
         r1 = _fit(add_days(cd, intervals["r1"]), act_hrs.get("R1", 1.5))
         _commit(r1, act_hrs.get("R1", 1.5))
 
-        r3_e = max(add_days(cd, intervals["r3"]), add_days(r1, 1))
+        r3_days = max(round(intervals["r3"] * r1_mult), 1)
+        r3_e = max(add_days(cd, r3_days), add_days(r1, 1))
         r3 = _fit(r3_e, act_hrs.get("R3", 1.0))
         _commit(r3, act_hrs.get("R3", 1.0))
 
-        mn = _fit(add_days(r3, 1), act_hrs.get("MN", 2.0))
-        _commit(mn, act_hrs.get("MN", 2.0))
+        mn = _fit(add_days(r3, 1), act_hrs.get("MN", 1.5))
+        _commit(mn, act_hrs.get("MN", 1.5))
 
-        r7_e = max(add_days(cd, intervals["r7"]), add_days(mn, 5))
-        r7 = _fit(r7_e, act_hrs.get("R7", 1.5), sunday_only=True)
+        r7_days = max(round(intervals["r7"] * r3_mult), 1)
+        r7_e = max(add_days(cd, r7_days), add_days(mn, 5))
+        r7 = _fit(r7_e, act_hrs.get("R7", 1.5), weekend_only=True)
         _commit(r7, act_hrs.get("R7", 1.5))
 
-        mva = _fit(add_days(r7, 7), act_hrs.get("MVA", 1.0))
-        _commit(mva, act_hrs.get("MVA", 1.0))
+        if exam_type != "prelims":  # both + mains have MVA and MAINS
+            mva = _fit(add_days(r7, 7), act_hrs.get("MVA", 1.0))
+            _commit(mva, act_hrs.get("MVA", 1.0))
+            mains_d = _fit(add_days(mva, 1), act_hrs.get("MAINS", 1.5))
+            _commit(mains_d, act_hrs.get("MAINS", 1.5))
+            r30_anchor = mains_d
+        else:  # prelims: skip MVA + MAINS; R30 anchors off R7
+            mva = None
+            mains_d = None
+            r30_anchor = r7
 
-        mains = _fit(add_days(mva, 1), act_hrs.get("MAINS", 1.5))
-        _commit(mains, act_hrs.get("MAINS", 1.5))
-
-        r30_e = max(add_days(cd, intervals["r30"]), add_days(mains, 14))
+        r30_days = max(round(intervals["r30"] * r7_mult), 1)
+        r30_e = max(add_days(cd, r30_days), add_days(r30_anchor, 7))
         r30 = _fit(r30_e, act_hrs.get("R30", 1.0))
         _commit(r30, act_hrs.get("R30", 1.0))
 
         rigid[tid] = {
             "r1": r1, "r3": r3, "mn": mn, "r7": r7,
-            "mva": mva, "mains": mains, "r30": r30,
+            "mva": mva, "mains": mains_d, "r30": r30,
+            "exam_type": exam_type,
         }
 
     # ── PHASE 2: Place flexible clusters for ALL topics ─────────────
@@ -1564,9 +1685,9 @@ def resolve_all_revision_schedules(data):
         tid = t["id"]
         rd = rigid[tid]
 
-        # [PYQ + ERA]: atomic, from R1 day, skip this topic's MN day
+        # [PYQ + ERA]: atomic, from R3 day, skip this topic's MN day
         cluster_a = act_hrs.get("PYQ", 0.5) + act_hrs.get("ERA", 0.5)
-        cand = rd["r1"]
+        cand = rd["r3"]
         for _ in range(120):
             if cand != rd["mn"] and _avail(cand) >= cluster_a - 0.01:
                 break
@@ -1574,30 +1695,38 @@ def resolve_all_revision_schedules(data):
         _commit(cand, cluster_a)
         pyq_date = era_date = cand
 
-        # [CA + MCQ + MCQA]: atomic, from day after MN, skip MN day
-        cluster_b = act_hrs.get("CA", 1.0) + act_hrs.get("MCQ", 0.5) + act_hrs.get("MCQA", 0.5)
+        # [CA + MCQ + MCQA]: atomic; mains topics skip MCQ/MCQA
+        exam_type = rd.get("exam_type", "both")
+        if exam_type == "mains":
+            cluster_b = act_hrs.get("CA", 1.0)
+        else:
+            cluster_b = act_hrs.get("CA", 1.0) + act_hrs.get("MCQ", 0.5) + act_hrs.get("MCQA", 0.5)
         cand = add_days(rd["mn"], 1)
         for _ in range(120):
             if cand != rd["mn"] and _avail(cand) >= cluster_b - 0.01:
                 break
             cand = add_days(cand, 1)
         _commit(cand, cluster_b)
-        ca_date = mcq_date = mcqa_date = cand
+        ca_date = cand
+        mcq_date = mcqa_date = cand if exam_type != "mains" else None
 
-        resolved[tid] = {
-            "r1":    {"date": rd["r1"],    "type": "R1",    "label": "1st Revision (Recall)"},
-            "pyq":   {"date": pyq_date,    "type": "PYQ",   "label": "PYQ Practice"},
-            "era":   {"date": era_date,    "type": "ERA",   "label": "Error Analysis"},
-            "r3":    {"date": rd["r3"],    "type": "R3",    "label": "2nd Revision (Active Recall)"},
-            "mn":    {"date": rd["mn"],    "type": "MN",    "label": "Micro Note Making"},
-            "ca":    {"date": ca_date,     "type": "CA",    "label": "Current Affairs + Mapping"},
-            "mcq":   {"date": mcq_date,    "type": "MCQ",   "label": "MCQ Practice"},
-            "mcqa":  {"date": mcqa_date,   "type": "MCQA",  "label": "MCQ Analysis"},
-            "r7":    {"date": rd["r7"],    "type": "R7",    "label": "3rd Revision (Weekend Consolidation)"},
-            "mva":   {"date": rd["mva"],   "type": "MVA",   "label": "Mains Value Addition"},
-            "mains": {"date": rd["mains"], "type": "MAINS", "label": "Mains Answer Writing"},
-            "r30":   {"date": rd["r30"],   "type": "R30",   "label": "Final Revision"},
+        sched = {
+            "r1":  {"date": rd["r1"],  "type": "R1",  "label": "1st Revision (Recall)"},
+            "pyq": {"date": pyq_date,  "type": "PYQ", "label": "PYQ Practice"},
+            "era": {"date": era_date,  "type": "ERA", "label": "Error Analysis"},
+            "r3":  {"date": rd["r3"],  "type": "R3",  "label": "2nd Revision (Active Recall)"},
+            "mn":  {"date": rd["mn"],  "type": "MN",  "label": "Micro Note Making"},
+            "ca":  {"date": ca_date,   "type": "CA",  "label": "Current Affairs + Mapping"},
+            "r7":  {"date": rd["r7"],  "type": "R7",  "label": "3rd Revision (Weekend Consolidation)"},
+            "r30": {"date": rd["r30"], "type": "R30", "label": "Final Revision"},
         }
+        if exam_type != "mains":  # prelims + both have MCQ/MCQA
+            sched["mcq"]  = {"date": mcq_date,  "type": "MCQ",  "label": "MCQ Practice"}
+            sched["mcqa"] = {"date": mcqa_date, "type": "MCQA", "label": "MCQ Analysis"}
+        if exam_type != "prelims":  # both + mains have MVA/MAINS
+            sched["mva"]   = {"date": rd["mva"],   "type": "MVA",   "label": "Mains Value Addition"}
+            sched["mains"] = {"date": rd["mains"], "type": "MAINS", "label": "Mains Answer Writing"}
+        resolved[tid] = sched
 
     return resolved, daily_used
 
@@ -1869,6 +1998,7 @@ def api_add_topic(subj_id):
         "name": body["name"],
         "estimatedHours": round(float(body.get("estimatedHours", 7.5)), 1),
         "roi": body.get("roi", "high"),
+        "examType": body.get("examType", "both"),
         "notes": body.get("notes", ""),
         "status": "not-started",
         "startDate": None,
@@ -1932,6 +2062,11 @@ def api_edit_topic(subj_id, topic_id):
             for pt in cum.get("pendingTopics", []):
                 if pt.get("topicId") == topic_id:
                     pt["roi"] = topic["roi"]
+    if "examType" in body and body["examType"] in ("prelims", "mains", "both"):
+        old_et = topic.get("examType", "both")
+        topic["examType"] = body["examType"]
+        if old_et != topic["examType"]:
+            changes.append(f"Exam Type: {old_et} → {topic['examType']}")
 
     if changes:
         save_data(data)
@@ -2099,16 +2234,29 @@ def api_mark_revision():
     topic_id = body["topicId"]
     rev_type = body["type"]
     key = f"{topic_id}_{rev_type}"
+    confidence = int(body.get("confidence", 2))  # 1=Hard, 2=Okay, 3=Easy
+    if confidence not in (1, 2, 3):
+        confidence = 2
     data = load_data()
-    data["completedRevisions"][key] = int(time.time() * 1000)
+    data["completedRevisions"][key] = {
+        "completedAt": int(time.time() * 1000),
+        "confidence": confidence,
+    }
     save_data(data)
 
     topic_name, subj_name, subj_ntfy = find_topic_info(data, topic_id)
 
-    # Determine progress
-    types = ["R1", "PYQ", "ERA", "R3", "MN", "CA", "MCQ", "MCQA", "R7", "MVA", "MAINS", "R30"]
+    # Determine progress — use only stages active for this topic's exam type
+    topic_exam_type = "both"
+    for _s in data["subjects"]:
+        for _t in _s["topics"]:
+            if _t["id"] == topic_id:
+                topic_exam_type = _t.get("examType", "both")
+                break
+    types = get_active_stages(topic_exam_type)
+    total_stages = len(types)
     done_count = sum(1 for t in types if f"{topic_id}_{t}" in data["completedRevisions"])
-    progress_bar = "" .join("█" if f"{topic_id}_{t}" in data["completedRevisions"] else "░" for t in types)
+    progress_bar = "".join("█" if f"{topic_id}_{t}" in data["completedRevisions"] else "░" for t in types)
 
     type_emoji = {"R1": "R1", "PYQ": "PYQ", "ERA": "ERA", "R3": "R3", "MN": "MN", "CA": "CA", "MCQ": "MCQ", "MCQA": "MCQA", "R7": "R7", "MVA": "MVA", "R30": "R30", "MAINS": "MAINS"}
     type_desc = {"R1": "1st Revision", "PYQ": "PYQ Practice", "ERA": "Error Analysis", "R3": "2nd Revision", "MN": "Micro Note Making", "CA": "Current Affairs + Mapping", "MCQ": "MCQ Practice", "MCQA": "MCQ Analysis", "R7": "3rd Revision", "MVA": "Mains Value Addition", "MAINS": "Mains Writing", "R30": "Final Revision"}
@@ -2119,37 +2267,28 @@ def api_mark_revision():
         f"Subject: {subj_name}\n"
         f"Stage: {type_desc.get(rev_type, rev_type)}\n"
         f"━━━━━━━━━━━━━━━━━━\n"
-        f"Progress: [{progress_bar}] {done_count}/12\n"
+        f"Progress: [{progress_bar}] {done_count}/{total_stages}\n"
         f"━━━━━━━━━━━━━━━━━━\n"
-        f"{12 - done_count} stage(s) remaining to mastery",
+        f"{total_stages - done_count} stage(s) remaining to pipeline-complete",
         tags=["white_check_mark", "fire"],
         priority=3,
         subject_topic=subj_ntfy or None,
     )
 
-    # Check if ALL revisions are done → MASTERED!
+    # Check if ALL revisions are done → PIPELINE COMPLETE!
     if check_topic_mastery(data, topic_id):
         send_ntfy(
-            "TOPIC MASTERED!",
+            "TOPIC PIPELINE COMPLETE!",
             f"********************\n"
             f"\n"
             f"Topic: {topic_name}\n"
             f"Subject: {subj_name}\n"
             f"\n"
-            f"ALL 12 REVISION STAGES COMPLETE!\n"
+            f"ALL {total_stages} REVISION STAGES COMPLETE!\n"
+            f"Type: {topic_exam_type.upper()}\n"
             f"━━━━━━━━━━━━━━━━━━\n"
-            f"[done] R1    -- 1st Revision\n"
-            f"[done] PYQ   -- PYQ Practice\n"
-            f"[done] ERA   -- Error Analysis\n"
-            f"[done] R3    -- 2nd Revision\n"
-            f"[done] MN    -- Micro Note Making\n"
-            f"[done] CA    -- Current Affairs + Mapping\n"
-            f"[done] MCQ   -- MCQ Practice\n"
-            f"[done] MCQA  -- MCQ Analysis\n"
-            f"[done] R7    -- 3rd Revision\n"
-            f"[done] MVA   -- Mains Value Addition\n"
-            f"[done] MAINS -- Mains Writing\n"
-            f"[done] R30   -- Final Revision\n"
+            + "\n".join(f"[done] {t:<5} -- {type_desc.get(t, t)}" for t in types)
+            + "\n"
             f"━━━━━━━━━━━━━━━━━━\n"
             f"\n"
             f"This topic is now deeply embedded\n"
@@ -2161,11 +2300,11 @@ def api_mark_revision():
             subject_topic=subj_ntfy or None,
         )
 
-        # Auto-mark as mastered & add to cumulative revision pending pool
+        # Auto-mark as pipeline-complete & add to cumulative revision pending pool
         for subj in data["subjects"]:
             for topic in subj["topics"]:
                 if topic["id"] == topic_id:
-                    topic["status"] = "mastered"
+                    topic["status"] = "pipeline-complete"
                     # Add to cumulative revision pending pool
                     add_topic_to_pending(
                         data, topic_id, topic["name"],
@@ -2351,7 +2490,7 @@ def api_dashboard():
 
     total_topics = sum(len(s["topics"]) for s in data["subjects"])
     learning = sum(1 for s in data["subjects"] for t in s["topics"] if t["status"] == "learning")
-    completed = sum(1 for s in data["subjects"] for t in s["topics"] if t["status"] in ("completed", "mastered"))
+    completed = sum(1 for s in data["subjects"] for t in s["topics"] if t["status"] in ("completed", "pipeline-complete"))
     total_revisions = len(data["completedRevisions"])
 
     learning_topics = []
@@ -2596,7 +2735,7 @@ def api_analytics():
     not_started = sum(1 for s in data["subjects"] for t in s["topics"] if t["status"] == "not-started")
     learning = sum(1 for s in data["subjects"] for t in s["topics"] if t["status"] == "learning")
     completed = sum(1 for s in data["subjects"] for t in s["topics"] if t["status"] == "completed")
-    mastered = sum(1 for s in data["subjects"] for t in s["topics"] if t["status"] == "mastered")
+    mastered = sum(1 for s in data["subjects"] for t in s["topics"] if t["status"] == "pipeline-complete")
 
     total_expected = completed * 12
     total_done = len(data["completedRevisions"])
@@ -2620,7 +2759,7 @@ def api_analytics():
     subject_progress = []
     for subj in sorted(data["subjects"], key=lambda s: roi_order.get(s["roi"], 2)):
         t_total = len(subj["topics"])
-        t_done = sum(1 for t in subj["topics"] if t["status"] in ("completed", "mastered"))
+        t_done = sum(1 for t in subj["topics"] if t["status"] in ("completed", "pipeline-complete"))
         pct = round(t_done / t_total * 100) if t_total > 0 else 0
         subject_progress.append({
             "name": subj["name"], "color": subj["color"],
@@ -2644,7 +2783,7 @@ def api_analytics():
     return jsonify({
         "stats": {
             "total": total, "notStarted": not_started, "learning": learning,
-            "completed": completed, "mastered": mastered,
+            "completed": completed, "pipelineComplete": mastered,
             "compliance": compliance, "totalDone": total_done,
             "totalExpected": total_expected, "overdue": overdue,
         },
@@ -2810,7 +2949,7 @@ def api_cumulative():
             enriched["subjectColor"] = subj["color"]
             enriched["subjectROI"] = subj["roi"]
             enriched["topicCount"] = len(subj["topics"])
-            enriched["masteredCount"] = sum(1 for t in subj["topics"] if t["status"] == "mastered")
+            enriched["masteredCount"] = sum(1 for t in subj["topics"] if t["status"] == "pipeline-complete")
         for sess in enriched["sessions"]:
             sess["isPast"] = sess["scheduledDate"] < today
             sess["isThisWeekend"] = (

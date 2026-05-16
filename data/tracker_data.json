@@ -219,9 +219,9 @@
           "estimatedDays": 4,
           "roi": "very-high",
           "notes": "",
-          "status": "not-started",
-          "startDate": null,
-          "completionDate": null,
+          "status": "completed",
+          "startDate": "2026-05-16",
+          "completionDate": "2026-05-16",
           "createdAt": "2026-03-06",
           "estimatedHours": 10.0
         },
@@ -952,16 +952,16 @@
     "weekendRevHrs": 3,
     "intervals": {
       "r1": 1,
-      "r3": 3,
-      "r7": 7,
-      "r30": 20
+      "r3": 5,
+      "r7": 14,
+      "r30": 35
     },
     "activityHours": {
       "R1": 1.5,
       "PYQ": 0.5,
       "ERA": 0.5,
       "R3": 1,
-      "MN": 3,
+      "MN": 1.5,
       "CA": 1,
       "MCQ": 0.5,
       "MCQA": 0.5,
@@ -978,7 +978,12 @@
       "server": "https://ntfy.sh"
     }
   },
-  "completedRevisions": {},
+  "completedRevisions": {
+    "b13be257893b_ERA": {
+      "completedAt": 1778930349694,
+      "confidence": 2
+    }
+  },
   "completedPractice": {},
   "version": 2,
   "cumulativeRevisions": {
