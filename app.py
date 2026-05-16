@@ -764,7 +764,7 @@ def check_topic_mastery(data, topic_id):
 # =============================================================================
 
 MAX_PARALLEL_TOPICS = 2  # Max topics being learned simultaneously
-MIN_STAGGER_DAYS = 3     # Min days between new topic starts (prevents revision wave sync)
+MIN_STAGGER_DAYS = 1     # Min days between new topic starts (prevents revision wave sync)
 
 # =============================================================================
 #  ACTIVITY DURATION DEFAULTS (hours)
