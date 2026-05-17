@@ -327,9 +327,9 @@
           "estimatedDays": 2,
           "roi": "high",
           "notes": "",
-          "status": "learning",
+          "status": "completed",
           "startDate": "2026-05-18",
-          "completionDate": null,
+          "completionDate": "2026-05-18",
           "createdAt": "2026-03-07",
           "estimatedHours": 3.5,
           "examType": "both"
