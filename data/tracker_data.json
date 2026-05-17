@@ -331,7 +331,8 @@
           "startDate": null,
           "completionDate": null,
           "createdAt": "2026-03-07",
-          "estimatedHours": 5.0
+          "estimatedHours": 3.5,
+          "examType": "both"
         },
         {
           "id": "96d24b96b2c5",
