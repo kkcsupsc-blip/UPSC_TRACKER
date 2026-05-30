@@ -1,17 +1,6 @@
 {
   "subjects": [
     {
-      "id": "51b3917c6620",
-      "name": "MEDIEVAL HISTORY",
-      "roi": "low",
-      "color": "#ec4899",
-      "ntfyTopic": "UPSC-MEDIEVAL HISTORY",
-      "notes": "Unpredictable.\nArt & Culture overlaps heavily.\nTemple architecture, inscriptions, dynasties.\n\nUsually 4–8 direct questions.\nLow volume but high trap density.",
-      "topics": [],
-      "createdAt": "2026-02-22",
-      "defaultStages": null
-    },
-    {
       "id": "9a6d405cfafb",
       "name": "ART AND CULTURE",
       "roi": "low",
