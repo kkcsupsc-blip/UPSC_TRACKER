@@ -748,14 +748,14 @@ def get_active_stages(exam_type):
     both    → all 12 stages
     """
     if exam_type == "prelims":
-        return ["R1", "PYQ", "ERA", "R3", "MN", "CA", "MCQ", "MCQA", "R7", "R30"]
+        return ["R1", "PYQ", "ERA", "R3", "MN", "MCQ", "MCQA", "R7", "R30"]
     elif exam_type == "mains":
-        return ["R1", "PYQ", "ERA", "R3", "MN", "CA", "R7", "MVA", "MAINS", "R30"]
+        return ["R1", "PYQ", "ERA", "R3", "MN", "R7", "MVA", "MAINS", "R30"]
     else:  # both
-        return ["R1", "PYQ", "ERA", "R3", "MN", "CA", "MCQ", "MCQA", "R7", "MVA", "MAINS", "R30"]
+        return ["R1", "PYQ", "ERA", "R3", "MN", "MCQ", "MCQA", "R7", "MVA", "MAINS", "R30"]
 
-
-ALL_STAGES = ["R1", "PYQ", "ERA", "R3", "MN", "CA", "MCQ", "MCQA", "R7", "MVA", "MAINS", "R30"]
+# CA (Current Affairs) removed — replaced by continuous CA links feature
+ALL_STAGES = ["R1", "PYQ", "ERA", "R3", "MN", "MCQ", "MCQA", "R7", "MVA", "MAINS", "R30"]
 
 
 def get_topic_stages(data, topic_id):
@@ -816,7 +816,6 @@ DEFAULT_ACTIVITY_HOURS = {
     "ERA": 1.0,               # Error Analysis
     "R3": 1.0,                # 2nd Revision (Active Recall)
     "MN": 1.5,                # Micro Note Making
-    "CA": 1.0,                # Current Affairs + Mapping
     "MCQ": 0.5,               # MCQ Practice (30 min)
     "MCQA": 0.5,              # MCQ Analysis (30 min)
     "R7": 1.5,                # 3rd Revision (Consolidation)
@@ -833,8 +832,26 @@ def get_activity_hours(settings):
     return {**DEFAULT_ACTIVITY_HOURS, **settings.get("activityHours", {})}
 
 
+def get_actual_hours(data, topic_id):
+    """Return total actual hours logged for a topic from study logs, or 0 if none."""
+    return sum(log["hours"] for log in data.get("studyLogs", []) if log["topicId"] == topic_id)
+
+
+def get_effective_hours(data, topic):
+    """Return actual logged hours if available, else estimated hours.
+
+    After a topic completes learning, actual hours give a more accurate
+    measure of content depth than the pre-study estimate.
+    """
+    if topic.get("status") in ("completed", "pipeline-complete"):
+        actual = get_actual_hours(data, topic["id"])
+        if actual > 0:
+            return actual
+    return topic.get("estimatedHours", 5.0)
+
+
 def get_topic_scaled_hours(act_hrs, estimated_hours):
-    """Scale revision-stage hours by topic depth (estimated learning hours).
+    """Scale revision-stage hours by topic depth (learning hours).
 
     Only spaced-repetition recall stages and note-making scale.
     Practice / writing stages stay fixed — they are time-boxed tasks,
@@ -846,7 +863,7 @@ def get_topic_scaled_hours(act_hrs, estimated_hours):
                        floor 0.5h  |  cap 2.5h
     MN              — linear scaling (notes directly proportional to content)
                        floor 0.75h |  cap 3.0h
-    PYQ, ERA, MCQ, MCQA, CA, MVA, MAINS — unchanged (task-based)
+    PYQ, ERA, MCQ, MCQA, MVA, MAINS — unchanged (task-based)
     """
     ref = 5.0
     est = max(estimated_hours or ref, 0.5)
@@ -1017,7 +1034,7 @@ def compute_daily_load(data, date_str, include_overdue=False, resolved_schedules
         "R1": 10, "R3": 11, "R7": 12, "R30": 13,
         "learning": 20,
         "MN": 30,
-        "PYQ": 40, "ERA": 40, "MCQ": 40, "MCQA": 40, "CA": 40,
+        "PYQ": 40, "ERA": 40, "MCQ": 40, "MCQA": 40,
         "MVA": 50, "MAINS": 50,
         "cumulative_sectional": 60, "cumulative_subject": 60,
     }
@@ -1266,8 +1283,9 @@ def estimate_all_timelines(data):
             if not schedule:
                 continue
             mastery_date = schedule["r30"]["date"]
+            active = get_topic_stages(data, t["id"])
             done_count = sum(
-                1 for tp in ["R1", "PYQ", "ERA", "R3", "MN", "CA", "MCQ", "MCQA", "R7", "MVA", "MAINS", "R30"]
+                1 for tp in active
                 if f"{t['id']}_{tp}" in data["completedRevisions"]
             )
             estimates[t["id"]] = {
@@ -1552,8 +1570,9 @@ def calculate_revision_schedule(completion_date, intervals):
         R1, R3, MN, R7, MVA, MAINS, R30
       Phase 2 — FLEXIBLE clusters (practice & analysis, packed atomically):
         [PYQ + ERA]       on R3 day (test under forgetting, errors inform MN notes)
-        [CA + MCQ + MCQA] day after MN (applied practice cluster)
+        [MCQ + MCQA]      day after MN (applied practice cluster)
 
+    CA removed from pipeline — replaced by continuous CA links feature.
     MN is standalone — never shares a day with other stage types of the same topic.
     """
     # ── Phase 1: Rigid stages ───────────────────────────────────────
@@ -1564,9 +1583,8 @@ def calculate_revision_schedule(completion_date, intervals):
 
     mn_date = add_days(r3, 1)                     # standalone day
 
-    ca_date  = add_days(mn_date, 1)               # practice cluster day
-    mcq_date = ca_date
-    mcqa_date = ca_date
+    mcq_date  = add_days(mn_date, 1)              # practice cluster day
+    mcqa_date = mcq_date
 
     r7_raw = add_days(completion_date, intervals["r7"])
     r7 = get_next_weekend_day(max(r7_raw, add_days(mcqa_date, 5)))
@@ -1587,7 +1605,6 @@ def calculate_revision_schedule(completion_date, intervals):
         "era":   {"date": era_date,   "type": "ERA",   "label": "Error Analysis"},
         "r3":    {"date": r3,         "type": "R3",    "label": "2nd Revision (Active Recall)"},
         "mn":    {"date": mn_date,    "type": "MN",    "label": "Micro Note Making"},
-        "ca":    {"date": ca_date,    "type": "CA",    "label": "Current Affairs + Mapping"},
         "mcq":   {"date": mcq_date,   "type": "MCQ",   "label": "MCQ Practice"},
         "mcqa":  {"date": mcqa_date,  "type": "MCQA",  "label": "MCQ Analysis"},
         "r7":    {"date": r7,         "type": "R7",    "label": "3rd Revision (Weekend Consolidation)"},
@@ -1608,7 +1625,7 @@ def calculate_revision_schedule_dynamic(completion_date, intervals, act_hrs,
 
     Phase 2 — FLEXIBLE clusters packed into available budget gaps:
       [PYQ + ERA]       → atomic cluster, earliest slot from R3 day (forgetting has occurred)
-      [CA + MCQ + MCQA] → atomic cluster, earliest slot from day after MN
+      [MCQ + MCQA]      → atomic cluster, earliest slot from day after MN
 
     Key rules:
       • MN never shares a day with other stages of this topic
@@ -1676,15 +1693,15 @@ def calculate_revision_schedule_dynamic(completion_date, intervals, act_hrs,
     _commit(cand, cluster_a)
     pyq_date = era_date = cand
 
-    # [CA + MCQ + MCQA]: atomic, from day after MN, skip this topic's MN day
-    cluster_b = act_hrs.get("CA", 1.0) + act_hrs.get("MCQ", 0.5) + act_hrs.get("MCQA", 0.5)
+    # [MCQ + MCQA]: atomic, from day after MN, skip this topic's MN day
+    cluster_b = act_hrs.get("MCQ", 0.5) + act_hrs.get("MCQA", 0.5)
     cand = add_days(mn, 1)
     for _ in range(120):
         if cand != mn and _avail(cand) >= cluster_b - 0.01:
             break
         cand = add_days(cand, 1)
     _commit(cand, cluster_b)
-    ca_date = mcq_date = mcqa_date = cand
+    mcq_date = mcqa_date = cand
 
     return {
         "r1":    {"date": r1,         "type": "R1",    "label": "1st Revision (Recall)"},
@@ -1692,7 +1709,6 @@ def calculate_revision_schedule_dynamic(completion_date, intervals, act_hrs,
         "era":   {"date": era_date,   "type": "ERA",   "label": "Error Analysis"},
         "r3":    {"date": r3,         "type": "R3",    "label": "2nd Revision (Active Recall)"},
         "mn":    {"date": mn,         "type": "MN",    "label": "Micro Note Making"},
-        "ca":    {"date": ca_date,    "type": "CA",    "label": "Current Affairs + Mapping"},
         "mcq":   {"date": mcq_date,   "type": "MCQ",   "label": "MCQ Practice"},
         "mcqa":  {"date": mcqa_date,  "type": "MCQA",  "label": "MCQ Analysis"},
         "r7":    {"date": r7,         "type": "R7",    "label": "3rd Revision (Weekend Consolidation)"},
@@ -1710,7 +1726,7 @@ def resolve_all_revision_schedules(data):
       Spaced repetition anchors get absolute priority over practice tasks.
 
     Phase 2 — ALL topics' flexible clusters fill remaining budget gaps:
-      [PYQ + ERA], [CA + MCQ + MCQA]
+      [PYQ + ERA], [MCQ + MCQA]
       Placed as atomic units for maximum daily utilization.
 
     Global two-phase ensures rigid stages never get displaced by another
@@ -1770,7 +1786,7 @@ def resolve_all_revision_schedules(data):
         r3_mult = _get_conf_mult(tid, "R3")
         r7_mult = _get_conf_mult(tid, "R7")
 
-        t_hrs = get_topic_scaled_hours(act_hrs, t.get("estimatedHours", 5.0))
+        t_hrs = get_topic_scaled_hours(act_hrs, get_effective_hours(data, t))
 
         # Rigid stages: R1, R3, MN, R7, MVA, MAINS, R30 — only if active
         r1 = mn = r3 = r7 = mva = mains_d = r30 = None
@@ -1849,14 +1865,12 @@ def resolve_all_revision_schedules(data):
             if has_pyq: pyq_date = cand
             if has_era: era_date = cand
 
-        # [CA + MCQ + MCQA]: atomic
-        ca_date = mcq_date = mcqa_date = None
-        has_ca = "CA" in active_stages
+        # [MCQ + MCQA]: atomic practice cluster
+        mcq_date = mcqa_date = None
         has_mcq = "MCQ" in active_stages
         has_mcqa = "MCQA" in active_stages
-        if has_ca or has_mcq or has_mcqa:
+        if has_mcq or has_mcqa:
             cluster_b = 0
-            if has_ca: cluster_b += act_hrs.get("CA", 1.0)
             if has_mcq: cluster_b += act_hrs.get("MCQ", 0.5)
             if has_mcqa: cluster_b += act_hrs.get("MCQA", 0.5)
             mn_anchor = rd["mn"] or flex_anchor
@@ -1866,7 +1880,6 @@ def resolve_all_revision_schedules(data):
                     break
                 cand = add_days(cand, 1)
             _commit(cand, cluster_b)
-            if has_ca: ca_date = cand
             if has_mcq: mcq_date = cand
             if has_mcqa: mcqa_date = cand
 
@@ -1877,7 +1890,6 @@ def resolve_all_revision_schedules(data):
             "era":   ("ERA", era_date,    "Error Analysis"),
             "r3":    ("R3",  rd["r3"],    "2nd Revision (Active Recall)"),
             "mn":    ("MN",  rd["mn"],    "Micro Note Making"),
-            "ca":    ("CA",  ca_date,     "Current Affairs + Mapping"),
             "mcq":   ("MCQ", mcq_date,   "MCQ Practice"),
             "mcqa":  ("MCQA", mcqa_date,  "MCQ Analysis"),
             "r7":    ("R7",  rd["r7"],    "3rd Revision (Weekend Consolidation)"),
@@ -2431,8 +2443,8 @@ def api_mark_revision():
     done_count = sum(1 for t in types if f"{topic_id}_{t}" in data["completedRevisions"])
     progress_bar = "".join("█" if f"{topic_id}_{t}" in data["completedRevisions"] else "░" for t in types)
 
-    type_emoji = {"R1": "R1", "PYQ": "PYQ", "ERA": "ERA", "R3": "R3", "MN": "MN", "CA": "CA", "MCQ": "MCQ", "MCQA": "MCQA", "R7": "R7", "MVA": "MVA", "R30": "R30", "MAINS": "MAINS"}
-    type_desc = {"R1": "1st Revision", "PYQ": "PYQ Practice", "ERA": "Error Analysis", "R3": "2nd Revision", "MN": "Micro Note Making", "CA": "Current Affairs + Mapping", "MCQ": "MCQ Practice", "MCQA": "MCQ Analysis", "R7": "3rd Revision", "MVA": "Mains Value Addition", "MAINS": "Mains Writing", "R30": "Final Revision"}
+    type_emoji = {"R1": "R1", "PYQ": "PYQ", "ERA": "ERA", "R3": "R3", "MN": "MN", "MCQ": "MCQ", "MCQA": "MCQA", "R7": "R7", "MVA": "MVA", "R30": "R30", "MAINS": "MAINS"}
+    type_desc = {"R1": "1st Revision", "PYQ": "PYQ Practice", "ERA": "Error Analysis", "R3": "2nd Revision", "MN": "Micro Note Making", "MCQ": "MCQ Practice", "MCQA": "MCQ Analysis", "R7": "3rd Revision", "MVA": "Mains Value Addition", "MAINS": "Mains Writing", "R30": "Final Revision"}
 
     send_ntfy(
         f"{type_emoji.get(rev_type, '✓')} {rev_type} Revision Done!",
@@ -2737,6 +2749,55 @@ def api_dashboard():
         exam_info["milestones"]["r3Window"] = add_days(prelims, -56)
         exam_info["milestones"]["r4Window"] = add_days(prelims, -21)
         exam_info["milestones"]["r5Window"] = add_days(prelims, -3)
+
+    # Feasibility check: compare timeline projections against exam dates
+    exam_info["feasibility"] = {"status": "ok", "warnings": []}
+    if prelims or exam_dates.get("mains", ""):
+        try:
+            tl = estimate_all_timelines(data)
+            estimates = tl.get("estimates", {})
+            # Check each topic's projected dates against exam
+            topics_past_prelims = []
+            topics_past_mains = []
+            overall_finish = tl.get("summary", {}).get("overallFinishDate")
+            for tid, est in estimates.items():
+                mastery = est.get("masteryDate")
+                completion = est.get("completionDate")
+                name = est.get("topicName", "Unknown")
+                subj = est.get("subjectName", "")
+                # Check if learning won't complete before prelims
+                if prelims and completion and est.get("isEstimate"):
+                    if completion > prelims:
+                        topics_past_prelims.append(f"{subj}: {name}")
+            if topics_past_prelims:
+                exam_info["feasibility"]["status"] = "behind"
+                exam_info["feasibility"]["warnings"].append({
+                    "type": "learning_overflow",
+                    "message": f"{len(topics_past_prelims)} topic(s) won't complete learning before Prelims",
+                    "topics": topics_past_prelims[:10],  # cap at 10 for display
+                })
+            if prelims and overall_finish and overall_finish > prelims:
+                prelims_gap = day_diff(prelims, overall_finish)
+                exam_info["feasibility"]["status"] = "behind"
+                exam_info["feasibility"]["warnings"].append({
+                    "type": "overall_behind",
+                    "message": f"Full pipeline finishes {prelims_gap} days AFTER Prelims",
+                    "finishDate": overall_finish,
+                })
+            # Subject-level: which subjects have not-started topics
+            subj_behind = {}
+            for tid, est in estimates.items():
+                if est.get("status") == "not-started" and est.get("isEstimate"):
+                    sn = est.get("subjectName", "Unknown")
+                    subj_behind[sn] = subj_behind.get(sn, 0) + 1
+            if subj_behind:
+                for sn, count in subj_behind.items():
+                    exam_info["feasibility"]["warnings"].append({
+                        "type": "subject_backlog",
+                        "message": f"{sn}: {count} topic(s) not yet started",
+                    })
+        except Exception:
+            pass
 
     return jsonify({
         "today": today,
@@ -3419,6 +3480,7 @@ def api_add_link(subj_id, topic_id):
         "url": body["url"],
         "title": body.get("title", ""),
         "dateAdded": today_str(),
+        "read": False,
     }
     if "links" not in topic:
         topic["links"] = []
@@ -3439,6 +3501,24 @@ def api_delete_link(subj_id, topic_id, link_id):
     topic["links"] = [l for l in topic.get("links", []) if l["id"] != link_id]
     save_data(data)
     return jsonify({"ok": True})
+
+
+@app.route("/api/subjects/<subj_id>/topics/<topic_id>/links/<link_id>/toggle-read", methods=["POST"])
+def api_toggle_link_read(subj_id, topic_id, link_id):
+    """Toggle the read/done status of a CA link."""
+    data = load_data()
+    subj = next((s for s in data["subjects"] if s["id"] == subj_id), None)
+    if not subj:
+        return jsonify({"error": "Subject not found"}), 404
+    topic = next((t for t in subj["topics"] if t["id"] == topic_id), None)
+    if not topic:
+        return jsonify({"error": "Topic not found"}), 404
+    link = next((l for l in topic.get("links", []) if l["id"] == link_id), None)
+    if not link:
+        return jsonify({"error": "Link not found"}), 404
+    link["read"] = not link.get("read", False)
+    save_data(data)
+    return jsonify({"ok": True, "read": link["read"]})
 
 
 # =============================================================================
