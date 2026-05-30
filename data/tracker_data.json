@@ -99,7 +99,14 @@
     "subjectRevisions": [],
     "pendingTopics": []
   },
-  "studyLogs": [],
+  "studyLogs": [
+    {
+      "id": "74faead59809",
+      "topicId": "58e9706b9e74",
+      "date": "2026-05-31",
+      "hours": 4.0
+    }
+  ],
   "subjectCycles": [],
   "version": 3
 }
