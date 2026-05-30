@@ -8,7 +8,23 @@
       "ntfyTopic": "",
       "notes": "",
       "defaultStages": null,
-      "topics": [],
+      "topics": [
+        {
+          "id": "e9e8ffb4db51",
+          "name": "NCERT - CLASS 11",
+          "estimatedHours": 25.0,
+          "roi": "very-high",
+          "examType": "both",
+          "notes": "",
+          "status": "not-started",
+          "startDate": null,
+          "completionDate": null,
+          "activeStages": null,
+          "links": [],
+          "relatedTopicIds": [],
+          "createdAt": "2026-05-31"
+        }
+      ],
       "createdAt": "2026-05-31"
     },
     {
