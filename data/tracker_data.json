@@ -1,48 +1,5 @@
 {
-  "subjects": [
-    {
-      "id": "98a0c394d0af",
-      "name": "WORLD GEOGRAPHY",
-      "roi": "low",
-      "color": "#6366f1",
-      "ntfyTopic": "UPSC-WORLD GEOGRAPHY",
-      "notes": "",
-      "topics": [
-        {
-          "id": "f867fa78690d",
-          "name": "Climatic Regions of the World",
-          "estimatedDays": 4,
-          "roi": "medium",
-          "notes": "",
-          "status": "not-started",
-          "startDate": null,
-          "completionDate": null,
-          "createdAt": "2026-03-07",
-          "estimatedHours": 10.0,
-          "activeStages": null,
-          "links": [],
-          "relatedTopicIds": []
-        },
-        {
-          "id": "587b5fbae667",
-          "name": "Oceans",
-          "estimatedDays": 4,
-          "roi": "medium",
-          "notes": "",
-          "status": "not-started",
-          "startDate": null,
-          "completionDate": null,
-          "createdAt": "2026-03-07",
-          "estimatedHours": 10.0,
-          "activeStages": null,
-          "links": [],
-          "relatedTopicIds": []
-        }
-      ],
-      "createdAt": "2026-03-07",
-      "defaultStages": null
-    }
-  ],
+  "subjects": [],
   "settings": {
     "weekdayHours": 5,
     "weekendHours": 12,
