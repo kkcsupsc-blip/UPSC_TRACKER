@@ -1,5 +1,17 @@
 {
-  "subjects": [],
+  "subjects": [
+    {
+      "id": "a02a86c914b7",
+      "name": "POLITY",
+      "roi": "very-high",
+      "color": "#22c55e",
+      "ntfyTopic": "UPSC-POLITY",
+      "notes": "",
+      "defaultStages": null,
+      "topics": [],
+      "createdAt": "2026-05-30"
+    }
+  ],
   "settings": {
     "weekdayHours": 6,
     "weekendHours": 12,
