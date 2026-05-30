@@ -1,17 +1,6 @@
 {
   "subjects": [
     {
-      "id": "c5084dbadaaa",
-      "name": "ANCIENT HISOTRY",
-      "roi": "low",
-      "color": "#06b6d4",
-      "ntfyTopic": "UPSC-ANCIENT HISOTRY",
-      "notes": "Unpredictable.\nArt & Culture overlaps heavily.\nTemple architecture, inscriptions, dynasties.\n\nUsually 4–8 direct questions.\nLow volume but high trap density.",
-      "topics": [],
-      "createdAt": "2026-02-22",
-      "defaultStages": null
-    },
-    {
       "id": "51b3917c6620",
       "name": "MEDIEVAL HISTORY",
       "roi": "low",
