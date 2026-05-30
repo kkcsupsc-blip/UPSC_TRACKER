@@ -1,17 +1,6 @@
 {
   "subjects": [
     {
-      "id": "9a6d405cfafb",
-      "name": "ART AND CULTURE",
-      "roi": "low",
-      "color": "#6366f1",
-      "ntfyTopic": "UPSC-ART AND CULTURE",
-      "notes": "Statement-based.\nArchitecture styles.\nLiterature.\nReligious philosophies.\nDance forms.\n\nOften blended into Ancient/Medieval.\n5–8 questions zone.",
-      "topics": [],
-      "createdAt": "2026-02-22",
-      "defaultStages": null
-    },
-    {
       "id": "98a0c394d0af",
       "name": "WORLD GEOGRAPHY",
       "roi": "low",
