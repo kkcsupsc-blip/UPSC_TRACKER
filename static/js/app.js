@@ -1697,15 +1697,15 @@ async function renderCumulative() {
   document.getElementById('cum-stats').innerHTML = `
     <div class="stat-card accent"><div class="stat-label">Sectional Batches</div><div class="stat-value">${data.stats.totalBatches}</div><div class="stat-sub">cross-topic groups</div></div>
     <div class="stat-card cyan"><div class="stat-label">Subject Revisions</div><div class="stat-value">${data.stats.totalSubjectRevisions}</div><div class="stat-sub">full subject reviews</div></div>
-    <div class="stat-card yellow"><div class="stat-label">Pending Topics</div><div class="stat-value">${data.stats.pendingCount}</div><div class="stat-sub">${data.intervals.minBatch}+ needed for batch</div></div>
+    <div class="stat-card yellow"><div class="stat-label">Pending Topics</div><div class="stat-value">${data.stats.pendingCount}</div><div class="stat-sub">ready for synthesis batches</div></div>
     <div class="stat-card green"><div class="stat-label">Upcoming Sessions</div><div class="stat-value">${data.stats.upcomingCount}</div><div class="stat-sub">weekend sessions</div></div>
   `;
 
-  // Force batch button
+  // Create batch button — always show when pending > 0
   const forceBatchBtn = document.getElementById('force-batch-btn');
-  if (data.stats.pendingCount > 0 && data.stats.pendingCount < data.intervals.minBatch) {
+  if (data.stats.pendingCount >= 2) {
     forceBatchBtn.style.display = 'inline-flex';
-    forceBatchBtn.textContent = `Create Batch (${data.stats.pendingCount} topics)`;
+    forceBatchBtn.textContent = `Create Custom Batch`;
   } else {
     forceBatchBtn.style.display = 'none';
   }
@@ -1736,19 +1736,27 @@ async function renderCumulative() {
   } else {
     document.getElementById('cum-pending-list').innerHTML = data.pendingTopics.map(t => {
       const roiBadge = `<span class="badge badge-${roiBadgeClass(t.roi)}" style="font-size:10px">${roiEmoji(t.roi)} ${t.roi.toUpperCase()}</span>`;
-      return `<div class="task-item" style="cursor:default;">
+      return `<div class="task-item" style="cursor:pointer;" onclick="this.querySelector('input').click()">
+        <input type="checkbox" class="batch-select-cb" value="${t.topicId}" style="margin-right:8px; cursor:pointer;" onclick="event.stopPropagation(); updateBatchSelection();">
         <div class="task-info">
           <div class="task-name">${t.topicName}</div>
           <div class="task-meta">${t.subjectName} · Pipeline-complete ${formatDateShort(t.masteredAt)}</div>
         </div>
         ${roiBadge}
       </div>`;
-    }).join('');
+    }).join('') + `<div id="batch-create-form" style="display:none; margin-top:10px; padding:10px; background:var(--bg2); border-radius:8px; border:1px solid var(--accent);">
+      <div style="font-size:12px; font-weight:600; color:var(--accent); margin-bottom:8px;"><span id="batch-selected-count">0</span> topics selected for synthesis batch</div>
+      <div style="display:flex; gap:6px; align-items:center;">
+        <input type="text" id="batch-name-input" placeholder="Batch name (e.g. Macro Loop)" class="form-input" style="flex:1; font-size:12px;">
+        <button class="btn btn-sm btn-primary" onclick="createCustomBatch()">Create Batch</button>
+        <button class="btn btn-sm" onclick="clearBatchSelection()" style="font-size:11px;">Clear</button>
+      </div>
+    </div>`;
   }
 
   // Sectional batches
   if (data.sectionalBatches.length === 0) {
-    document.getElementById('cum-batches-list').innerHTML = '<div class="card"><div class="empty-state" style="padding: 20px 0;"><div class="empty-state-text">No sectional batches yet. Batches are auto-created when 5+ topics are pipeline-complete.</div></div></div>';
+    document.getElementById('cum-batches-list').innerHTML = '<div class="card"><div class="empty-state" style="padding: 20px 0;"><div class="empty-state-text">No synthesis batches yet. Select topics from the pending pool above to create cross-topic revision groups.</div></div></div>';
   } else {
     document.getElementById('cum-batches-list').innerHTML = data.sectionalBatches.map(batch => {
       const completedSessions = batch.sessions.filter(s => s.completed).length;
@@ -1761,7 +1769,7 @@ async function renderCumulative() {
           <div style="display:flex; align-items:center; gap:12px;">
             <div style="width:4px; height:28px; border-radius:2px; background:var(--accent);"></div>
             <div>
-              <div style="font-weight:600; font-size:14px;">Batch — ${topics.length} Topics</div>
+              <div style="font-weight:600; font-size:14px;">${batch.name || 'Batch'} — ${topics.length} Topics</div>
               <div style="font-size:11px; color:var(--text3);">Created ${formatDate(batch.createdAt)} · ${completedSessions}/${totalSessions} sessions done</div>
             </div>
           </div>
@@ -1788,7 +1796,7 @@ async function renderCumulative() {
               return `<div class="timeline-node ${nodeClass}">
                 <div style="display:flex; justify-content:space-between; align-items:center;">
                   <div>
-                    <div style="font-size:13px; font-weight:600;">Round ${s.round} — Sectional Review ${overdueTag} ${weekendTag}</div>
+                    <div style="font-size:13px; font-weight:600;">Round ${s.round} — ${s.label || (s.round === 1 ? 'Synthesis' : 'Gap-check')} ${overdueTag} ${weekendTag}</div>
                     <div style="font-size:11px; color:var(--text3); margin-top:2px;">${formatDate(s.scheduledDate)} (Saturday-Sunday)</div>
                   </div>
                   <div>
@@ -1874,11 +1882,39 @@ async function completeSubjectSession(subjId, round) {
   renderCumulative();
 }
 
-async function forceBatch() {
-  if (!confirm('Create a sectional batch from the pending topics now? (Normally auto-creates at 5+ topics)')) return;
-  await api('/api/cumulative/force-batch', 'POST');
-  showToast('Sectional batch created!');
+function updateBatchSelection() {
+  const checked = document.querySelectorAll('.batch-select-cb:checked');
+  const form = document.getElementById('batch-create-form');
+  const countEl = document.getElementById('batch-selected-count');
+  if (form && countEl) {
+    if (checked.length >= 2) {
+      form.style.display = 'block';
+      countEl.textContent = checked.length;
+    } else {
+      form.style.display = 'none';
+    }
+  }
+}
+
+function clearBatchSelection() {
+  document.querySelectorAll('.batch-select-cb:checked').forEach(cb => { cb.checked = false; });
+  const form = document.getElementById('batch-create-form');
+  if (form) form.style.display = 'none';
+}
+
+async function createCustomBatch() {
+  const checked = document.querySelectorAll('.batch-select-cb:checked');
+  const topicIds = [...checked].map(cb => cb.value);
+  const nameInput = document.getElementById('batch-name-input');
+  const name = nameInput ? nameInput.value.trim() : '';
+  if (topicIds.length < 2) { showToast('Select at least 2 topics', 'warning'); return; }
+  await api('/api/cumulative/create-batch', 'POST', { topicIds, name });
+  showToast(`Synthesis batch created with ${topicIds.length} topics!`);
   renderCumulative();
+}
+
+async function forceBatch() {
+  showToast('Select topics from pending pool and click Create Batch', 'info');
 }
 
 // ===== SUBJECT REVISION CYCLES =====
