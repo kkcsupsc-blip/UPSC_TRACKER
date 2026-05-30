@@ -1814,59 +1814,13 @@ async function renderCumulative() {
     }).join('');
   }
 
-  // Subject-level revisions
-  if (data.subjectRevisions.length === 0) {
-    document.getElementById('cum-subject-list').innerHTML = '<div class="card"><div class="empty-state" style="padding: 20px 0;"><div class="empty-state-text">No subject-level revisions yet. Master all Very High+High+Medium ROI topics in a subject to trigger this.</div></div></div>';
-  } else {
-    document.getElementById('cum-subject-list').innerHTML = data.subjectRevisions.map(sr => {
-      const completedSessions = sr.sessions.filter(s => s.completed).length;
-      const totalSessions = sr.sessions.length;
-      const pct = Math.round(completedSessions / totalSessions * 100);
-      const color = sr.subjectColor || 'var(--cyan)';
-
-      return `<div class="card cum-batch-card">
-        <div class="cum-batch-header" onclick="this.parentElement.querySelector('.cum-batch-body').classList.toggle('hide')">
-          <div style="display:flex; align-items:center; gap:12px;">
-            <div style="width:4px; height:28px; border-radius:2px; background:${color};"></div>
-            <div>
-              <div style="font-weight:600; font-size:14px;">${sr.subjectName} — Full Subject Revision</div>
-              <div style="font-size:11px; color:var(--text3);">Triggered ${formatDate(sr.triggeredAt)} · ${sr.masteredCount || '?'}/${sr.topicCount || '?'} topics mastered · ${completedSessions}/${totalSessions} rounds done</div>
-            </div>
-          </div>
-          <div style="display:flex; align-items:center; gap:8px;">
-            <div style="width:80px;">
-              <div class="progress-bar"><div class="progress-fill" style="width:${pct}%; background:${color};"></div></div>
-            </div>
-            <span style="font-size:12px; color:var(--text3);">${pct}%</span>
-          </div>
-        </div>
-        <div class="cum-batch-body">
-          <div style="font-size:12px; font-weight:600; color:var(--text2); margin-bottom:8px;">Subject Consolidation Sessions (Expanding Intervals):</div>
-          <div class="timeline-track">
-            ${sr.sessions.map(s => {
-              const nodeClass = s.completed ? 'done' : (s.isOverdue ? 'active' : 'pending');
-              const overdueTag = s.isOverdue ? '<span class="badge badge-red" style="font-size:9px">OVERDUE</span>' : '';
-              const weekendTag = s.isThisWeekend && !s.completed ? '<span class="badge badge-green" style="font-size:9px">THIS WEEKEND</span>' : '';
-              const roundLabels = {1: '2-week review', 2: '6-week deep dive', 3: '14-week consolidation', 4: '24-week final embed'};
-              return `<div class="timeline-node ${nodeClass}">
-                <div style="display:flex; justify-content:space-between; align-items:center;">
-                  <div>
-                    <div style="font-size:13px; font-weight:600;">Round ${s.round} — ${roundLabels[s.round] || 'Review'} ${overdueTag} ${weekendTag}</div>
-                    <div style="font-size:11px; color:var(--text3); margin-top:2px;">${formatDate(s.scheduledDate)} (Saturday-Sunday)</div>
-                  </div>
-                  <div>
-                    ${s.completed
-                      ? `<span class="badge badge-green">Done ${s.completedAt ? formatDateShort(s.completedAt) : ''}</span>`
-                      : `<button class="btn btn-sm btn-success" onclick="event.stopPropagation();completeSubjectSession('${sr.subjectId}',${s.round});">Mark Done</button>`
-                    }
-                  </div>
-                </div>
-              </div>`;
-            }).join('')}
-          </div>
-        </div>
-      </div>`;
-    }).join('');
+  // Subject-level revisions removed — replaced by Subject Revision Cycles (R1-R5)
+  // Hide the old section entirely
+  const cumSubjList = document.getElementById('cum-subject-list');
+  if (cumSubjList) {
+    cumSubjList.innerHTML = '';
+    const parentCard = cumSubjList.closest('.card');
+    if (parentCard) parentCard.style.display = 'none';
   }
 }
 
