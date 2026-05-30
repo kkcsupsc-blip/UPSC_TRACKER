@@ -91,7 +91,7 @@ async function addSubject() {
   if (!name) { showToast('Please enter a subject name', 'warning'); return; }
   const stageChecks = document.querySelectorAll('#subj-default-stages input:checked');
   const defaultStages = [...stageChecks].map(cb => cb.value);
-  const allStages = ['R1','PYQ','ERA','R3','MN','CA','MCQ','MCQA','R7','MVA','MAINS','R30'];
+  const allStages = ['R1','PYQ','ERA','R3','MN','MCQ','MCQA','R7','MVA','MAINS','R30'];
   await api('/api/subjects', 'POST', {
     name,
     roi: document.getElementById('subj-roi').value,
@@ -416,7 +416,7 @@ async function showTopicDetail(subjId, topicId) {
 
     // Show estimated revision stages
     if (estimate.revisionSchedule) {
-      const stageLabels = {r1: 'R1 · 1st Revision', pyq: 'PYQ · Practice', era: 'ERA · Error Analysis', r3: 'R3 · 2nd Revision', mn: 'MN · Micro Notes', ca: 'CA · Mapping', mcq: 'MCQ · Practice', mcqa: 'MCQA · MCQ Analysis', r7: 'R7 · 3rd Revision', mva: 'MVA · Value Addition', mains: 'MAINS · Writing', r30: 'R30 · Final'};
+      const stageLabels = {r1: 'R1 · 1st Revision', pyq: 'PYQ · Practice', era: 'ERA · Error Analysis', r3: 'R3 · 2nd Revision', mn: 'MN · Micro Notes', mcq: 'MCQ · Practice', mcqa: 'MCQA · MCQ Analysis', r7: 'R7 · 3rd Revision', mva: 'MVA · Value Addition', mains: 'MAINS · Writing', r30: 'R30 · Final'};
       const stageColors = {r1: 'var(--red)', pyq: 'var(--cyan)', era: 'var(--pink)', r3: 'var(--orange)', mn: 'var(--lime)', ca: 'var(--purple)', mcq: 'var(--teal)', mcqa: 'var(--indigo)', r7: 'var(--yellow)', mva: 'var(--emerald)', mains: 'var(--accent)', r30: 'var(--blue)'};
       html += `<div style="margin-top:10px; display:flex; flex-wrap:wrap; gap:6px;">`;
       for (const [key, date] of Object.entries(estimate.revisionSchedule)) {
@@ -476,7 +476,7 @@ async function showTopicDetail(subjId, topicId) {
   }
 
   // Active Stages Customization
-  const allStages = ['R1','PYQ','ERA','R3','MN','CA','MCQ','MCQA','R7','MVA','MAINS','R30'];
+  const allStages = ['R1','PYQ','ERA','R3','MN','MCQ','MCQA','R7','MVA','MAINS','R30'];
   const activeStages = detail.resolvedStages || allStages;
   html += `<details style="margin-top:14px; margin-bottom:14px;">
     <summary style="font-size:13px; font-weight:600; cursor:pointer; color:var(--text2);">Customize Active Stages</summary>
@@ -495,11 +495,16 @@ async function showTopicDetail(subjId, topicId) {
   const links = topic.links || [];
   html += `<div style="margin-top:14px;">
     <div style="font-weight:600; font-size:14px; margin-bottom:10px;">Current Affairs Links <span class="badge badge-cyan" style="font-size:10px;">${links.length}</span></div>`;
+  const readCount = links.filter(l => l.read).length;
   if (links.length > 0) {
+    html += `<div style="font-size:11px; color:var(--text3); margin-bottom:6px;">${readCount}/${links.length} read</div>`;
     links.forEach(link => {
-      html += `<div style="display:flex; justify-content:space-between; align-items:center; padding:8px 10px; background:var(--bg); border-radius:6px; margin-bottom:6px;">
+      const readStyle = link.read ? 'opacity:0.6;' : '';
+      const titleStyle = link.read ? 'text-decoration:line-through;' : '';
+      html += `<div style="display:flex; align-items:center; padding:8px 10px; background:var(--bg); border-radius:6px; margin-bottom:6px; ${readStyle}">
+        <div class="task-check ${link.read ? 'done' : ''}" style="width:18px; height:18px; margin-right:8px; cursor:pointer; flex-shrink:0;" onclick="toggleLinkRead('${subjId}','${topicId}','${link.id}')"></div>
         <div style="min-width:0; flex:1;">
-          <a href="${link.url}" target="_blank" style="font-size:12px; color:var(--accent2); text-decoration:none; display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${link.title || link.url}</a>
+          <a href="${link.url}" target="_blank" style="font-size:12px; color:var(--accent2); text-decoration:none; display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; ${titleStyle}">${link.title || link.url}</a>
           <div style="font-size:10px; color:var(--text3);">${link.dateAdded}</div>
         </div>
         <button class="btn btn-sm btn-danger" style="margin-left:8px; padding:2px 6px; font-size:10px;" onclick="deleteLink('${subjId}','${topicId}','${link.id}')">x</button>
@@ -587,6 +592,11 @@ async function addLink(subjId, topicId) {
   const title = document.getElementById(`link-title-${topicId}`).value.trim();
   if (!url) { showToast('Enter a URL', 'warning'); return; }
   await api(`/api/subjects/${subjId}/topics/${topicId}/links`, 'POST', { url, title: title || url });
+  showTopicDetail(subjId, topicId);
+}
+
+async function toggleLinkRead(subjId, topicId, linkId) {
+  await api(`/api/subjects/${subjId}/topics/${topicId}/links/${linkId}/toggle-read`, 'POST');
   showTopicDetail(subjId, topicId);
 }
 
@@ -697,6 +707,25 @@ async function renderDashboard() {
         html += `<span class="badge badge-orange" style="font-size:11px;">R3 window in ${r3days}d</span>`;
         html += `<span class="badge badge-red" style="font-size:11px;">R4 window in ${r4days}d</span>`;
         html += `</div>`;
+      }
+      // Feasibility warnings
+      const feas = ei.feasibility || {};
+      if (feas.warnings && feas.warnings.length > 0) {
+        const statusColor = feas.status === 'behind' ? 'var(--red)' : 'var(--green)';
+        const statusLabel = feas.status === 'behind' ? 'BEHIND SCHEDULE' : 'ON TRACK';
+        html += `<div style="margin-top:12px; padding:10px 14px; background:${feas.status === 'behind' ? 'var(--red-bg, rgba(239,68,68,0.1))' : 'var(--green-bg, rgba(34,197,94,0.1))'}; border-left:3px solid ${statusColor}; border-radius:6px;">`;
+        html += `<div style="font-weight:600; font-size:13px; color:${statusColor}; margin-bottom:6px;">${statusLabel}</div>`;
+        feas.warnings.forEach(w => {
+          html += `<div style="font-size:12px; color:var(--text2); margin-bottom:4px;">
+            <span style="color:var(--red); margin-right:4px;">!</span> ${w.message}
+          </div>`;
+          if (w.topics && w.topics.length > 0) {
+            html += `<div style="font-size:11px; color:var(--text3); margin-left:16px; margin-bottom:4px;">${w.topics.slice(0,5).join(', ')}${w.topics.length > 5 ? ` +${w.topics.length-5} more` : ''}</div>`;
+          }
+        });
+        html += `</div>`;
+      } else if (dte.prelims !== undefined) {
+        html += `<div style="margin-top:12px; padding:8px 14px; background:var(--green-bg, rgba(34,197,94,0.1)); border-left:3px solid var(--green); border-radius:6px; font-size:12px; color:var(--green); font-weight:600;">ON TRACK</div>`;
       }
       examEl.innerHTML = html;
     } else {
@@ -1099,7 +1128,7 @@ async function renderToday() {
   </div>`;
 
   // === BLOCK 4: Practice (PYQs, MCQs, Current Affairs, Mains due today) ===
-  const practiceTasks = todayTasks.filter(t => ['PYQ', 'ERA', 'MCQ', 'MCQA', 'CA', 'MN', 'MVA', 'MAINS'].includes(t.type));
+  const practiceTasks = todayTasks.filter(t => ['PYQ', 'ERA', 'MCQ', 'MCQA', 'MN', 'MVA', 'MAINS'].includes(t.type));
   if (practiceTasks.length > 0) {
     const practiceHrs = practiceTasks.reduce((sum, t) => sum + (actHrs[t.type] || 1), 0);
     html += `<div class="time-block practice">
@@ -1336,7 +1365,7 @@ async function showCalDay(dateStr, skipHighlight = false) {
     </div>`;
   } else {
     const typeOrder = ['R1', 'PYQ', 'ERA', 'R3', 'MN', 'CA', 'MCQ', 'MCQA', 'R7', 'MVA', 'MAINS', 'R30'];
-    const typeLabels = { R1: '1st Revision', PYQ: 'PYQ Practice', ERA: 'Error Analysis', R3: '2nd Revision', MN: 'Micro Note Making', CA: 'Current Affairs + Mapping', MCQ: 'MCQ Practice', MCQA: 'MCQ Analysis', R7: '3rd Revision', MVA: 'Mains Value Addition', MAINS: 'Mains Writing', R30: 'Final Revision' };
+    const typeLabels = { R1: '1st Revision', PYQ: 'PYQ Practice', ERA: 'Error Analysis', R3: '2nd Revision', MN: 'Micro Note Making', MCQ: 'MCQ Practice', MCQA: 'MCQ Analysis', R7: '3rd Revision', MVA: 'Mains Value Addition', MAINS: 'Mains Writing', R30: 'Final Revision' };
     const typeColors = { R1: 'red', PYQ: 'cyan', ERA: 'pink', R3: 'orange', MN: 'lime', CA: 'purple', MCQ: 'teal', MCQA: 'indigo', R7: 'yellow', MVA: 'emerald', R30: 'blue', MAINS: 'accent' };
 
     const grouped = {};
@@ -1495,7 +1524,6 @@ async function renderSettings() {
   document.getElementById('set-act-r30').value = ah.R30 || 1;
   document.getElementById('set-act-pyq').value = ah.PYQ || 1;
   document.getElementById('set-act-era').value = ah.ERA || 1;
-  document.getElementById('set-act-ca').value = ah.CA || 1;
   document.getElementById('set-act-mn').value = ah.MN || 1;
   document.getElementById('set-act-mcq').value = ah.MCQ || 0.5;
   document.getElementById('set-act-mcqa').value = ah.MCQA || 0.5;
@@ -1552,7 +1580,6 @@ async function saveSettings() {
       ERA: parseFloat(document.getElementById('set-act-era').value) || 1,
       R3: parseFloat(document.getElementById('set-act-r3').value) || 1,
       MN: parseFloat(document.getElementById('set-act-mn').value) || 1,
-      CA: parseFloat(document.getElementById('set-act-ca').value) || 1,
       MCQ: parseFloat(document.getElementById('set-act-mcq').value) || 0.5,
       MCQA: parseFloat(document.getElementById('set-act-mcqa').value) || 0.5,
       R7: parseFloat(document.getElementById('set-act-r7').value) || 1.5,
