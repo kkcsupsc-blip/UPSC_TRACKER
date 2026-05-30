@@ -92,6 +92,10 @@
       <h2 class="page-title">Dashboard</h2>
       <div class="day-type" id="dash-day-type"></div>
       <div class="stats-row" id="dash-stats"></div>
+      <div class="card" style="margin-bottom: 16px; border-left: 4px solid var(--accent2);">
+        <div class="card-header"><span class="card-title">Exam Countdown</span></div>
+        <div id="dash-exam-countdown"></div>
+      </div>
       <div class="card" id="dash-time-budget-card" style="margin-bottom: 16px; border-left: 4px solid var(--cyan);">
         <div class="card-header"><span class="card-title">⏱️ Today's Time Budget</span></div>
         <div id="dash-time-budget"></div>
@@ -209,6 +213,11 @@
         <div class="card-header"><span class="card-title">Topic Lifecycle</span></div>
         <div id="analytics-lifecycle"></div>
       </div>
+      <div class="card" style="margin-top: 16px; border-left: 4px solid var(--emerald);">
+        <div class="card-header"><span class="card-title">Weekly Review</span></div>
+        <div style="font-size: 11px; color: var(--text2); margin-bottom: 10px;">Study hours by subject, revision compliance, and week-over-week progress. Requires study logging.</div>
+        <div id="analytics-weekly"></div>
+      </div>
     </div>
 
     <!-- ===== CUMULATIVE REVISIONS ===== -->
@@ -274,6 +283,13 @@
       <div style="margin-top: 24px;">
         <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 12px;">📚 Subject-Level Revisions</h3>
         <div id="cum-subject-list"></div>
+      </div>
+
+      <!-- Subject Revision Cycles (5-Cycle System) -->
+      <div style="margin-top: 24px;">
+        <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 6px;">📖 Subject Revision Cycles</h3>
+        <p style="font-size: 12px; color: var(--text2); margin-bottom: 12px;">5-cycle subject-level revision system: R1 Consolidation → R2 Active Recall → R3 Targeted Repair → R4 Rapid Fire → R5 Final Review. R3-R5 are anchored to your exam date.</p>
+        <div id="cum-subject-cycles"></div>
       </div>
     </div>
 
@@ -344,6 +360,22 @@
         <div class="card-title" style="margin-bottom: 16px;">🎨 Theme</div>
         <p style="font-size: 12px; color: var(--text2); margin-bottom: 14px;">Choose a color scheme for your tracker. Changes apply instantly.</p>
         <div class="theme-picker-card" id="theme-picker"></div>
+      </div>
+
+      <div class="card" style="margin-bottom: 16px;">
+        <div class="card-title" style="margin-bottom: 16px;">Exam Dates</div>
+        <p style="font-size: 12px; color: var(--text2); margin-bottom: 12px;">Set your target exam dates. The tracker uses these for backward planning, milestone calculations, and subject revision cycle scheduling.</p>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Prelims Date</label>
+            <input type="date" class="form-input" id="set-exam-prelims">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Mains Date</label>
+            <input type="date" class="form-input" id="set-exam-mains">
+          </div>
+        </div>
+        <button class="btn btn-primary" onclick="saveSettings()" style="margin-top: 8px;">Save Exam Dates</button>
       </div>
 
       <div class="card">
@@ -853,6 +885,24 @@
       <label class="form-label">Notes (Optional)</label>
       <textarea class="form-input" id="subj-notes" rows="2" placeholder="Key resources, strategy, important areas..."></textarea>
     </div>
+    <details style="margin-bottom:12px;">
+      <summary style="font-size:12px; font-weight:600; cursor:pointer; color:var(--text2);">Default Revision Stages (for all topics in this subject)</summary>
+      <div style="display:flex; flex-wrap:wrap; gap:6px; margin-top:8px;" id="subj-default-stages">
+        <label style="display:flex; align-items:center; gap:4px; font-size:11px; padding:3px 6px; background:var(--bg); border-radius:4px; cursor:pointer;"><input type="checkbox" value="R1" checked> R1</label>
+        <label style="display:flex; align-items:center; gap:4px; font-size:11px; padding:3px 6px; background:var(--bg); border-radius:4px; cursor:pointer;"><input type="checkbox" value="PYQ" checked> PYQ</label>
+        <label style="display:flex; align-items:center; gap:4px; font-size:11px; padding:3px 6px; background:var(--bg); border-radius:4px; cursor:pointer;"><input type="checkbox" value="ERA" checked> ERA</label>
+        <label style="display:flex; align-items:center; gap:4px; font-size:11px; padding:3px 6px; background:var(--bg); border-radius:4px; cursor:pointer;"><input type="checkbox" value="R3" checked> R3</label>
+        <label style="display:flex; align-items:center; gap:4px; font-size:11px; padding:3px 6px; background:var(--bg); border-radius:4px; cursor:pointer;"><input type="checkbox" value="MN" checked> MN</label>
+        <label style="display:flex; align-items:center; gap:4px; font-size:11px; padding:3px 6px; background:var(--bg); border-radius:4px; cursor:pointer;"><input type="checkbox" value="CA" checked> CA</label>
+        <label style="display:flex; align-items:center; gap:4px; font-size:11px; padding:3px 6px; background:var(--bg); border-radius:4px; cursor:pointer;"><input type="checkbox" value="MCQ" checked> MCQ</label>
+        <label style="display:flex; align-items:center; gap:4px; font-size:11px; padding:3px 6px; background:var(--bg); border-radius:4px; cursor:pointer;"><input type="checkbox" value="MCQA" checked> MCQA</label>
+        <label style="display:flex; align-items:center; gap:4px; font-size:11px; padding:3px 6px; background:var(--bg); border-radius:4px; cursor:pointer;"><input type="checkbox" value="R7" checked> R7</label>
+        <label style="display:flex; align-items:center; gap:4px; font-size:11px; padding:3px 6px; background:var(--bg); border-radius:4px; cursor:pointer;"><input type="checkbox" value="MVA" checked> MVA</label>
+        <label style="display:flex; align-items:center; gap:4px; font-size:11px; padding:3px 6px; background:var(--bg); border-radius:4px; cursor:pointer;"><input type="checkbox" value="MAINS" checked> MAINS</label>
+        <label style="display:flex; align-items:center; gap:4px; font-size:11px; padding:3px 6px; background:var(--bg); border-radius:4px; cursor:pointer;"><input type="checkbox" value="R30" checked> R30</label>
+      </div>
+      <div style="font-size:10px; color:var(--text3); margin-top:4px;">Uncheck stages that topics in this subject don't need. Individual topics can still override.</div>
+    </details>
     <div class="modal-actions">
       <button class="btn" onclick="closeModal('add-subject')">Cancel</button>
       <button class="btn btn-primary" onclick="addSubject()">Add Subject</button>
