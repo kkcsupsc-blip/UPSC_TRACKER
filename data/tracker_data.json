@@ -298,6 +298,19 @@
       "hoursPerDay": 3,
       "completed": false,
       "completedAt": null
+    },
+    {
+      "id": "0e7cdf41344a",
+      "subjectId": "730387ae6543",
+      "subjectName": "POLITY",
+      "cycle": "R2",
+      "label": "Active Recall",
+      "startDate": "2026-07-24",
+      "endDate": "2026-08-05",
+      "durationDays": 12,
+      "hoursPerDay": 3,
+      "completed": false,
+      "completedAt": null
     }
   ],
   "version": 3
