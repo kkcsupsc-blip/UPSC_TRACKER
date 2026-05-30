@@ -285,6 +285,19 @@
       "hoursPerDay": 4,
       "completed": false,
       "completedAt": null
+    },
+    {
+      "id": "9b2d9ab95357",
+      "subjectId": "730387ae6543",
+      "subjectName": "POLITY",
+      "cycle": "R1",
+      "label": "Consolidation",
+      "startDate": "2026-06-14",
+      "endDate": "2026-06-26",
+      "durationDays": 12,
+      "hoursPerDay": 3,
+      "completed": false,
+      "completedAt": null
     }
   ],
   "version": 3
