@@ -1,79 +1,5 @@
 {
-  "subjects": [
-    {
-      "id": "39bccf300b69",
-      "name": "POLITY",
-      "roi": "very-high",
-      "color": "#6366f1",
-      "ntfyTopic": "UPSC-POLITY",
-      "notes": "",
-      "defaultStages": null,
-      "topics": [
-        {
-          "id": "7faf202c8f90",
-          "name": "kISHORE",
-          "estimatedHours": 5.0,
-          "roi": "very-high",
-          "examType": "both",
-          "notes": "",
-          "status": "pipeline-complete",
-          "startDate": "2026-05-31",
-          "completionDate": "2026-05-31",
-          "activeStages": null,
-          "links": [],
-          "relatedTopicIds": [
-            "c65ff774e646"
-          ],
-          "createdAt": "2026-05-31"
-        },
-        {
-          "id": "73f40e295e67",
-          "name": "ajsd",
-          "estimatedHours": 3.0,
-          "roi": "very-high",
-          "examType": "both",
-          "notes": "",
-          "status": "not-started",
-          "startDate": null,
-          "completionDate": null,
-          "activeStages": null,
-          "links": [],
-          "relatedTopicIds": [],
-          "createdAt": "2026-05-31"
-        }
-      ],
-      "createdAt": "2026-05-31"
-    },
-    {
-      "id": "f5f034d4830e",
-      "name": "economy",
-      "roi": "very-high",
-      "color": "#6366f1",
-      "ntfyTopic": "",
-      "notes": "",
-      "defaultStages": null,
-      "topics": [
-        {
-          "id": "c65ff774e646",
-          "name": "money",
-          "estimatedHours": 3.0,
-          "roi": "very-high",
-          "examType": "both",
-          "notes": "",
-          "status": "not-started",
-          "startDate": null,
-          "completionDate": null,
-          "activeStages": null,
-          "links": [],
-          "relatedTopicIds": [
-            "7faf202c8f90"
-          ],
-          "createdAt": "2026-05-31"
-        }
-      ],
-      "createdAt": "2026-05-31"
-    }
-  ],
+  "subjects": [],
   "settings": {
     "weekdayHours": 6,
     "weekendHours": 12,
@@ -91,7 +17,6 @@
       "ERA": 1.0,
       "R3": 1.0,
       "MN": 1.5,
-      "CA": 1.0,
       "MCQ": 0.5,
       "MCQA": 0.5,
       "R7": 1.5,
@@ -111,90 +36,15 @@
       "mains": ""
     }
   },
-  "completedRevisions": {
-    "7faf202c8f90_MVA": {
-      "completedAt": 1780167989168,
-      "confidence": 2
-    },
-    "7faf202c8f90_MAINS": {
-      "completedAt": 1780167989801,
-      "confidence": 2
-    },
-    "7faf202c8f90_R1": {
-      "completedAt": 1780167996857,
-      "confidence": 2
-    },
-    "7faf202c8f90_PYQ": {
-      "completedAt": 1780167997716,
-      "confidence": 2
-    },
-    "7faf202c8f90_ERA": {
-      "completedAt": 1780167998991,
-      "confidence": 2
-    },
-    "7faf202c8f90_R3": {
-      "completedAt": 1780168002273,
-      "confidence": 2
-    },
-    "7faf202c8f90_MN": {
-      "completedAt": 1780168003279,
-      "confidence": 2
-    },
-    "7faf202c8f90_MCQ": {
-      "completedAt": 1780168005562,
-      "confidence": 2
-    },
-    "7faf202c8f90_MCQA": {
-      "completedAt": 1780168007048,
-      "confidence": 2
-    },
-    "7faf202c8f90_R7": {
-      "completedAt": 1780168013027,
-      "confidence": 2
-    },
-    "7faf202c8f90_R30": {
-      "completedAt": 1780168016244,
-      "confidence": 2
-    }
-  },
+  "completedRevisions": {},
   "completedPractice": {},
   "holidays": [],
   "cumulativeRevisions": {
     "sectionalBatches": [],
     "subjectRevisions": [],
-    "pendingTopics": [
-      {
-        "topicId": "7faf202c8f90",
-        "topicName": "kISHORE",
-        "subjectId": "39bccf300b69",
-        "subjectName": "POLITY",
-        "roi": "very-high",
-        "masteredAt": "2026-05-31"
-      }
-    ]
+    "pendingTopics": []
   },
-  "studyLogs": [
-    {
-      "id": "8002215d2fac",
-      "topicId": "7faf202c8f90",
-      "date": "2026-05-31",
-      "hours": 3.0
-    }
-  ],
-  "subjectCycles": [
-    {
-      "id": "3d27d84c84cb",
-      "subjectId": "39bccf300b69",
-      "subjectName": "POLITY",
-      "cycle": "R1",
-      "label": "Consolidation",
-      "startDate": "2026-06-14",
-      "endDate": "2026-06-26",
-      "durationDays": 12,
-      "hoursPerDay": 3,
-      "completed": false,
-      "completedAt": null
-    }
-  ],
+  "studyLogs": [],
+  "subjectCycles": [],
   "version": 3
 }
