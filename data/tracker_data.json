@@ -8,7 +8,8 @@
       "ntfyTopic": "UPSC-MODERN_HISTORY",
       "notes": "Stable zone.\nFreedom struggle personalities.\nActs, movements, chronology traps.\nUsually 8–12 questions.\nScoring subject if timeline clarity is strong.",
       "topics": [],
-      "createdAt": "2026-02-22"
+      "createdAt": "2026-02-22",
+      "defaultStages": null
     },
     {
       "id": "dea2220bf1c0",
@@ -18,7 +19,8 @@
       "ntfyTopic": "UPSC-SCIENCE AND TECH",
       "notes": "Not static theory.\nTrend-based.\n\nFocus areas:\n\nSpace\n\nBiotechnology\n\nDefence tech\n\nBasic science principles\n\nUsually 8–12 questions.\nElimination-based, not memory-heavy.",
       "topics": [],
-      "createdAt": "2026-02-22"
+      "createdAt": "2026-02-22",
+      "defaultStages": null
     },
     {
       "id": "c5084dbadaaa",
@@ -28,7 +30,8 @@
       "ntfyTopic": "UPSC-ANCIENT HISOTRY",
       "notes": "Unpredictable.\nArt & Culture overlaps heavily.\nTemple architecture, inscriptions, dynasties.\n\nUsually 4–8 direct questions.\nLow volume but high trap density.",
       "topics": [],
-      "createdAt": "2026-02-22"
+      "createdAt": "2026-02-22",
+      "defaultStages": null
     },
     {
       "id": "51b3917c6620",
@@ -38,7 +41,8 @@
       "ntfyTopic": "UPSC-MEDIEVAL HISTORY",
       "notes": "Unpredictable.\nArt & Culture overlaps heavily.\nTemple architecture, inscriptions, dynasties.\n\nUsually 4–8 direct questions.\nLow volume but high trap density.",
       "topics": [],
-      "createdAt": "2026-02-22"
+      "createdAt": "2026-02-22",
+      "defaultStages": null
     },
     {
       "id": "9a6d405cfafb",
@@ -48,7 +52,8 @@
       "ntfyTopic": "UPSC-ART AND CULTURE",
       "notes": "Statement-based.\nArchitecture styles.\nLiterature.\nReligious philosophies.\nDance forms.\n\nOften blended into Ancient/Medieval.\n5–8 questions zone.",
       "topics": [],
-      "createdAt": "2026-02-22"
+      "createdAt": "2026-02-22",
+      "defaultStages": null
     },
     {
       "id": "2baef3cbc9ed",
@@ -68,7 +73,10 @@
           "startDate": null,
           "completionDate": null,
           "createdAt": "2026-03-07",
-          "estimatedHours": 5.0
+          "estimatedHours": 5.0,
+          "activeStages": null,
+          "links": [],
+          "relatedTopicIds": []
         },
         {
           "id": "26b2ec53b7fb",
@@ -80,7 +88,10 @@
           "startDate": null,
           "completionDate": null,
           "createdAt": "2026-03-07",
-          "estimatedHours": 5.0
+          "estimatedHours": 5.0,
+          "activeStages": null,
+          "links": [],
+          "relatedTopicIds": []
         },
         {
           "id": "f5a792461f56",
@@ -92,7 +103,10 @@
           "startDate": null,
           "completionDate": null,
           "createdAt": "2026-03-07",
-          "estimatedHours": 7.5
+          "estimatedHours": 7.5,
+          "activeStages": null,
+          "links": [],
+          "relatedTopicIds": []
         },
         {
           "id": "02125c48da0b",
@@ -104,7 +118,10 @@
           "startDate": null,
           "completionDate": null,
           "createdAt": "2026-03-07",
-          "estimatedHours": 5.0
+          "estimatedHours": 5.0,
+          "activeStages": null,
+          "links": [],
+          "relatedTopicIds": []
         },
         {
           "id": "6a7bb05ac25e",
@@ -116,7 +133,10 @@
           "startDate": null,
           "completionDate": null,
           "createdAt": "2026-03-07",
-          "estimatedHours": 5.0
+          "estimatedHours": 5.0,
+          "activeStages": null,
+          "links": [],
+          "relatedTopicIds": []
         },
         {
           "id": "4c87bd33f4a6",
@@ -128,7 +148,10 @@
           "startDate": null,
           "completionDate": null,
           "createdAt": "2026-03-07",
-          "estimatedHours": 10.0
+          "estimatedHours": 10.0,
+          "activeStages": null,
+          "links": [],
+          "relatedTopicIds": []
         },
         {
           "id": "56d24f4ca58b",
@@ -140,7 +163,10 @@
           "startDate": null,
           "completionDate": null,
           "createdAt": "2026-03-07",
-          "estimatedHours": 2.5
+          "estimatedHours": 2.5,
+          "activeStages": null,
+          "links": [],
+          "relatedTopicIds": []
         },
         {
           "id": "94fc73fc2778",
@@ -152,7 +178,10 @@
           "startDate": null,
           "completionDate": null,
           "createdAt": "2026-03-07",
-          "estimatedHours": 5.0
+          "estimatedHours": 5.0,
+          "activeStages": null,
+          "links": [],
+          "relatedTopicIds": []
         },
         {
           "id": "9030e012f327",
@@ -164,7 +193,10 @@
           "startDate": null,
           "completionDate": null,
           "createdAt": "2026-03-07",
-          "estimatedHours": 5.0
+          "estimatedHours": 5.0,
+          "activeStages": null,
+          "links": [],
+          "relatedTopicIds": []
         },
         {
           "id": "86cb6392fb07",
@@ -176,7 +208,10 @@
           "startDate": null,
           "completionDate": null,
           "createdAt": "2026-03-07",
-          "estimatedHours": 2.5
+          "estimatedHours": 2.5,
+          "activeStages": null,
+          "links": [],
+          "relatedTopicIds": []
         },
         {
           "id": "9490d2e32c17",
@@ -188,7 +223,10 @@
           "startDate": null,
           "completionDate": null,
           "createdAt": "2026-03-07",
-          "estimatedHours": 2.5
+          "estimatedHours": 2.5,
+          "activeStages": null,
+          "links": [],
+          "relatedTopicIds": []
         },
         {
           "id": "dbf99bb0ad78",
@@ -200,10 +238,14 @@
           "startDate": null,
           "completionDate": null,
           "createdAt": "2026-03-07",
-          "estimatedHours": 2.5
+          "estimatedHours": 2.5,
+          "activeStages": null,
+          "links": [],
+          "relatedTopicIds": []
         }
       ],
-      "createdAt": "2026-02-22"
+      "createdAt": "2026-02-22",
+      "defaultStages": null
     },
     {
       "id": "41bdc3bb1161",
@@ -223,7 +265,10 @@
           "startDate": null,
           "completionDate": null,
           "createdAt": "2026-03-06",
-          "estimatedHours": 5.0
+          "estimatedHours": 5.0,
+          "activeStages": null,
+          "links": [],
+          "relatedTopicIds": []
         },
         {
           "id": "23d41f528296",
@@ -235,7 +280,10 @@
           "startDate": null,
           "completionDate": null,
           "createdAt": "2026-03-06",
-          "estimatedHours": 5.0
+          "estimatedHours": 5.0,
+          "activeStages": null,
+          "links": [],
+          "relatedTopicIds": []
         },
         {
           "id": "79679748d24a",
@@ -247,7 +295,10 @@
           "startDate": null,
           "completionDate": null,
           "createdAt": "2026-03-07",
-          "estimatedHours": 2.5
+          "estimatedHours": 2.5,
+          "activeStages": null,
+          "links": [],
+          "relatedTopicIds": []
         },
         {
           "id": "a8e8a9355da0",
@@ -259,7 +310,10 @@
           "startDate": null,
           "completionDate": null,
           "createdAt": "2026-03-07",
-          "estimatedHours": 10.0
+          "estimatedHours": 10.0,
+          "activeStages": null,
+          "links": [],
+          "relatedTopicIds": []
         },
         {
           "id": "f925994c07be",
@@ -271,7 +325,10 @@
           "startDate": null,
           "completionDate": null,
           "createdAt": "2026-03-07",
-          "estimatedHours": 5.0
+          "estimatedHours": 5.0,
+          "activeStages": null,
+          "links": [],
+          "relatedTopicIds": []
         },
         {
           "id": "899f8dcd12ad",
@@ -283,7 +340,10 @@
           "startDate": null,
           "completionDate": null,
           "createdAt": "2026-03-07",
-          "estimatedHours": 5.0
+          "estimatedHours": 5.0,
+          "activeStages": null,
+          "links": [],
+          "relatedTopicIds": []
         },
         {
           "id": "c54a4545adc0",
@@ -295,7 +355,10 @@
           "startDate": null,
           "completionDate": null,
           "createdAt": "2026-03-07",
-          "estimatedHours": 2.5
+          "estimatedHours": 2.5,
+          "activeStages": null,
+          "links": [],
+          "relatedTopicIds": []
         },
         {
           "id": "e0ea1ca0e019",
@@ -307,7 +370,10 @@
           "startDate": null,
           "completionDate": null,
           "createdAt": "2026-03-07",
-          "estimatedHours": 7.5
+          "estimatedHours": 7.5,
+          "activeStages": null,
+          "links": [],
+          "relatedTopicIds": []
         },
         {
           "id": "fbcb1217d41f",
@@ -319,7 +385,10 @@
           "startDate": null,
           "completionDate": null,
           "createdAt": "2026-03-07",
-          "estimatedHours": 5.0
+          "estimatedHours": 5.0,
+          "activeStages": null,
+          "links": [],
+          "relatedTopicIds": []
         },
         {
           "id": "b4265ad812a5",
@@ -332,7 +401,10 @@
           "completionDate": null,
           "createdAt": "2026-03-07",
           "estimatedHours": 3.5,
-          "examType": "both"
+          "examType": "both",
+          "activeStages": null,
+          "links": [],
+          "relatedTopicIds": []
         },
         {
           "id": "96d24b96b2c5",
@@ -344,7 +416,10 @@
           "startDate": null,
           "completionDate": null,
           "createdAt": "2026-03-07",
-          "estimatedHours": 2.5
+          "estimatedHours": 2.5,
+          "activeStages": null,
+          "links": [],
+          "relatedTopicIds": []
         },
         {
           "id": "9da1064e7d76",
@@ -356,7 +431,10 @@
           "startDate": null,
           "completionDate": null,
           "createdAt": "2026-03-07",
-          "estimatedHours": 2.5
+          "estimatedHours": 2.5,
+          "activeStages": null,
+          "links": [],
+          "relatedTopicIds": []
         },
         {
           "id": "2b2b41f6c33d",
@@ -368,7 +446,10 @@
           "startDate": null,
           "completionDate": null,
           "createdAt": "2026-03-07",
-          "estimatedHours": 5.0
+          "estimatedHours": 5.0,
+          "activeStages": null,
+          "links": [],
+          "relatedTopicIds": []
         },
         {
           "id": "7a31b00e94d0",
@@ -380,7 +461,10 @@
           "startDate": null,
           "completionDate": null,
           "createdAt": "2026-03-07",
-          "estimatedHours": 5.0
+          "estimatedHours": 5.0,
+          "activeStages": null,
+          "links": [],
+          "relatedTopicIds": []
         },
         {
           "id": "73b326810b48",
@@ -392,7 +476,10 @@
           "startDate": null,
           "completionDate": null,
           "createdAt": "2026-03-07",
-          "estimatedHours": 2.5
+          "estimatedHours": 2.5,
+          "activeStages": null,
+          "links": [],
+          "relatedTopicIds": []
         },
         {
           "id": "0cddcbc04458",
@@ -404,10 +491,14 @@
           "startDate": null,
           "completionDate": null,
           "createdAt": "2026-03-07",
-          "estimatedHours": 5.0
+          "estimatedHours": 5.0,
+          "activeStages": null,
+          "links": [],
+          "relatedTopicIds": []
         }
       ],
-      "createdAt": "2026-03-06"
+      "createdAt": "2026-03-06",
+      "defaultStages": null
     },
     {
       "id": "504a7045f9b5",
@@ -427,7 +518,10 @@
           "startDate": null,
           "completionDate": null,
           "createdAt": "2026-03-06",
-          "estimatedHours": 1.5
+          "estimatedHours": 1.5,
+          "activeStages": null,
+          "links": [],
+          "relatedTopicIds": []
         },
         {
           "id": "6d5d9f1a2ea8",
@@ -439,7 +533,10 @@
           "startDate": null,
           "completionDate": null,
           "createdAt": "2026-03-06",
-          "estimatedHours": 1.5
+          "estimatedHours": 1.5,
+          "activeStages": null,
+          "links": [],
+          "relatedTopicIds": []
         },
         {
           "id": "a3db33298925",
@@ -451,7 +548,10 @@
           "startDate": null,
           "completionDate": null,
           "createdAt": "2026-03-07",
-          "estimatedHours": 7.5
+          "estimatedHours": 7.5,
+          "activeStages": null,
+          "links": [],
+          "relatedTopicIds": []
         },
         {
           "id": "8572a11756b1",
@@ -463,7 +563,10 @@
           "startDate": null,
           "completionDate": null,
           "createdAt": "2026-03-07",
-          "estimatedHours": 5.0
+          "estimatedHours": 5.0,
+          "activeStages": null,
+          "links": [],
+          "relatedTopicIds": []
         },
         {
           "id": "3678f0de7543",
@@ -475,7 +578,10 @@
           "startDate": null,
           "completionDate": null,
           "createdAt": "2026-03-07",
-          "estimatedHours": 7.5
+          "estimatedHours": 7.5,
+          "activeStages": null,
+          "links": [],
+          "relatedTopicIds": []
         },
         {
           "id": "3c1dddaf02d6",
@@ -487,7 +593,10 @@
           "startDate": null,
           "completionDate": null,
           "createdAt": "2026-03-07",
-          "estimatedHours": 5.0
+          "estimatedHours": 5.0,
+          "activeStages": null,
+          "links": [],
+          "relatedTopicIds": []
         },
         {
           "id": "77df3b3ac6b8",
@@ -499,7 +608,10 @@
           "startDate": null,
           "completionDate": null,
           "createdAt": "2026-03-07",
-          "estimatedHours": 7.5
+          "estimatedHours": 7.5,
+          "activeStages": null,
+          "links": [],
+          "relatedTopicIds": []
         },
         {
           "id": "6c0d0f8191d8",
@@ -511,7 +623,10 @@
           "startDate": null,
           "completionDate": null,
           "createdAt": "2026-03-07",
-          "estimatedHours": 7.5
+          "estimatedHours": 7.5,
+          "activeStages": null,
+          "links": [],
+          "relatedTopicIds": []
         },
         {
           "id": "3425b4856e41",
@@ -523,7 +638,10 @@
           "startDate": null,
           "completionDate": null,
           "createdAt": "2026-03-07",
-          "estimatedHours": 5.0
+          "estimatedHours": 5.0,
+          "activeStages": null,
+          "links": [],
+          "relatedTopicIds": []
         },
         {
           "id": "e4fbfbc6754c",
@@ -535,7 +653,10 @@
           "startDate": null,
           "completionDate": null,
           "createdAt": "2026-03-07",
-          "estimatedHours": 7.5
+          "estimatedHours": 7.5,
+          "activeStages": null,
+          "links": [],
+          "relatedTopicIds": []
         },
         {
           "id": "67498b2c58d2",
@@ -547,7 +668,10 @@
           "startDate": null,
           "completionDate": null,
           "createdAt": "2026-03-07",
-          "estimatedHours": 5.0
+          "estimatedHours": 5.0,
+          "activeStages": null,
+          "links": [],
+          "relatedTopicIds": []
         },
         {
           "id": "afd1c38eaabd",
@@ -559,7 +683,10 @@
           "startDate": null,
           "completionDate": null,
           "createdAt": "2026-03-07",
-          "estimatedHours": 2.5
+          "estimatedHours": 2.5,
+          "activeStages": null,
+          "links": [],
+          "relatedTopicIds": []
         },
         {
           "id": "1efc1f07bb34",
@@ -571,7 +698,10 @@
           "startDate": null,
           "completionDate": null,
           "createdAt": "2026-03-07",
-          "estimatedHours": 2.5
+          "estimatedHours": 2.5,
+          "activeStages": null,
+          "links": [],
+          "relatedTopicIds": []
         },
         {
           "id": "8c1d4996cb44",
@@ -583,10 +713,14 @@
           "startDate": null,
           "completionDate": null,
           "createdAt": "2026-03-07",
-          "estimatedHours": 85.0
+          "estimatedHours": 85.0,
+          "activeStages": null,
+          "links": [],
+          "relatedTopicIds": []
         }
       ],
-      "createdAt": "2026-03-06"
+      "createdAt": "2026-03-06",
+      "defaultStages": null
     },
     {
       "id": "17656c2cfde7",
@@ -606,7 +740,10 @@
           "startDate": null,
           "completionDate": null,
           "createdAt": "2026-03-07",
-          "estimatedHours": 7.5
+          "estimatedHours": 7.5,
+          "activeStages": null,
+          "links": [],
+          "relatedTopicIds": []
         },
         {
           "id": "003b08ef60c3",
@@ -618,7 +755,10 @@
           "startDate": null,
           "completionDate": null,
           "createdAt": "2026-03-07",
-          "estimatedHours": 7.5
+          "estimatedHours": 7.5,
+          "activeStages": null,
+          "links": [],
+          "relatedTopicIds": []
         },
         {
           "id": "7eb49041fc7a",
@@ -630,7 +770,10 @@
           "startDate": null,
           "completionDate": null,
           "createdAt": "2026-03-07",
-          "estimatedHours": 7.5
+          "estimatedHours": 7.5,
+          "activeStages": null,
+          "links": [],
+          "relatedTopicIds": []
         },
         {
           "id": "1c3b70c8fc5c",
@@ -642,7 +785,10 @@
           "startDate": null,
           "completionDate": null,
           "createdAt": "2026-03-07",
-          "estimatedHours": 7.5
+          "estimatedHours": 7.5,
+          "activeStages": null,
+          "links": [],
+          "relatedTopicIds": []
         },
         {
           "id": "dc9a10db0364",
@@ -654,7 +800,10 @@
           "startDate": null,
           "completionDate": null,
           "createdAt": "2026-03-07",
-          "estimatedHours": 5.0
+          "estimatedHours": 5.0,
+          "activeStages": null,
+          "links": [],
+          "relatedTopicIds": []
         },
         {
           "id": "899671967e67",
@@ -666,7 +815,10 @@
           "startDate": null,
           "completionDate": null,
           "createdAt": "2026-03-07",
-          "estimatedHours": 5.0
+          "estimatedHours": 5.0,
+          "activeStages": null,
+          "links": [],
+          "relatedTopicIds": []
         },
         {
           "id": "92a1286a4aab",
@@ -678,7 +830,10 @@
           "startDate": null,
           "completionDate": null,
           "createdAt": "2026-03-07",
-          "estimatedHours": 7.5
+          "estimatedHours": 7.5,
+          "activeStages": null,
+          "links": [],
+          "relatedTopicIds": []
         },
         {
           "id": "dda5963b3f1a",
@@ -690,7 +845,10 @@
           "startDate": null,
           "completionDate": null,
           "createdAt": "2026-03-07",
-          "estimatedHours": 2.5
+          "estimatedHours": 2.5,
+          "activeStages": null,
+          "links": [],
+          "relatedTopicIds": []
         },
         {
           "id": "22b856c5675b",
@@ -702,7 +860,10 @@
           "startDate": null,
           "completionDate": null,
           "createdAt": "2026-03-07",
-          "estimatedHours": 7.5
+          "estimatedHours": 7.5,
+          "activeStages": null,
+          "links": [],
+          "relatedTopicIds": []
         },
         {
           "id": "0ce3956082bb",
@@ -714,10 +875,14 @@
           "startDate": null,
           "completionDate": null,
           "createdAt": "2026-03-07",
-          "estimatedHours": 5.0
+          "estimatedHours": 5.0,
+          "activeStages": null,
+          "links": [],
+          "relatedTopicIds": []
         }
       ],
-      "createdAt": "2026-03-06"
+      "createdAt": "2026-03-06",
+      "defaultStages": null
     },
     {
       "id": "6fb944c9b542",
@@ -737,7 +902,10 @@
           "startDate": null,
           "completionDate": null,
           "createdAt": "2026-03-07",
-          "estimatedHours": 5.0
+          "estimatedHours": 5.0,
+          "activeStages": null,
+          "links": [],
+          "relatedTopicIds": []
         },
         {
           "id": "fd022b0a10fc",
@@ -749,7 +917,10 @@
           "startDate": null,
           "completionDate": null,
           "createdAt": "2026-03-07",
-          "estimatedHours": 5.0
+          "estimatedHours": 5.0,
+          "activeStages": null,
+          "links": [],
+          "relatedTopicIds": []
         },
         {
           "id": "52eda4078db7",
@@ -761,7 +932,10 @@
           "startDate": null,
           "completionDate": null,
           "createdAt": "2026-03-07",
-          "estimatedHours": 5.0
+          "estimatedHours": 5.0,
+          "activeStages": null,
+          "links": [],
+          "relatedTopicIds": []
         },
         {
           "id": "db1974a223a1",
@@ -773,7 +947,10 @@
           "startDate": null,
           "completionDate": null,
           "createdAt": "2026-03-07",
-          "estimatedHours": 2.5
+          "estimatedHours": 2.5,
+          "activeStages": null,
+          "links": [],
+          "relatedTopicIds": []
         },
         {
           "id": "34836d184d30",
@@ -785,7 +962,10 @@
           "startDate": null,
           "completionDate": null,
           "createdAt": "2026-03-07",
-          "estimatedHours": 5.0
+          "estimatedHours": 5.0,
+          "activeStages": null,
+          "links": [],
+          "relatedTopicIds": []
         },
         {
           "id": "c2d64e8945a4",
@@ -797,7 +977,10 @@
           "startDate": null,
           "completionDate": null,
           "createdAt": "2026-03-07",
-          "estimatedHours": 2.5
+          "estimatedHours": 2.5,
+          "activeStages": null,
+          "links": [],
+          "relatedTopicIds": []
         },
         {
           "id": "fbfc47466ece",
@@ -809,7 +992,10 @@
           "startDate": null,
           "completionDate": null,
           "createdAt": "2026-03-07",
-          "estimatedHours": 7.5
+          "estimatedHours": 7.5,
+          "activeStages": null,
+          "links": [],
+          "relatedTopicIds": []
         },
         {
           "id": "e7281d728e29",
@@ -821,7 +1007,10 @@
           "startDate": null,
           "completionDate": null,
           "createdAt": "2026-03-07",
-          "estimatedHours": 2.5
+          "estimatedHours": 2.5,
+          "activeStages": null,
+          "links": [],
+          "relatedTopicIds": []
         },
         {
           "id": "3d6d1cd6a32f",
@@ -833,7 +1022,10 @@
           "startDate": null,
           "completionDate": null,
           "createdAt": "2026-03-07",
-          "estimatedHours": 7.5
+          "estimatedHours": 7.5,
+          "activeStages": null,
+          "links": [],
+          "relatedTopicIds": []
         },
         {
           "id": "c6f70ad173d4",
@@ -845,7 +1037,10 @@
           "startDate": null,
           "completionDate": null,
           "createdAt": "2026-03-07",
-          "estimatedHours": 7.5
+          "estimatedHours": 7.5,
+          "activeStages": null,
+          "links": [],
+          "relatedTopicIds": []
         },
         {
           "id": "1d24e7e3c591",
@@ -857,7 +1052,10 @@
           "startDate": null,
           "completionDate": null,
           "createdAt": "2026-03-07",
-          "estimatedHours": 7.5
+          "estimatedHours": 7.5,
+          "activeStages": null,
+          "links": [],
+          "relatedTopicIds": []
         },
         {
           "id": "6c2e4db71132",
@@ -869,7 +1067,10 @@
           "startDate": null,
           "completionDate": null,
           "createdAt": "2026-03-07",
-          "estimatedHours": 2.5
+          "estimatedHours": 2.5,
+          "activeStages": null,
+          "links": [],
+          "relatedTopicIds": []
         },
         {
           "id": "e92f1efb32a0",
@@ -881,7 +1082,10 @@
           "startDate": null,
           "completionDate": null,
           "createdAt": "2026-03-07",
-          "estimatedHours": 5.0
+          "estimatedHours": 5.0,
+          "activeStages": null,
+          "links": [],
+          "relatedTopicIds": []
         },
         {
           "id": "82b40d695e1b",
@@ -893,7 +1097,10 @@
           "startDate": null,
           "completionDate": null,
           "createdAt": "2026-03-07",
-          "estimatedHours": 10.0
+          "estimatedHours": 10.0,
+          "activeStages": null,
+          "links": [],
+          "relatedTopicIds": []
         },
         {
           "id": "0bc35d90f401",
@@ -905,10 +1112,14 @@
           "startDate": null,
           "completionDate": null,
           "createdAt": "2026-03-07",
-          "estimatedHours": 7.5
+          "estimatedHours": 7.5,
+          "activeStages": null,
+          "links": [],
+          "relatedTopicIds": []
         }
       ],
-      "createdAt": "2026-03-06"
+      "createdAt": "2026-03-06",
+      "defaultStages": null
     },
     {
       "id": "98a0c394d0af",
@@ -928,7 +1139,10 @@
           "startDate": null,
           "completionDate": null,
           "createdAt": "2026-03-07",
-          "estimatedHours": 10.0
+          "estimatedHours": 10.0,
+          "activeStages": null,
+          "links": [],
+          "relatedTopicIds": []
         },
         {
           "id": "587b5fbae667",
@@ -940,10 +1154,14 @@
           "startDate": null,
           "completionDate": null,
           "createdAt": "2026-03-07",
-          "estimatedHours": 10.0
+          "estimatedHours": 10.0,
+          "activeStages": null,
+          "links": [],
+          "relatedTopicIds": []
         }
       ],
-      "createdAt": "2026-03-07"
+      "createdAt": "2026-03-07",
+      "defaultStages": null
     }
   ],
   "settings": {
@@ -977,6 +1195,10 @@
       "enabled": true,
       "topic": "UPSC_2027",
       "server": "https://ntfy.sh"
+    },
+    "examDates": {
+      "prelims": "",
+      "mains": ""
     }
   },
   "completedRevisions": {},
@@ -987,5 +1209,7 @@
     "subjectRevisions": [],
     "pendingTopics": []
   },
-  "holidays": []
+  "holidays": [],
+  "studyLogs": [],
+  "subjectCycles": []
 }
