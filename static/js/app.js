@@ -116,11 +116,28 @@ async function deleteSubject(id) {
 }
 
 // ===== TOPIC MANAGEMENT =====
-function openAddTopic(subjId) {
+async function openAddTopic(subjId) {
   document.getElementById('topic-subj-id').value = subjId;
   document.getElementById('topic-name').value = '';
-  document.getElementById('topic-days').value = '3';
   document.getElementById('topic-notes').value = '';
+  // Smart default: average actual hours of completed topics in this subject
+  try {
+    const data = await api('/api/data');
+    const subj = (data.subjects || []).find(s => s.id === subjId);
+    if (subj) {
+      const completed = subj.topics.filter(t => (t.status === 'completed' || t.status === 'pipeline-complete') && t.estimatedHours > 0);
+      if (completed.length > 0) {
+        const avg = completed.reduce((sum, t) => sum + t.estimatedHours, 0) / completed.length;
+        document.getElementById('topic-days').value = Math.round(avg * 2) / 2; // round to 0.5
+      } else {
+        document.getElementById('topic-days').value = '3';
+      }
+    } else {
+      document.getElementById('topic-days').value = '3';
+    }
+  } catch(e) {
+    document.getElementById('topic-days').value = '3';
+  }
   openModal('add-topic');
 }
 
