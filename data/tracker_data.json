@@ -16,7 +16,7 @@
           "roi": "very-high",
           "examType": "both",
           "notes": "",
-          "status": "completed",
+          "status": "pipeline-complete",
           "startDate": "2026-05-31",
           "completionDate": "2026-05-31",
           "activeStages": null,
@@ -131,6 +131,10 @@
     "58e9706b9e74_MAINS": {
       "completedAt": 1780169702915,
       "confidence": 2
+    },
+    "58e9706b9e74_R30": {
+      "completedAt": 1780169705262,
+      "confidence": 2
     }
   },
   "completedPractice": {},
@@ -138,7 +142,16 @@
   "cumulativeRevisions": {
     "sectionalBatches": [],
     "subjectRevisions": [],
-    "pendingTopics": []
+    "pendingTopics": [
+      {
+        "topicId": "58e9706b9e74",
+        "topicName": "Parliament",
+        "subjectId": "730387ae6543",
+        "subjectName": "POLITY",
+        "roi": "very-high",
+        "masteredAt": "2026-05-31"
+      }
+    ]
   },
   "studyLogs": [
     {
