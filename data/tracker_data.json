@@ -1,62 +1,7 @@
 {
-  "subjects": [
-    {
-      "id": "730387ae6543",
-      "name": "POLITY",
-      "roi": "very-high",
-      "color": "#22c55e",
-      "ntfyTopic": "",
-      "notes": "",
-      "defaultStages": null,
-      "topics": [
-        {
-          "id": "58e9706b9e74",
-          "name": "Parliament",
-          "estimatedHours": 4.0,
-          "roi": "very-high",
-          "examType": "both",
-          "notes": "",
-          "status": "pipeline-complete",
-          "startDate": "2026-05-31",
-          "completionDate": "2026-05-31",
-          "activeStages": null,
-          "links": [],
-          "relatedTopicIds": [],
-          "createdAt": "2026-05-31"
-        }
-      ],
-      "createdAt": "2026-05-31"
-    },
-    {
-      "id": "44c6c5d989ff",
-      "name": "ECONOMY",
-      "roi": "very-high",
-      "color": "#06b6d4",
-      "ntfyTopic": "",
-      "notes": "",
-      "defaultStages": null,
-      "topics": [
-        {
-          "id": "ea84b8bd5963",
-          "name": "money",
-          "estimatedHours": 5.0,
-          "roi": "very-high",
-          "examType": "both",
-          "notes": "",
-          "status": "pipeline-complete",
-          "startDate": "2026-05-31",
-          "completionDate": "2026-05-31",
-          "activeStages": null,
-          "links": [],
-          "relatedTopicIds": [],
-          "createdAt": "2026-05-31"
-        }
-      ],
-      "createdAt": "2026-05-31"
-    }
-  ],
+  "subjects": [],
   "settings": {
-    "weekdayHours": 5,
+    "weekdayHours": 6,
     "weekendHours": 12,
     "revisionMins": 60,
     "weekendRevHrs": 3,
@@ -68,16 +13,16 @@
     },
     "activityHours": {
       "R1": 1.5,
-      "PYQ": 1,
-      "ERA": 1,
-      "R3": 1,
+      "PYQ": 1.0,
+      "ERA": 1.0,
+      "R3": 1.0,
       "MN": 1.5,
       "MCQ": 0.5,
       "MCQA": 0.5,
       "R7": 1.5,
-      "MVA": 1,
+      "MVA": 1.0,
       "MAINS": 1.5,
-      "R30": 1,
+      "R30": 1.0,
       "sectionalBatch": 12,
       "subjectRevision": 24
     },
@@ -87,296 +32,19 @@
       "server": "https://ntfy.sh"
     },
     "examDates": {
-      "prelims": "2027-05-23",
-      "mains": "2027-08-20"
+      "prelims": "",
+      "mains": ""
     }
   },
-  "completedRevisions": {
-    "58e9706b9e74_R1": {
-      "completedAt": 1780169684690,
-      "confidence": 2
-    },
-    "58e9706b9e74_PYQ": {
-      "completedAt": 1780169687515,
-      "confidence": 2
-    },
-    "58e9706b9e74_ERA": {
-      "completedAt": 1780169689588,
-      "confidence": 2
-    },
-    "58e9706b9e74_R3": {
-      "completedAt": 1780169691998,
-      "confidence": 2
-    },
-    "58e9706b9e74_MN": {
-      "completedAt": 1780169693964,
-      "confidence": 2
-    },
-    "58e9706b9e74_MCQ": {
-      "completedAt": 1780169695387,
-      "confidence": 2
-    },
-    "58e9706b9e74_MCQA": {
-      "completedAt": 1780169696770,
-      "confidence": 2
-    },
-    "58e9706b9e74_R7": {
-      "completedAt": 1780169698680,
-      "confidence": 2
-    },
-    "58e9706b9e74_MVA": {
-      "completedAt": 1780169700832,
-      "confidence": 2
-    },
-    "58e9706b9e74_MAINS": {
-      "completedAt": 1780169702915,
-      "confidence": 2
-    },
-    "58e9706b9e74_R30": {
-      "completedAt": 1780169705262,
-      "confidence": 2
-    },
-    "ea84b8bd5963_R1": {
-      "completedAt": 1780169712638,
-      "confidence": 2
-    },
-    "ea84b8bd5963_PYQ": {
-      "completedAt": 1780169714224,
-      "confidence": 2
-    },
-    "ea84b8bd5963_ERA": {
-      "completedAt": 1780169715634,
-      "confidence": 2
-    },
-    "ea84b8bd5963_R3": {
-      "completedAt": 1780169717909,
-      "confidence": 3
-    },
-    "ea84b8bd5963_MN": {
-      "completedAt": 1780169719274,
-      "confidence": 2
-    },
-    "ea84b8bd5963_MCQ": {
-      "completedAt": 1780169720682,
-      "confidence": 2
-    },
-    "ea84b8bd5963_MCQA": {
-      "completedAt": 1780169723307,
-      "confidence": 2
-    },
-    "ea84b8bd5963_R7": {
-      "completedAt": 1780169725977,
-      "confidence": 2
-    },
-    "ea84b8bd5963_MVA": {
-      "completedAt": 1780169726814,
-      "confidence": 2
-    },
-    "ea84b8bd5963_MAINS": {
-      "completedAt": 1780169728323,
-      "confidence": 2
-    },
-    "ea84b8bd5963_R30": {
-      "completedAt": 1780169729738,
-      "confidence": 2
-    }
-  },
+  "completedRevisions": {},
   "completedPractice": {},
   "holidays": [],
   "cumulativeRevisions": {
-    "sectionalBatches": [
-      {
-        "id": "904e70f29935",
-        "name": "Parliament-money",
-        "topicIds": [
-          "58e9706b9e74",
-          "ea84b8bd5963"
-        ],
-        "topicDetails": [
-          {
-            "topicId": "58e9706b9e74",
-            "topicName": "Parliament",
-            "subjectId": "730387ae6543",
-            "subjectName": "POLITY",
-            "roi": "very-high",
-            "masteredAt": "2026-05-31"
-          },
-          {
-            "topicId": "ea84b8bd5963",
-            "topicName": "money",
-            "subjectId": "44c6c5d989ff",
-            "subjectName": "ECONOMY",
-            "roi": "very-high",
-            "masteredAt": "2026-05-31"
-          }
-        ],
-        "createdAt": "2026-05-31",
-        "sessions": [
-          {
-            "round": 1,
-            "label": "Synthesis",
-            "scheduledDate": "2026-06-06",
-            "completed": true,
-            "completedAt": "2026-05-31"
-          },
-          {
-            "round": 2,
-            "label": "Gap-check",
-            "scheduledDate": "2026-06-27",
-            "completed": true,
-            "completedAt": "2026-05-31"
-          }
-        ]
-      }
-    ],
+    "sectionalBatches": [],
     "subjectRevisions": [],
     "pendingTopics": []
   },
-  "studyLogs": [
-    {
-      "id": "74faead59809",
-      "topicId": "58e9706b9e74",
-      "date": "2026-05-31",
-      "hours": 4.0
-    },
-    {
-      "id": "ad9dc755b9de",
-      "topicId": "ea84b8bd5963",
-      "date": "2026-05-31",
-      "hours": 5.0
-    }
-  ],
-  "subjectCycles": [
-    {
-      "id": "9d632c63e9b1",
-      "subjectId": "44c6c5d989ff",
-      "subjectName": "ECONOMY",
-      "cycle": "R1",
-      "label": "Consolidation",
-      "startDate": "2026-06-14",
-      "endDate": "2026-06-26",
-      "durationDays": 12,
-      "hoursPerDay": 3,
-      "completed": false,
-      "completedAt": null
-    },
-    {
-      "id": "bda5ebe4e1ab",
-      "subjectId": "44c6c5d989ff",
-      "subjectName": "ECONOMY",
-      "cycle": "R2",
-      "label": "Active Recall",
-      "startDate": "2026-07-24",
-      "endDate": "2026-08-05",
-      "durationDays": 12,
-      "hoursPerDay": 3,
-      "completed": false,
-      "completedAt": null
-    },
-    {
-      "id": "0130aff7739e",
-      "subjectId": "44c6c5d989ff",
-      "subjectName": "ECONOMY",
-      "cycle": "R3",
-      "label": "Targeted Repair",
-      "startDate": "2027-03-28",
-      "endDate": "2027-04-05",
-      "durationDays": 8,
-      "hoursPerDay": 4,
-      "completed": false,
-      "completedAt": null
-    },
-    {
-      "id": "9b2d9ab95357",
-      "subjectId": "730387ae6543",
-      "subjectName": "POLITY",
-      "cycle": "R1",
-      "label": "Consolidation",
-      "startDate": "2026-06-14",
-      "endDate": "2026-06-26",
-      "durationDays": 12,
-      "hoursPerDay": 3,
-      "completed": false,
-      "completedAt": null
-    },
-    {
-      "id": "0e7cdf41344a",
-      "subjectId": "730387ae6543",
-      "subjectName": "POLITY",
-      "cycle": "R2",
-      "label": "Active Recall",
-      "startDate": "2026-07-24",
-      "endDate": "2026-08-05",
-      "durationDays": 12,
-      "hoursPerDay": 3,
-      "completed": false,
-      "completedAt": null
-    },
-    {
-      "id": "e15d90389afc",
-      "subjectId": "730387ae6543",
-      "subjectName": "POLITY",
-      "cycle": "R3",
-      "label": "Targeted Repair",
-      "startDate": "2027-03-28",
-      "endDate": "2027-04-05",
-      "durationDays": 8,
-      "hoursPerDay": 4,
-      "completed": false,
-      "completedAt": null
-    },
-    {
-      "id": "b8d12864eb0f",
-      "subjectId": "730387ae6543",
-      "subjectName": "POLITY",
-      "cycle": "R4",
-      "label": "Rapid Fire",
-      "startDate": "2027-05-02",
-      "endDate": "2027-05-06",
-      "durationDays": 4,
-      "hoursPerDay": 5,
-      "completed": false,
-      "completedAt": null
-    },
-    {
-      "id": "542a0cd4b5cf",
-      "subjectId": "730387ae6543",
-      "subjectName": "POLITY",
-      "cycle": "R5",
-      "label": "Final Review",
-      "startDate": "2027-05-20",
-      "endDate": "2027-05-22",
-      "durationDays": 2,
-      "hoursPerDay": 3,
-      "completed": false,
-      "completedAt": null
-    },
-    {
-      "id": "0ffac88205e2",
-      "subjectId": "44c6c5d989ff",
-      "subjectName": "ECONOMY",
-      "cycle": "R4",
-      "label": "Rapid Fire",
-      "startDate": "2027-05-02",
-      "endDate": "2027-05-06",
-      "durationDays": 4,
-      "hoursPerDay": 5,
-      "completed": false,
-      "completedAt": null
-    },
-    {
-      "id": "211c11ee0e99",
-      "subjectId": "44c6c5d989ff",
-      "subjectName": "ECONOMY",
-      "cycle": "R5",
-      "label": "Final Review",
-      "startDate": "2027-05-20",
-      "endDate": "2027-05-22",
-      "durationDays": 2,
-      "hoursPerDay": 3,
-      "completed": false,
-      "completedAt": null
-    }
-  ],
+  "studyLogs": [],
+  "subjectCycles": [],
   "version": 3
 }
