@@ -10,6 +10,17 @@
       "defaultStages": null,
       "topics": [],
       "createdAt": "2026-05-31"
+    },
+    {
+      "id": "44c6c5d989ff",
+      "name": "ECONOMY",
+      "roi": "very-high",
+      "color": "#06b6d4",
+      "ntfyTopic": "",
+      "notes": "",
+      "defaultStages": null,
+      "topics": [],
+      "createdAt": "2026-05-31"
     }
   ],
   "settings": {
