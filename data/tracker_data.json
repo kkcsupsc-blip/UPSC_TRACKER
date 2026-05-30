@@ -73,7 +73,14 @@
     "subjectRevisions": [],
     "pendingTopics": []
   },
-  "studyLogs": [],
+  "studyLogs": [
+    {
+      "id": "8002215d2fac",
+      "topicId": "7faf202c8f90",
+      "date": "2026-05-31",
+      "hours": 3.0
+    }
+  ],
   "subjectCycles": [],
   "version": 3
 }
