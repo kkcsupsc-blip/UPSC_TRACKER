@@ -161,40 +161,7 @@
   "holidays": [],
   "cumulativeRevisions": {
     "sectionalBatches": [],
-    "subjectRevisions": [
-      {
-        "subjectId": "39bccf300b69",
-        "subjectName": "POLITY",
-        "triggeredAt": "2026-05-31",
-        "sessions": [
-          {
-            "round": 1,
-            "scheduledDate": "2026-06-20",
-            "completed": false,
-            "completedAt": null
-          },
-          {
-            "round": 2,
-            "scheduledDate": "2026-07-18",
-            "completed": false,
-            "completedAt": null
-          },
-          {
-            "round": 3,
-            "scheduledDate": "2026-09-12",
-            "completed": false,
-            "completedAt": null
-          },
-          {
-            "round": 4,
-            "scheduledDate": "2026-11-21",
-            "completed": false,
-            "completedAt": null
-          }
-        ],
-        "type": "full"
-      }
-    ],
+    "subjectRevisions": [],
     "pendingTopics": [
       {
         "topicId": "7faf202c8f90",
