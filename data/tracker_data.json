@@ -1,17 +1,6 @@
 {
   "subjects": [
     {
-      "id": "dea2220bf1c0",
-      "name": "SCIENCE AND TECHNOLOGY",
-      "roi": "medium",
-      "color": "#ef4444",
-      "ntfyTopic": "UPSC-SCIENCE AND TECH",
-      "notes": "Not static theory.\nTrend-based.\n\nFocus areas:\n\nSpace\n\nBiotechnology\n\nDefence tech\n\nBasic science principles\n\nUsually 8–12 questions.\nElimination-based, not memory-heavy.",
-      "topics": [],
-      "createdAt": "2026-02-22",
-      "defaultStages": null
-    },
-    {
       "id": "c5084dbadaaa",
       "name": "ANCIENT HISOTRY",
       "roi": "low",
