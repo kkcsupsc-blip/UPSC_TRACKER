@@ -184,26 +184,53 @@
   "completedPractice": {},
   "holidays": [],
   "cumulativeRevisions": {
-    "sectionalBatches": [],
-    "subjectRevisions": [],
-    "pendingTopics": [
+    "sectionalBatches": [
       {
-        "topicId": "58e9706b9e74",
-        "topicName": "Parliament",
-        "subjectId": "730387ae6543",
-        "subjectName": "POLITY",
-        "roi": "very-high",
-        "masteredAt": "2026-05-31"
-      },
-      {
-        "topicId": "ea84b8bd5963",
-        "topicName": "money",
-        "subjectId": "44c6c5d989ff",
-        "subjectName": "ECONOMY",
-        "roi": "very-high",
-        "masteredAt": "2026-05-31"
+        "id": "904e70f29935",
+        "name": "Parliament-money",
+        "topicIds": [
+          "58e9706b9e74",
+          "ea84b8bd5963"
+        ],
+        "topicDetails": [
+          {
+            "topicId": "58e9706b9e74",
+            "topicName": "Parliament",
+            "subjectId": "730387ae6543",
+            "subjectName": "POLITY",
+            "roi": "very-high",
+            "masteredAt": "2026-05-31"
+          },
+          {
+            "topicId": "ea84b8bd5963",
+            "topicName": "money",
+            "subjectId": "44c6c5d989ff",
+            "subjectName": "ECONOMY",
+            "roi": "very-high",
+            "masteredAt": "2026-05-31"
+          }
+        ],
+        "createdAt": "2026-05-31",
+        "sessions": [
+          {
+            "round": 1,
+            "label": "Synthesis",
+            "scheduledDate": "2026-06-06",
+            "completed": false,
+            "completedAt": null
+          },
+          {
+            "round": 2,
+            "label": "Gap-check",
+            "scheduledDate": "2026-06-27",
+            "completed": false,
+            "completedAt": null
+          }
+        ]
       }
-    ]
+    ],
+    "subjectRevisions": [],
+    "pendingTopics": []
   },
   "studyLogs": [
     {
