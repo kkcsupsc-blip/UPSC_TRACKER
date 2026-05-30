@@ -223,8 +223,8 @@
             "round": 2,
             "label": "Gap-check",
             "scheduledDate": "2026-06-27",
-            "completed": false,
-            "completedAt": null
+            "completed": true,
+            "completedAt": "2026-05-31"
           }
         ]
       }
