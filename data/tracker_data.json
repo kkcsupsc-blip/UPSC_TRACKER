@@ -216,8 +216,8 @@
             "round": 1,
             "label": "Synthesis",
             "scheduledDate": "2026-06-06",
-            "completed": false,
-            "completedAt": null
+            "completed": true,
+            "completedAt": "2026-05-31"
           },
           {
             "round": 2,
