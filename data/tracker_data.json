@@ -311,6 +311,19 @@
       "hoursPerDay": 3,
       "completed": false,
       "completedAt": null
+    },
+    {
+      "id": "e15d90389afc",
+      "subjectId": "730387ae6543",
+      "subjectName": "POLITY",
+      "cycle": "R3",
+      "label": "Targeted Repair",
+      "startDate": "2027-03-28",
+      "endDate": "2027-04-05",
+      "durationDays": 8,
+      "hoursPerDay": 4,
+      "completed": false,
+      "completedAt": null
     }
   ],
   "version": 3
