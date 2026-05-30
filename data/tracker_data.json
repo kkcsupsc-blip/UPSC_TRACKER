@@ -43,7 +43,7 @@
           "roi": "very-high",
           "examType": "both",
           "notes": "",
-          "status": "completed",
+          "status": "pipeline-complete",
           "startDate": "2026-05-31",
           "completionDate": "2026-05-31",
           "activeStages": null,
@@ -175,6 +175,10 @@
     "ea84b8bd5963_MAINS": {
       "completedAt": 1780169728323,
       "confidence": 2
+    },
+    "ea84b8bd5963_R30": {
+      "completedAt": 1780169729738,
+      "confidence": 2
     }
   },
   "completedPractice": {},
@@ -188,6 +192,14 @@
         "topicName": "Parliament",
         "subjectId": "730387ae6543",
         "subjectName": "POLITY",
+        "roi": "very-high",
+        "masteredAt": "2026-05-31"
+      },
+      {
+        "topicId": "ea84b8bd5963",
+        "topicName": "money",
+        "subjectId": "44c6c5d989ff",
+        "subjectName": "ECONOMY",
         "roi": "very-high",
         "masteredAt": "2026-05-31"
       }
