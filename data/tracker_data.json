@@ -350,6 +350,19 @@
       "hoursPerDay": 3,
       "completed": false,
       "completedAt": null
+    },
+    {
+      "id": "0ffac88205e2",
+      "subjectId": "44c6c5d989ff",
+      "subjectName": "ECONOMY",
+      "cycle": "R4",
+      "label": "Rapid Fire",
+      "startDate": "2027-05-02",
+      "endDate": "2027-05-06",
+      "durationDays": 4,
+      "hoursPerDay": 5,
+      "completed": false,
+      "completedAt": null
     }
   ],
   "version": 3
