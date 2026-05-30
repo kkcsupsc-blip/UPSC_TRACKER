@@ -89,12 +89,16 @@ function showToast(msg, type = 'success') {
 async function addSubject() {
   const name = document.getElementById('subj-name').value.trim();
   if (!name) { showToast('Please enter a subject name', 'warning'); return; }
+  const stageChecks = document.querySelectorAll('#subj-default-stages input:checked');
+  const defaultStages = [...stageChecks].map(cb => cb.value);
+  const allStages = ['R1','PYQ','ERA','R3','MN','CA','MCQ','MCQA','R7','MVA','MAINS','R30'];
   await api('/api/subjects', 'POST', {
     name,
     roi: document.getElementById('subj-roi').value,
     color: document.getElementById('subj-color').value,
     ntfyTopic: document.getElementById('subj-ntfy-topic').value.trim(),
     notes: document.getElementById('subj-notes').value.trim(),
+    defaultStages: defaultStages.length < allStages.length ? defaultStages : null,
   });
   closeModal('add-subject');
   document.getElementById('subj-name').value = '';
@@ -426,27 +430,29 @@ async function showTopicDetail(subjId, topicId) {
     html += `</div>`;
   }
 
-  // Timeline
+  // Study Progress (for learning topics)
+  if (topic.status === 'learning') {
+    const logged = detail.loggedHours || 0;
+    const remaining = detail.remainingHours || topic.estimatedHours;
+    const pct = topic.estimatedHours > 0 ? Math.min(100, Math.round(logged / topic.estimatedHours * 100)) : 0;
+    html += `<div style="background:var(--bg); border-radius:8px; padding:12px; margin-bottom:14px;">
+      <div style="font-weight:600; font-size:13px; margin-bottom:8px;">Study Progress</div>
+      <div class="progress-bar" style="height:8px; margin-bottom:6px;"><div class="progress-fill" style="width:${pct}%; background:var(--accent2);"></div></div>
+      <div style="font-size:11px; color:var(--text2);">${logged}h logged / ${topic.estimatedHours}h estimated (${pct}%) — ${remaining}h remaining</div>
+    </div>`;
+  }
+
+  // Timeline — only show active stages
   if (schedule) {
-    html += `<div style="font-weight:600; font-size:14px; margin-bottom:12px;">Revision Timeline</div>`;
+    const resolvedStages = detail.resolvedStages || [];
+    html += `<div style="font-weight:600; font-size:14px; margin-bottom:12px;">Revision Timeline <span style="font-size:11px; font-weight:400; color:var(--text3);">(${resolvedStages.length} stages active)</span></div>`;
     html += `<div class="timeline-track">`;
 
-    const steps = [
-      { key: 'r1', ...schedule.r1 },
-      { key: 'pyq', ...schedule.pyq },
-      { key: 'era', ...schedule.era },
-      { key: 'r3', ...schedule.r3 },
-      { key: 'mn', ...schedule.mn },
-      { key: 'ca', ...schedule.ca },
-      { key: 'mcq', ...schedule.mcq },
-      { key: 'mcqa', ...schedule.mcqa },
-      { key: 'r7', ...schedule.r7 },
-      { key: 'mva', ...schedule.mva },
-      { key: 'mains', ...schedule.mains },
-      { key: 'r30', ...schedule.r30 }
-    ];
-
-    steps.forEach(step => {
+    const keyMap = {R1:'r1',PYQ:'pyq',ERA:'era',R3:'r3',MN:'mn',CA:'ca',MCQ:'mcq',MCQA:'mcqa',R7:'r7',MVA:'mva',MAINS:'mains',R30:'r30'};
+    resolvedStages.forEach(stageCode => {
+      const key = keyMap[stageCode];
+      const step = schedule[key];
+      if (!step) return;
       const nodeClass = step.done ? 'done' : (step.isToday || step.overdue) ? 'active' : 'pending';
       const dateLabel = step.isToday ? 'TODAY' : formatDate(step.date);
       const overdueTag = step.overdue ? '<span class="badge badge-red" style="font-size:9px">OVERDUE</span>' : '';
@@ -469,13 +475,70 @@ async function showTopicDetail(subjId, topicId) {
     html += `</div>`;
   }
 
+  // Active Stages Customization
+  const allStages = ['R1','PYQ','ERA','R3','MN','CA','MCQ','MCQA','R7','MVA','MAINS','R30'];
+  const activeStages = detail.resolvedStages || allStages;
+  html += `<details style="margin-top:14px; margin-bottom:14px;">
+    <summary style="font-size:13px; font-weight:600; cursor:pointer; color:var(--text2);">Customize Active Stages</summary>
+    <div style="display:flex; flex-wrap:wrap; gap:6px; margin-top:10px;" id="stage-picker-${topicId}">`;
+  allStages.forEach(s => {
+    const checked = activeStages.includes(s);
+    html += `<label style="display:flex; align-items:center; gap:4px; font-size:12px; padding:4px 8px; background:var(--bg); border-radius:4px; cursor:pointer;">
+      <input type="checkbox" value="${s}" ${checked ? 'checked' : ''} style="accent-color:var(--accent);"> ${s}
+    </label>`;
+  });
+  html += `</div>
+    <button class="btn btn-sm btn-primary" style="margin-top:8px;" onclick="saveTopicStages('${subjId}','${topicId}')">Save Stages</button>
+  </details>`;
+
+  // CA Links
+  const links = topic.links || [];
+  html += `<div style="margin-top:14px;">
+    <div style="font-weight:600; font-size:14px; margin-bottom:10px;">Current Affairs Links <span class="badge badge-cyan" style="font-size:10px;">${links.length}</span></div>`;
+  if (links.length > 0) {
+    links.forEach(link => {
+      html += `<div style="display:flex; justify-content:space-between; align-items:center; padding:8px 10px; background:var(--bg); border-radius:6px; margin-bottom:6px;">
+        <div style="min-width:0; flex:1;">
+          <a href="${link.url}" target="_blank" style="font-size:12px; color:var(--accent2); text-decoration:none; display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${link.title || link.url}</a>
+          <div style="font-size:10px; color:var(--text3);">${link.dateAdded}</div>
+        </div>
+        <button class="btn btn-sm btn-danger" style="margin-left:8px; padding:2px 6px; font-size:10px;" onclick="deleteLink('${subjId}','${topicId}','${link.id}')">x</button>
+      </div>`;
+    });
+  }
+  html += `<div style="display:flex; gap:6px; margin-top:8px;">
+    <input type="text" id="link-url-${topicId}" placeholder="Paste URL" class="form-input" style="flex:2; font-size:11px;">
+    <input type="text" id="link-title-${topicId}" placeholder="Title" class="form-input" style="flex:1; font-size:11px;">
+    <button class="btn btn-sm btn-primary" onclick="addLink('${subjId}','${topicId}')">Add</button>
+  </div></div>`;
+
+  // Related Topics
+  const related = detail.relatedTopics || [];
+  html += `<div style="margin-top:14px;">
+    <div style="font-weight:600; font-size:14px; margin-bottom:10px;">Related Topics <span class="badge badge-purple" style="font-size:10px;">${related.length}</span></div>`;
+  if (related.length > 0) {
+    related.forEach(r => {
+      html += `<div style="display:flex; justify-content:space-between; align-items:center; padding:6px 10px; background:var(--bg); border-radius:6px; margin-bottom:4px;">
+        <span style="font-size:12px; cursor:pointer; color:var(--text1);" onclick="showTopicDetail('${r.subjectId}','${r.topicId}')">
+          <span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:${r.subjectColor}; margin-right:6px;"></span>${r.topicName} <span style="color:var(--text3); font-size:10px;">${r.subjectName}</span>
+        </span>
+        <button class="btn btn-sm btn-danger" style="padding:2px 6px; font-size:10px;" onclick="removeRelated('${subjId}','${topicId}','${r.topicId}')">x</button>
+      </div>`;
+    });
+  }
+  html += `<div style="display:flex; gap:6px; margin-top:8px;">
+    <select id="related-select-${topicId}" class="form-select" style="flex:1; font-size:11px;">
+      <option value="">Select a topic...</option>
+    </select>
+    <button class="btn btn-sm btn-primary" onclick="addRelated('${subjId}','${topicId}')">Link</button>
+  </div></div>`;
+
   // Actions
   html += `<div style="margin-top:16px; display:flex; gap:8px; flex-wrap:wrap;">`;
   if (topic.status === 'not-started') {
-    // Check learning slot availability
-    const allData = await api('/api/data');
-    const currentLearning = allData.subjects.reduce((sum, s) => sum + s.topics.filter(t => t.status === 'learning').length, 0);
-    const maxSlots = 2;
+    const preData = await api('/api/data');
+    const currentLearning = preData.subjects.reduce((sum, s) => sum + s.topics.filter(t => t.status === 'learning').length, 0);
+    const maxSlots = 3;
     if (currentLearning < maxSlots) {
       html += `<button class="btn btn-primary btn-sm" onclick="startLearning('${subjId}','${topicId}');setTimeout(()=>showTopicDetail('${subjId}','${topicId}'),300);">Start Learning</button>`;
     } else {
@@ -492,18 +555,78 @@ async function showTopicDetail(subjId, topicId) {
 
   document.getElementById('detail-content').innerHTML = html;
   openModal('topic-detail');
+
+  // Populate related topic dropdown (async after render)
+  const allData = await api('/api/data');
+  const sel = document.getElementById(`related-select-${topicId}`);
+  if (sel) {
+    const existingIds = new Set((topic.relatedTopicIds || []).concat([topicId]));
+    allData.subjects.forEach(s => {
+      s.topics.forEach(t => {
+        if (!existingIds.has(t.id)) {
+          const opt = document.createElement('option');
+          opt.value = t.id;
+          opt.textContent = `${t.name} (${s.name})`;
+          sel.appendChild(opt);
+        }
+      });
+    });
+  }
+}
+
+async function saveTopicStages(subjId, topicId) {
+  const container = document.getElementById(`stage-picker-${topicId}`);
+  const checked = [...container.querySelectorAll('input:checked')].map(cb => cb.value);
+  await api(`/api/subjects/${subjId}/topics/${topicId}`, 'PUT', { activeStages: checked.length > 0 ? checked : null });
+  showToast('Stages updated!');
+  showTopicDetail(subjId, topicId);
+}
+
+async function addLink(subjId, topicId) {
+  const url = document.getElementById(`link-url-${topicId}`).value.trim();
+  const title = document.getElementById(`link-title-${topicId}`).value.trim();
+  if (!url) { showToast('Enter a URL', 'warning'); return; }
+  await api(`/api/subjects/${subjId}/topics/${topicId}/links`, 'POST', { url, title: title || url });
+  showTopicDetail(subjId, topicId);
+}
+
+async function deleteLink(subjId, topicId, linkId) {
+  await api(`/api/subjects/${subjId}/topics/${topicId}/links/${linkId}`, 'DELETE');
+  showTopicDetail(subjId, topicId);
+}
+
+async function addRelated(subjId, topicId) {
+  const sel = document.getElementById(`related-select-${topicId}`);
+  const relatedId = sel.value;
+  if (!relatedId) { showToast('Select a topic', 'warning'); return; }
+  await api(`/api/subjects/${subjId}/topics/${topicId}/related`, 'POST', { relatedTopicId: relatedId });
+  showTopicDetail(subjId, topicId);
+}
+
+async function removeRelated(subjId, topicId, relatedId) {
+  await api(`/api/subjects/${subjId}/topics/${topicId}/related/${relatedId}`, 'DELETE');
+  showTopicDetail(subjId, topicId);
+}
+
+async function logStudyHours(topicId, hours) {
+  const h = parseFloat(hours);
+  if (!h || h <= 0) { showToast('Enter valid hours', 'warning'); return; }
+  await api('/api/study-logs', 'POST', { topicId, hours: h });
+  showToast(`Logged ${h}h!`, 'success');
+  renderPage(document.querySelector('.nav-item.active')?.dataset?.page || 'today');
 }
 
 // ===== RENDER HELPERS =====
 function renderTimeBudgetActivities(activities) {
   const pending = activities.filter(a => !a.done);
   if (pending.length === 0) return '';
-  const colors = {revision: 'var(--red)', learning: 'var(--accent2)', cumulative_sectional: 'var(--purple)', cumulative_subject: 'var(--cyan)'};
+  const colors = {revision: 'var(--red)', learning: 'var(--accent2)', cumulative_sectional: 'var(--purple)', cumulative_subject: 'var(--cyan)', subject_cycle: 'var(--emerald)'};
   const items = pending.map(a => {
     let label;
     if (a.category === 'revision') label = a.revType + ' · ' + a.topicName;
     else if (a.category === 'learning') label = '📖 ' + a.topicName;
     else if (a.category === 'cumulative_sectional') label = '🔄 Sectional R' + a.round;
+    else if (a.category === 'subject_cycle') label = '📚 ' + (a.label || a.subjectName);
     else label = '🔄 ' + a.subjectName + ' R' + a.round;
     const color = colors[a.category] || 'var(--text3)';
     const warn = a.overdue ? ' ⚠️' : '';
@@ -549,6 +672,37 @@ async function renderDashboard() {
   `;
 
   document.getElementById('dash-due-count').textContent = s.todayTasks + s.overdue;
+
+  // Exam Countdown
+  const examEl = document.getElementById('dash-exam-countdown');
+  if (examEl) {
+    const ei = data.examInfo || {};
+    const dte = ei.daysToExam || {};
+    if (dte.prelims !== undefined || dte.mains !== undefined) {
+      let html = '<div style="display:flex; gap:12px; flex-wrap:wrap;">';
+      if (dte.prelims !== undefined) {
+        const col = dte.prelims <= 30 ? 'var(--red)' : dte.prelims <= 90 ? 'var(--orange)' : 'var(--green)';
+        html += `<div class="stat-card" style="border-left-color:${col}; flex:1; min-width:140px;"><div class="stat-label">Prelims</div><div class="stat-value" style="color:${col}">${dte.prelims}d</div><div class="stat-sub">${ei.examDates.prelims}</div></div>`;
+      }
+      if (dte.mains !== undefined) {
+        const col = dte.mains <= 60 ? 'var(--red)' : dte.mains <= 120 ? 'var(--orange)' : 'var(--green)';
+        html += `<div class="stat-card" style="border-left-color:${col}; flex:1; min-width:140px;"><div class="stat-label">Mains</div><div class="stat-value" style="color:${col}">${dte.mains}d</div><div class="stat-sub">${ei.examDates.mains}</div></div>`;
+      }
+      html += '</div>';
+      const ms = ei.milestones || {};
+      if (ms.r3Window) {
+        const r3days = Math.ceil((new Date(ms.r3Window) - new Date(today)) / 86400000);
+        const r4days = Math.ceil((new Date(ms.r4Window) - new Date(today)) / 86400000);
+        html += `<div style="display:flex; gap:8px; margin-top:8px; flex-wrap:wrap;">`;
+        html += `<span class="badge badge-orange" style="font-size:11px;">R3 window in ${r3days}d</span>`;
+        html += `<span class="badge badge-red" style="font-size:11px;">R4 window in ${r4days}d</span>`;
+        html += `</div>`;
+      }
+      examEl.innerHTML = html;
+    } else {
+      examEl.innerHTML = '<div style="font-size:12px; color:var(--text3);">Set exam dates in Settings for countdown</div>';
+    }
+  }
 
   // Time Budget Card
   const tb = data.timeBudget;
@@ -926,13 +1080,18 @@ async function renderToday() {
     ${learningTopics.length > 0
       ? learningTopics.map(t => {
           const daysIn = daysBetween(t.startDate, today);
+          const linkCount = (t.links || []).length;
           return `<div class="task-item" style="cursor:pointer;" onclick="showTopicDetail('${t.subjectId}','${t.id}')">
             <div style="width: 4px; height: 32px; border-radius: 2px; background: ${t.subjectColor};"></div>
             <div class="task-info">
-              <div class="task-name">${t.name}</div>
+              <div class="task-name">${t.name}${linkCount > 0 ? ` <span class="badge badge-cyan" style="font-size:9px;">${linkCount} links</span>` : ''}</div>
               <div class="task-meta">${t.subjectName} · Day ${daysIn + 1} · ${t.estimatedHours || '?'}h total · ${t.roi} ROI</div>
             </div>
-            <button class="btn btn-sm btn-success" onclick="event.stopPropagation();completeLearning('${t.subjectId}','${t.id}');">Done</button>
+            <div style="display:flex; gap:4px; align-items:center;" onclick="event.stopPropagation();">
+              <input type="number" id="log-hrs-${t.id}" value="2" min="0.5" max="12" step="0.5" class="form-input" style="width:55px; padding:4px 6px; font-size:11px; text-align:center;">
+              <button class="btn btn-sm" onclick="logStudyHours('${t.id}', document.getElementById('log-hrs-${t.id}').value)" title="Log study hours">Log</button>
+              <button class="btn btn-sm btn-success" onclick="completeLearning('${t.subjectId}','${t.id}');">Done</button>
+            </div>
           </div>`;
         }).join('')
       : '<div style="padding: 8px; font-size: 12px; color: var(--text3);">No topics in progress. Go to Subjects and start a topic!</div>'
@@ -1345,6 +1504,11 @@ async function renderSettings() {
   document.getElementById('set-act-sectional').value = ah.sectionalBatch || 12;
   document.getElementById('set-act-subject').value = ah.subjectRevision || 24;
 
+  // Exam dates
+  const examDates = s.examDates || {};
+  document.getElementById('set-exam-prelims').value = examDates.prelims || '';
+  document.getElementById('set-exam-mains').value = examDates.mains || '';
+
   // ntfy settings
   const ntfy = s.ntfy || {};
   document.getElementById('set-ntfy-enabled').value = ntfy.enabled ? 'true' : 'false';
@@ -1402,6 +1566,10 @@ async function saveSettings() {
       enabled: document.getElementById('set-ntfy-enabled').value === 'true',
       topic: document.getElementById('set-ntfy-topic').value.trim(),
       server: document.getElementById('set-ntfy-server').value.trim() || 'https://ntfy.sh',
+    },
+    examDates: {
+      prelims: document.getElementById('set-exam-prelims').value || '',
+      mains: document.getElementById('set-exam-mains').value || '',
     },
   };
   await api('/api/settings', 'PUT', settings);
@@ -1686,6 +1854,149 @@ async function forceBatch() {
   renderCumulative();
 }
 
+// ===== SUBJECT REVISION CYCLES =====
+async function renderSubjectCycles() {
+  const data = await api('/api/subject-cycles');
+  const container = document.getElementById('cum-subject-cycles');
+  if (!container) return;
+
+  const statuses = Object.values(data.subjectStatus || {});
+  if (statuses.length === 0) {
+    container.innerHTML = '<div class="empty-state"><div class="empty-state-text">Add subjects to see revision cycle planning.</div></div>';
+    return;
+  }
+
+  const cycleOrder = ['R1','R2','R3','R4','R5'];
+  const configs = data.configs || {};
+  let html = '';
+
+  statuses.forEach(ss => {
+    const cycleMap = {};
+    (ss.cycles || []).forEach(c => { cycleMap[c.cycle] = c; });
+
+    html += `<div class="card" style="margin-bottom:12px; border-left:4px solid ${ss.color};">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+        <div>
+          <div style="font-weight:600; font-size:14px;">${ss.subjectName}</div>
+          <div style="font-size:11px; color:var(--text3);">${ss.learnedTopics}/${ss.totalTopics} topics learned${ss.r0Ready ? ' — R0 Complete' : ''}</div>
+        </div>
+      </div>
+      <div class="timeline-track" style="padding-left:20px;">`;
+
+    cycleOrder.forEach(cyc => {
+      const existing = cycleMap[cyc];
+      const cfg = configs[cyc] || {};
+      const suggestion = (ss.suggestions || {})[cyc];
+
+      if (existing) {
+        const nodeClass = existing.completed ? 'done' : 'active';
+        html += `<div class="timeline-node ${nodeClass}">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <div>
+              <div style="font-size:13px; font-weight:600;">${cyc} — ${existing.label}</div>
+              <div style="font-size:11px; color:var(--text3);">${formatDate(existing.startDate)} to ${formatDate(existing.endDate)} · ${existing.hoursPerDay}h/day</div>
+            </div>
+            <div>
+              ${existing.completed
+                ? '<span class="badge badge-green">Done</span>'
+                : `<button class="btn btn-sm btn-success" onclick="completeSubjectCycle('${existing.id}')">Done</button>`
+              }
+            </div>
+          </div>
+        </div>`;
+      } else {
+        html += `<div class="timeline-node pending">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <div>
+              <div style="font-size:13px; font-weight:600; color:var(--text3);">${cyc} — ${cfg.label || cyc}</div>
+              <div style="font-size:11px; color:var(--text3);">${cfg.durationDays || '?'}d · ${cfg.hoursPerDay || '?'}h/day${suggestion ? ` · Suggested: ${formatDate(suggestion)}` : ''}</div>
+            </div>
+            <div>
+              ${suggestion
+                ? `<button class="btn btn-sm btn-primary" onclick="scheduleSubjectCycle('${ss.subjectId}','${cyc}','${suggestion}')">Schedule</button>`
+                : `<button class="btn btn-sm" disabled style="opacity:0.4;">Not ready</button>`
+              }
+            </div>
+          </div>
+        </div>`;
+      }
+    });
+
+    html += `</div></div>`;
+  });
+
+  container.innerHTML = html;
+}
+
+async function scheduleSubjectCycle(subjectId, cycle, suggestedDate) {
+  const startDate = prompt(`Schedule ${cycle} starting from:`, suggestedDate);
+  if (!startDate) return;
+  await api('/api/subject-cycles', 'POST', { subjectId, cycle, startDate });
+  showToast(`${cycle} cycle scheduled!`);
+  renderCumulative();
+  renderSubjectCycles();
+}
+
+async function completeSubjectCycle(cycleId) {
+  await api(`/api/subject-cycles/${cycleId}/complete`, 'POST');
+  showToast('Cycle completed!');
+  renderSubjectCycles();
+}
+
+// ===== WEEKLY REVIEW =====
+async function renderWeeklyReview(dateStr) {
+  const date = dateStr || todayStr();
+  const data = await api(`/api/weekly-review?date=${date}`);
+  const container = document.getElementById('analytics-weekly');
+  if (!container) return;
+
+  const w = data.week;
+  const hbs = data.hoursBySubject || [];
+  const rev = data.revisions || {};
+
+  let html = `<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+    <button class="btn btn-sm" onclick="renderWeeklyReview('${addDays(w.start, -7)}')">Prev</button>
+    <span style="font-size:13px; font-weight:600;">${formatDate(w.start)} — ${formatDate(w.end)}</span>
+    <button class="btn btn-sm" onclick="renderWeeklyReview('${addDays(w.end, 1)}')">Next</button>
+  </div>`;
+
+  // Hours summary
+  const deltaSign = data.hoursDelta >= 0 ? '+' : '';
+  const deltaColor = data.hoursDelta >= 0 ? 'var(--green)' : 'var(--red)';
+  html += `<div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-bottom:14px;">
+    <div class="stat-card blue"><div class="stat-label">This Week</div><div class="stat-value">${data.totalHours}h</div></div>
+    <div class="stat-card accent"><div class="stat-label">Last Week</div><div class="stat-value">${data.prevWeekHours}h</div></div>
+    <div class="stat-card" style="border-left-color:${deltaColor};"><div class="stat-label">Change</div><div class="stat-value" style="color:${deltaColor};">${deltaSign}${data.hoursDelta}h</div></div>
+  </div>`;
+
+  // Subject balance
+  if (hbs.length > 0) {
+    html += `<div style="font-weight:600; font-size:13px; margin-bottom:8px;">Hours by Subject</div>`;
+    const maxH = Math.max(...hbs.map(s => s.hours), 1);
+    hbs.sort((a, b) => b.hours - a.hours);
+    hbs.forEach(s => {
+      const pct = Math.round(s.hours / maxH * 100);
+      html += `<div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">
+        <span style="font-size:11px; width:100px; text-align:right; color:var(--text2); overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${s.name}</span>
+        <div style="flex:1; height:14px; background:var(--bg); border-radius:3px; overflow:hidden;">
+          <div style="height:100%; width:${pct}%; background:${s.color}; border-radius:3px;"></div>
+        </div>
+        <span style="font-size:11px; width:40px; color:var(--text1); font-weight:600;">${s.hours}h</span>
+      </div>`;
+    });
+  } else {
+    html += `<div style="font-size:12px; color:var(--text3); margin-bottom:12px;">No study hours logged this week. Use "Log" buttons on the Today page.</div>`;
+  }
+
+  // Compliance
+  html += `<div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:14px;">
+    <div class="stat-card green"><div class="stat-label">Compliance</div><div class="stat-value">${data.compliance}%</div><div class="stat-sub">${rev.onTime || 0} on-time</div></div>
+    <div class="stat-card ${rev.overdue > 0 ? 'red' : 'accent'}"><div class="stat-label">Revisions Due</div><div class="stat-value">${rev.due || 0}</div><div class="stat-sub">${rev.late || 0} late · ${rev.overdue || 0} overdue</div></div>
+  </div>`;
+
+  container.innerHTML = html;
+}
+
 // ===== RENDER: TIMELINE ESTIMATOR =====
 async function renderTimeline() {
   const data = await api('/api/timeline-estimate');
@@ -1839,8 +2150,8 @@ function renderPage(page) {
     case 'subjects': renderSubjects(); break;
     case 'today': renderToday(); break;
     case 'calendar': renderCalendar(); break;
-    case 'analytics': renderAnalytics(); break;
-    case 'cumulative': renderCumulative(); break;
+    case 'analytics': renderAnalytics(); renderWeeklyReview(); break;
+    case 'cumulative': renderCumulative(); renderSubjectCycles(); break;
     case 'timeline': renderTimeline(); break;
     case 'settings': renderSettings(); renderThemePicker(); break;
     case 'htmlpages': renderHtmlPages(); break;

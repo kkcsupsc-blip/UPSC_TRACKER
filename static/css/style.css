@@ -550,3 +550,11 @@ tr:hover td { background: rgba(255,255,255,0.02); }
 .upload-link-input { background: var(--bg); border: 1px solid var(--border); border-radius: 4px; color: var(--text2); font-size: 11px; padding: 4px 8px; width: 220px; cursor: pointer; }
 .upload-link-input:focus { outline: none; border-color: var(--accent); }
 #html-upload-area.drag-over { border-color: var(--accent); background: var(--accent-bg); }
+
+/* Subject cycle + weekly review */
+details summary { list-style: none; }
+details summary::-webkit-details-marker { display: none; }
+details summary::before { content: '▸ '; }
+details[open] summary::before { content: '▾ '; }
+details { border: 1px solid var(--bg3); border-radius: 6px; padding: 10px; }
+.time-block.subject-cycle { background: var(--emerald-bg, rgba(16,185,129,0.08)); border-color: var(--emerald); }

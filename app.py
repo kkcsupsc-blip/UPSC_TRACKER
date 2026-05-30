@@ -163,6 +163,10 @@ def default_data():
                 "topic": "",
                 "server": "https://ntfy.sh",
             },
+            "examDates": {
+                "prelims": "",
+                "mains": "",
+            },
         },
         "completedRevisions": {},
         "completedPractice": {},
@@ -172,7 +176,9 @@ def default_data():
             "subjectRevisions": [],
             "pendingTopics": [],
         },
-        "version": 2,
+        "studyLogs": [],
+        "subjectCycles": [],
+        "version": 3,
     }
 
 
@@ -235,6 +241,25 @@ def load_data():
                 if "estimatedHours" not in topic:
                     days = topic.get("estimatedDays", 3)
                     topic["estimatedHours"] = round(days * 2.5, 1)
+
+        # v3 migration: examDates, studyLogs, subjectCycles, per-topic/subject fields
+        if "examDates" not in data["settings"]:
+            data["settings"]["examDates"] = {"prelims": "", "mains": ""}
+        if "studyLogs" not in data:
+            data["studyLogs"] = []
+        if "subjectCycles" not in data:
+            data["subjectCycles"] = []
+        for subj in data.get("subjects", []):
+            if "defaultStages" not in subj:
+                subj["defaultStages"] = None
+            for topic in subj.get("topics", []):
+                if "activeStages" not in topic:
+                    topic["activeStages"] = None
+                if "links" not in topic:
+                    topic["links"] = []
+                if "relatedTopicIds" not in topic:
+                    topic["relatedTopicIds"] = []
+
         # Data integrity: fix topics with all 12 revisions done but wrong status
         _fix_mastery_status(data)
         return data
@@ -243,16 +268,16 @@ def load_data():
 
 
 def _fix_mastery_status(data):
-    """Auto-correct topics that have all 12 revisions done but status != pipeline-complete.
+    """Auto-correct topics that have all active revisions done but status != pipeline-complete.
     This handles race conditions from rapid concurrent marking."""
-    types = ["R1", "PYQ", "ERA", "R3", "MN", "CA", "MCQ", "MCQA", "R7", "MVA", "MAINS", "R30"]
     fixed = False
     for subj in data.get("subjects", []):
         for topic in subj.get("topics", []):
             if topic["status"] == "completed":
+                active = get_topic_stages(data, topic["id"])
                 all_done = all(
                     f"{topic['id']}_{t}" in data.get("completedRevisions", {})
-                    for t in types
+                    for t in active
                 )
                 if all_done:
                     topic["status"] = "pipeline-complete"
@@ -730,6 +755,28 @@ def get_active_stages(exam_type):
         return ["R1", "PYQ", "ERA", "R3", "MN", "CA", "MCQ", "MCQA", "R7", "MVA", "MAINS", "R30"]
 
 
+ALL_STAGES = ["R1", "PYQ", "ERA", "R3", "MN", "CA", "MCQ", "MCQA", "R7", "MVA", "MAINS", "R30"]
+
+
+def get_topic_stages(data, topic_id):
+    """Return the active revision stages for a specific topic.
+
+    Resolution order:
+    1. topic.activeStages (per-topic override) if non-null/non-empty
+    2. subject.defaultStages (subject-level default) if non-null/non-empty
+    3. get_active_stages(topic.examType) — original examType-based fallback
+    """
+    for subj in data["subjects"]:
+        for topic in subj["topics"]:
+            if topic["id"] == topic_id:
+                if topic.get("activeStages"):
+                    return topic["activeStages"]
+                if subj.get("defaultStages"):
+                    return subj["defaultStages"]
+                return get_active_stages(topic.get("examType", "both"))
+    return ALL_STAGES
+
+
 def get_confidence_multiplier(data, topic_id, stage):
     """Return SRS interval multiplier from user's confidence rating on a stage.
 
@@ -749,13 +796,7 @@ def get_confidence_multiplier(data, topic_id, stage):
 
 def check_topic_mastery(data, topic_id):
     """Check if all active revision stages are done for a topic → pipeline-complete!"""
-    exam_type = "both"
-    for _s in data["subjects"]:
-        for _t in _s["topics"]:
-            if _t["id"] == topic_id:
-                exam_type = _t.get("examType", "both")
-                break
-    active = get_active_stages(exam_type)
+    active = get_topic_stages(data, topic_id)
     return all(f"{topic_id}_{st}" in data["completedRevisions"] for st in active)
 
 
@@ -890,6 +931,11 @@ def _simulate_learning_for_date(data, target_date, resolved_schedules=None):
                 non_learn_map[d] = non_learn_map.get(d, 0) + subj_day_hrs
 
     # --- Collect learning topics ----------------------------------------
+    # Pre-compute logged hours per topic from study logs
+    logged_by_topic = {}
+    for log in data.get("studyLogs", []):
+        logged_by_topic[log["topicId"]] = logged_by_topic.get(log["topicId"], 0) + log["hours"]
+
     learning_items = []
     earliest_start = None
     for subj in data["subjects"]:
@@ -897,13 +943,20 @@ def _simulate_learning_for_date(data, target_date, resolved_schedules=None):
             if topic["status"] != "learning":
                 continue
             start = topic.get("startDate") or today
+            est = topic.get("estimatedHours", 7.5)
+            logged = logged_by_topic.get(topic["id"], 0)
+            if logged > 0:
+                remaining = max(0, est - logged)
+            else:
+                days_elapsed = max(0, day_diff(start, today))
+                remaining = max(0, est - days_elapsed * 2.5)
             learning_items.append({
                 "topicId": topic["id"],
                 "topicName": topic["name"],
                 "subjectName": subj["name"],
                 "subjectId": subj["id"],
                 "start": start,
-                "remaining": topic.get("estimatedHours", 7.5),
+                "remaining": remaining,
             })
             if earliest_start is None or start < earliest_start:
                 earliest_start = start
@@ -1076,7 +1129,23 @@ def compute_daily_load(data, date_str, include_overdue=False, resolved_schedules
                     "priority": ACTIVITY_PRIORITY["cumulative_subject"],
                 })
 
-    # ── 4. Priority-based budget allocation ─────────────────────────────
+    # ── 4. Subject revision cycles ──────────────────────────────────────
+    for cycle in data.get("subjectCycles", []):
+        if cycle["completed"]:
+            continue
+        if cycle["startDate"] <= date_str <= cycle["endDate"]:
+            pending_demands.append({
+                "category": "subject_cycle",
+                "subjectName": cycle["subjectName"],
+                "cycle": cycle["cycle"],
+                "label": f"{cycle['subjectName']} {cycle['cycle']} — {cycle['label']}",
+                "hours": cycle["hoursPerDay"],
+                "done": False,
+                "priority": 25,
+                "cycleId": cycle["id"],
+            })
+
+    # ── 5. Priority-based budget allocation ─────────────────────────────
     pending_demands.sort(key=lambda a: a["priority"])
 
     activities = list(done_activities)   # done items always appear (display only)
@@ -1234,19 +1303,37 @@ def estimate_all_timelines(data):
                 for d in [sat, sun, add_days(sat, 7), add_days(sat, 8)]:
                     daily_used[d] = daily_used.get(d, 0) + per_day
 
-    # ── Step 3: Prepare learning & not-started queues ────────────────────
+    # Add subject cycle loads to daily_used
+    for cycle in data.get("subjectCycles", []):
+        if not cycle["completed"]:
+            sd = cycle["startDate"]
+            ed = cycle["endDate"]
+            d = sd
+            for _ in range(cycle["durationDays"] + 1):
+                if d > ed:
+                    break
+                daily_used[d] = daily_used.get(d, 0) + cycle["hoursPerDay"]
+                d = add_days(d, 1)
 
-    # Currently learning topics
+    # ── Step 3: Prepare learning & not-started queues ────────────────────
+    # Pre-compute logged hours per topic
+    logged_by_topic = {}
+    for log in data.get("studyLogs", []):
+        logged_by_topic[log["topicId"]] = logged_by_topic.get(log["topicId"], 0) + log["hours"]
+
     active_learning = []
     for t in all_topics:
         if t["status"] == "learning":
             start = t["startDate"] or today
-            days_elapsed = max(0, day_diff(start, today))
-            # Estimate hours already spent: ~2.5h per elapsed day (rough)
-            hours_spent = days_elapsed * 2.5
-            remaining_hrs = max(0, t["estimatedHours"] - hours_spent)
+            logged = logged_by_topic.get(t["id"], 0)
+            if logged > 0:
+                remaining_hrs = max(0, t["estimatedHours"] - logged)
+            else:
+                days_elapsed = max(0, day_diff(start, today))
+                remaining_hrs = max(0, t["estimatedHours"] - days_elapsed * 2.5)
+            topic_stages = get_topic_stages(data, t["id"])
             done_count = sum(
-                1 for tp in ["R1", "PYQ", "ERA", "R3", "MN", "CA", "MCQ", "MCQA", "R7", "MVA", "MAINS", "R30"]
+                1 for tp in topic_stages
                 if f"{t['id']}_{tp}" in data["completedRevisions"]
             )
             active_learning.append({
@@ -1678,50 +1765,61 @@ def resolve_all_revision_schedules(data):
         cd = t["completionDate"]
         tid = t["id"]
 
-        exam_type = t.get("examType", "both")
+        active_stages = set(get_topic_stages(data, tid))
         r1_mult = _get_conf_mult(tid, "R1")
         r3_mult = _get_conf_mult(tid, "R3")
         r7_mult = _get_conf_mult(tid, "R7")
 
-        # Scale recall/note hours by this topic's depth; practice stages unchanged
         t_hrs = get_topic_scaled_hours(act_hrs, t.get("estimatedHours", 5.0))
 
-        r1 = _fit(add_days(cd, intervals["r1"]), t_hrs.get("R1", 1.5))
-        _commit(r1, t_hrs.get("R1", 1.5))
+        # Rigid stages: R1, R3, MN, R7, MVA, MAINS, R30 — only if active
+        r1 = mn = r3 = r7 = mva = mains_d = r30 = None
+        last_anchor = cd
 
-        r3_days = max(round(intervals["r3"] * r1_mult), 1)
-        r3_e = max(add_days(cd, r3_days), add_days(r1, 1))
-        r3 = _fit(r3_e, t_hrs.get("R3", 1.0))
-        _commit(r3, t_hrs.get("R3", 1.0))
+        if "R1" in active_stages:
+            r1 = _fit(add_days(cd, intervals["r1"]), t_hrs.get("R1", 1.5))
+            _commit(r1, t_hrs.get("R1", 1.5))
+            last_anchor = r1
 
-        mn = _fit(add_days(r3, 1), t_hrs.get("MN", 1.5))
-        _commit(mn, t_hrs.get("MN", 1.5))
+        if "R3" in active_stages:
+            r3_days = max(round(intervals["r3"] * r1_mult), 1)
+            r3_e = max(add_days(cd, r3_days), add_days(last_anchor, 1))
+            r3 = _fit(r3_e, t_hrs.get("R3", 1.0))
+            _commit(r3, t_hrs.get("R3", 1.0))
+            last_anchor = r3
 
-        r7_days = max(round(intervals["r7"] * r3_mult), 1)
-        r7_e = max(add_days(cd, r7_days), add_days(mn, 5))
-        r7 = _fit(r7_e, t_hrs.get("R7", 1.5), weekend_only=True)
-        _commit(r7, t_hrs.get("R7", 1.5))
+        if "MN" in active_stages:
+            mn = _fit(add_days(last_anchor, 1), t_hrs.get("MN", 1.5))
+            _commit(mn, t_hrs.get("MN", 1.5))
+            last_anchor = mn
 
-        if exam_type != "prelims":  # both + mains have MVA and MAINS
-            mva = _fit(add_days(r7, 7), act_hrs.get("MVA", 1.0))
+        if "R7" in active_stages:
+            r7_days = max(round(intervals["r7"] * r3_mult), 1)
+            r7_e = max(add_days(cd, r7_days), add_days(last_anchor, 5))
+            r7 = _fit(r7_e, t_hrs.get("R7", 1.5), weekend_only=True)
+            _commit(r7, t_hrs.get("R7", 1.5))
+            last_anchor = r7
+
+        if "MVA" in active_stages:
+            mva = _fit(add_days(last_anchor, 7), act_hrs.get("MVA", 1.0))
             _commit(mva, act_hrs.get("MVA", 1.0))
-            mains_d = _fit(add_days(mva, 1), act_hrs.get("MAINS", 1.5))
-            _commit(mains_d, act_hrs.get("MAINS", 1.5))
-            r30_anchor = mains_d
-        else:  # prelims: skip MVA + MAINS; R30 anchors off R7
-            mva = None
-            mains_d = None
-            r30_anchor = r7
+            last_anchor = mva
 
-        r30_days = max(round(intervals["r30"] * r7_mult), 1)
-        r30_e = max(add_days(cd, r30_days), add_days(r30_anchor, 7))
-        r30 = _fit(r30_e, t_hrs.get("R30", 1.0))
-        _commit(r30, t_hrs.get("R30", 1.0))
+        if "MAINS" in active_stages:
+            mains_d = _fit(add_days(last_anchor, 1), act_hrs.get("MAINS", 1.5))
+            _commit(mains_d, act_hrs.get("MAINS", 1.5))
+            last_anchor = mains_d
+
+        if "R30" in active_stages:
+            r30_days = max(round(intervals["r30"] * r7_mult), 1)
+            r30_e = max(add_days(cd, r30_days), add_days(last_anchor, 7))
+            r30 = _fit(r30_e, t_hrs.get("R30", 1.0))
+            _commit(r30, t_hrs.get("R30", 1.0))
 
         rigid[tid] = {
             "r1": r1, "r3": r3, "mn": mn, "r7": r7,
             "mva": mva, "mains": mains_d, "r30": r30,
-            "exam_type": exam_type,
+            "active_stages": active_stages,
         }
 
     # ── PHASE 2: Place flexible clusters for ALL topics ─────────────
@@ -1729,48 +1827,68 @@ def resolve_all_revision_schedules(data):
     for t in topics:
         tid = t["id"]
         rd = rigid[tid]
+        active_stages = rd["active_stages"]
 
-        # [PYQ + ERA]: atomic, from R3 day, skip this topic's MN day
-        cluster_a = act_hrs.get("PYQ", 0.5) + act_hrs.get("ERA", 0.5)
-        cand = rd["r3"]
-        for _ in range(120):
-            if cand != rd["mn"] and _avail(cand) >= cluster_a - 0.01:
-                break
-            cand = add_days(cand, 1)
-        _commit(cand, cluster_a)
-        pyq_date = era_date = cand
+        # Determine earliest anchor for flexible stages
+        flex_anchor = rd["r3"] or rd["r1"] or t["completionDate"]
 
-        # [CA + MCQ + MCQA]: atomic; mains topics skip MCQ/MCQA
-        exam_type = rd.get("exam_type", "both")
-        if exam_type == "mains":
-            cluster_b = act_hrs.get("CA", 1.0)
-        else:
-            cluster_b = act_hrs.get("CA", 1.0) + act_hrs.get("MCQ", 0.5) + act_hrs.get("MCQA", 0.5)
-        cand = add_days(rd["mn"], 1)
-        for _ in range(120):
-            if cand != rd["mn"] and _avail(cand) >= cluster_b - 0.01:
-                break
-            cand = add_days(cand, 1)
-        _commit(cand, cluster_b)
-        ca_date = cand
-        mcq_date = mcqa_date = cand if exam_type != "mains" else None
+        # [PYQ + ERA]: atomic, skip this topic's MN day
+        pyq_date = era_date = None
+        has_pyq = "PYQ" in active_stages
+        has_era = "ERA" in active_stages
+        if has_pyq or has_era:
+            cluster_a = 0
+            if has_pyq: cluster_a += act_hrs.get("PYQ", 0.5)
+            if has_era: cluster_a += act_hrs.get("ERA", 0.5)
+            cand = flex_anchor
+            for _ in range(120):
+                if cand != rd["mn"] and _avail(cand) >= cluster_a - 0.01:
+                    break
+                cand = add_days(cand, 1)
+            _commit(cand, cluster_a)
+            if has_pyq: pyq_date = cand
+            if has_era: era_date = cand
 
-        sched = {
-            "r1":  {"date": rd["r1"],  "type": "R1",  "label": "1st Revision (Recall)"},
-            "pyq": {"date": pyq_date,  "type": "PYQ", "label": "PYQ Practice"},
-            "era": {"date": era_date,  "type": "ERA", "label": "Error Analysis"},
-            "r3":  {"date": rd["r3"],  "type": "R3",  "label": "2nd Revision (Active Recall)"},
-            "mn":  {"date": rd["mn"],  "type": "MN",  "label": "Micro Note Making"},
-            "ca":  {"date": ca_date,   "type": "CA",  "label": "Current Affairs + Mapping"},
-            "r7":  {"date": rd["r7"],  "type": "R7",  "label": "3rd Revision (Weekend Consolidation)"},
-            "r30": {"date": rd["r30"], "type": "R30", "label": "Final Revision"},
+        # [CA + MCQ + MCQA]: atomic
+        ca_date = mcq_date = mcqa_date = None
+        has_ca = "CA" in active_stages
+        has_mcq = "MCQ" in active_stages
+        has_mcqa = "MCQA" in active_stages
+        if has_ca or has_mcq or has_mcqa:
+            cluster_b = 0
+            if has_ca: cluster_b += act_hrs.get("CA", 1.0)
+            if has_mcq: cluster_b += act_hrs.get("MCQ", 0.5)
+            if has_mcqa: cluster_b += act_hrs.get("MCQA", 0.5)
+            mn_anchor = rd["mn"] or flex_anchor
+            cand = add_days(mn_anchor, 1)
+            for _ in range(120):
+                if cand != rd["mn"] and _avail(cand) >= cluster_b - 0.01:
+                    break
+                cand = add_days(cand, 1)
+            _commit(cand, cluster_b)
+            if has_ca: ca_date = cand
+            if has_mcq: mcq_date = cand
+            if has_mcqa: mcqa_date = cand
+
+        # Build schedule dict — only include active stages
+        stage_defs = {
+            "r1":    ("R1",  rd["r1"],    "1st Revision (Recall)"),
+            "pyq":   ("PYQ", pyq_date,    "PYQ Practice"),
+            "era":   ("ERA", era_date,    "Error Analysis"),
+            "r3":    ("R3",  rd["r3"],    "2nd Revision (Active Recall)"),
+            "mn":    ("MN",  rd["mn"],    "Micro Note Making"),
+            "ca":    ("CA",  ca_date,     "Current Affairs + Mapping"),
+            "mcq":   ("MCQ", mcq_date,   "MCQ Practice"),
+            "mcqa":  ("MCQA", mcqa_date,  "MCQ Analysis"),
+            "r7":    ("R7",  rd["r7"],    "3rd Revision (Weekend Consolidation)"),
+            "mva":   ("MVA", rd["mva"],   "Mains Value Addition"),
+            "mains": ("MAINS", rd["mains"], "Mains Answer Writing"),
+            "r30":   ("R30", rd["r30"],   "Final Revision"),
         }
-        if exam_type != "mains":  # prelims + both have MCQ/MCQA
-            sched["mcq"]  = {"date": mcq_date,  "type": "MCQ",  "label": "MCQ Practice"}
-            sched["mcqa"] = {"date": mcqa_date, "type": "MCQA", "label": "MCQ Analysis"}
-        if exam_type != "prelims":  # both + mains have MVA/MAINS
-            sched["mva"]   = {"date": rd["mva"],   "type": "MVA",   "label": "Mains Value Addition"}
-            sched["mains"] = {"date": rd["mains"], "type": "MAINS", "label": "Mains Answer Writing"}
+        sched = {}
+        for key, (stage_code, date, label) in stage_defs.items():
+            if stage_code in active_stages and date is not None:
+                sched[key] = {"date": date, "type": stage_code, "label": label}
         resolved[tid] = sched
 
     return resolved, daily_used
@@ -1983,6 +2101,7 @@ def api_add_subject():
         "color": body.get("color", "#6366f1"),
         "ntfyTopic": body.get("ntfyTopic", ""),
         "notes": body.get("notes", ""),
+        "defaultStages": body.get("defaultStages", None),
         "topics": [],
         "createdAt": today_str(),
     }
@@ -2048,6 +2167,9 @@ def api_add_topic(subj_id):
         "status": "not-started",
         "startDate": None,
         "completionDate": None,
+        "activeStages": body.get("activeStages", None),
+        "links": [],
+        "relatedTopicIds": [],
         "createdAt": today_str(),
     }
     subj["topics"].append(topic)
@@ -2112,6 +2234,12 @@ def api_edit_topic(subj_id, topic_id):
         topic["examType"] = body["examType"]
         if old_et != topic["examType"]:
             changes.append(f"Exam Type: {old_et} → {topic['examType']}")
+    if "activeStages" in body:
+        valid = [s for s in (body["activeStages"] or []) if s in ALL_STAGES]
+        topic["activeStages"] = valid if valid else None
+        changes.append("Custom stages updated")
+    if "relatedTopicIds" in body:
+        topic["relatedTopicIds"] = body["relatedTopicIds"] or []
 
     if changes:
         save_data(data)
@@ -2592,6 +2720,24 @@ def api_dashboard():
     cum_upcoming.sort(key=lambda x: x["date"])
 
     holidays = data.get("holidays", [])
+
+    # Exam countdown
+    exam_dates = data["settings"].get("examDates", {})
+    exam_info = {"examDates": exam_dates, "daysToExam": {}, "milestones": {}}
+    for key in ("prelims", "mains"):
+        ed = exam_dates.get(key, "")
+        if ed:
+            try:
+                days_left = day_diff(today, ed)
+                exam_info["daysToExam"][key] = days_left
+            except Exception:
+                pass
+    prelims = exam_dates.get("prelims", "")
+    if prelims:
+        exam_info["milestones"]["r3Window"] = add_days(prelims, -56)
+        exam_info["milestones"]["r4Window"] = add_days(prelims, -21)
+        exam_info["milestones"]["r5Window"] = add_days(prelims, -3)
+
     return jsonify({
         "today": today,
         "isWeekend": is_weekend(today, holidays),
@@ -2611,6 +2757,7 @@ def api_dashboard():
         "upcoming": upcoming,
         "cumulativeUpcoming": cum_upcoming,
         "timeBudget": compute_daily_load(data, today, include_overdue=True),
+        "examInfo": exam_info,
     })
 
 
@@ -2782,19 +2929,27 @@ def api_analytics():
     completed = sum(1 for s in data["subjects"] for t in s["topics"] if t["status"] == "completed")
     mastered = sum(1 for s in data["subjects"] for t in s["topics"] if t["status"] == "pipeline-complete")
 
-    total_expected = completed * 12
-    total_done = len(data["completedRevisions"])
+    total_expected = 0
+    total_done = 0
+    for subj in data["subjects"]:
+        for topic in subj["topics"]:
+            if topic["status"] not in ("completed", "pipeline-complete") or not topic.get("completionDate"):
+                continue
+            stages = get_topic_stages(data, topic["id"])
+            total_expected += len(stages)
+            total_done += sum(1 for s in stages if f"{topic['id']}_{s}" in data["completedRevisions"])
     compliance = round(total_done / total_expected * 100) if total_expected > 0 else 0
     overdue = len(get_overdue_tasks(data))
 
-    # Per-type stats
-    types = ["R1", "PYQ", "ERA", "R3", "MN", "CA", "MCQ", "MCQA", "R7", "MVA", "MAINS", "R30"]
+    # Per-type stats (respects per-topic active stages)
+    types = ALL_STAGES
     rev_stats = {t: {"total": 0, "done": 0} for t in types}
     for subj in data["subjects"]:
         for topic in subj["topics"]:
-            if topic["status"] != "completed" or not topic.get("completionDate"):
+            if topic["status"] not in ("completed", "pipeline-complete") or not topic.get("completionDate"):
                 continue
-            for t in types:
+            topic_stages = get_topic_stages(data, topic["id"])
+            for t in topic_stages:
                 rev_stats[t]["total"] += 1
                 if f"{topic['id']}_{t}" in data["completedRevisions"]:
                     rev_stats[t]["done"] += 1
@@ -2816,13 +2971,14 @@ def api_analytics():
     for subj in data["subjects"]:
         for topic in subj["topics"]:
             if topic["status"] == "completed" and topic.get("completionDate"):
-                progress = sum(1 for t in types if f"{topic['id']}_{t}" in data["completedRevisions"])
+                topic_stages = get_topic_stages(data, topic["id"])
+                progress = sum(1 for t in topic_stages if f"{topic['id']}_{t}" in data["completedRevisions"])
                 lifecycle.append({
                     "id": topic["id"], "name": topic["name"],
                     "subjectName": subj["name"], "subjectColor": subj["color"],
                     "subjectId": subj["id"],
                     "completionDate": topic["completionDate"],
-                    "progress": progress, "totalStages": len(types),
+                    "progress": progress, "totalStages": len(topic_stages),
                 })
 
     return jsonify({
@@ -2867,12 +3023,38 @@ def api_topic_detail(subj_id, topic_id):
     timeline_result = estimate_all_timelines(data)
     topic_estimate = timeline_result["estimates"].get(topic["id"])
 
+    # Resolved active stages for this topic
+    resolved_stages = get_topic_stages(data, topic["id"])
+
+    # Study log aggregation
+    logged_hours = sum(
+        log["hours"] for log in data.get("studyLogs", [])
+        if log["topicId"] == topic["id"]
+    )
+
+    # Resolve related topic details
+    related = []
+    for rid in topic.get("relatedTopicIds", []):
+        for s in data["subjects"]:
+            for t in s["topics"]:
+                if t["id"] == rid:
+                    related.append({
+                        "topicId": t["id"], "topicName": t["name"],
+                        "subjectId": s["id"], "subjectName": s["name"],
+                        "subjectColor": s["color"],
+                    })
+
     return jsonify({
-        "subject": {"id": subj["id"], "name": subj["name"], "color": subj["color"]},
+        "subject": {"id": subj["id"], "name": subj["name"], "color": subj["color"],
+                     "defaultStages": subj.get("defaultStages")},
         "topic": topic,
         "schedule": schedule,
         "estimate": topic_estimate,
         "today": today_str(),
+        "resolvedStages": resolved_stages,
+        "loggedHours": round(logged_hours, 1),
+        "remainingHours": round(max(0, topic.get("estimatedHours", 7.5) - logged_hours), 1),
+        "relatedTopics": related,
     })
 
 
@@ -3173,6 +3355,363 @@ def api_reschedule_sessions():
     data = load_data()
     reschedule_conflicting_sessions(data)
     return jsonify({"ok": True})
+
+
+# =============================================================================
+#  STUDY LOGS
+# =============================================================================
+
+@app.route("/api/study-logs", methods=["GET"])
+def api_get_study_logs():
+    data = load_data()
+    logs = data.get("studyLogs", [])
+    topic_id = request.args.get("topicId")
+    date_from = request.args.get("from")
+    date_to = request.args.get("to")
+    if topic_id:
+        logs = [l for l in logs if l["topicId"] == topic_id]
+    if date_from:
+        logs = [l for l in logs if l["date"] >= date_from]
+    if date_to:
+        logs = [l for l in logs if l["date"] <= date_to]
+    return jsonify(logs)
+
+
+@app.route("/api/study-logs", methods=["POST"])
+def api_add_study_log():
+    body = request.get_json(force=True)
+    data = load_data()
+    entry = {
+        "id": gen_id(),
+        "topicId": body["topicId"],
+        "date": body.get("date", today_str()),
+        "hours": round(float(body["hours"]), 1),
+    }
+    data["studyLogs"].append(entry)
+    save_data(data)
+    return jsonify(entry)
+
+
+@app.route("/api/study-logs/<log_id>", methods=["DELETE"])
+def api_delete_study_log(log_id):
+    data = load_data()
+    data["studyLogs"] = [l for l in data["studyLogs"] if l["id"] != log_id]
+    save_data(data)
+    return jsonify({"ok": True})
+
+
+# =============================================================================
+#  CA LINKS
+# =============================================================================
+
+@app.route("/api/subjects/<subj_id>/topics/<topic_id>/links", methods=["POST"])
+def api_add_link(subj_id, topic_id):
+    body = request.get_json(force=True)
+    data = load_data()
+    subj = next((s for s in data["subjects"] if s["id"] == subj_id), None)
+    if not subj:
+        return jsonify({"error": "Subject not found"}), 404
+    topic = next((t for t in subj["topics"] if t["id"] == topic_id), None)
+    if not topic:
+        return jsonify({"error": "Topic not found"}), 404
+    link = {
+        "id": gen_id(),
+        "url": body["url"],
+        "title": body.get("title", ""),
+        "dateAdded": today_str(),
+    }
+    if "links" not in topic:
+        topic["links"] = []
+    topic["links"].append(link)
+    save_data(data)
+    return jsonify(link)
+
+
+@app.route("/api/subjects/<subj_id>/topics/<topic_id>/links/<link_id>", methods=["DELETE"])
+def api_delete_link(subj_id, topic_id, link_id):
+    data = load_data()
+    subj = next((s for s in data["subjects"] if s["id"] == subj_id), None)
+    if not subj:
+        return jsonify({"error": "Subject not found"}), 404
+    topic = next((t for t in subj["topics"] if t["id"] == topic_id), None)
+    if not topic:
+        return jsonify({"error": "Topic not found"}), 404
+    topic["links"] = [l for l in topic.get("links", []) if l["id"] != link_id]
+    save_data(data)
+    return jsonify({"ok": True})
+
+
+# =============================================================================
+#  RELATED TOPICS (bidirectional)
+# =============================================================================
+
+@app.route("/api/subjects/<subj_id>/topics/<topic_id>/related", methods=["POST"])
+def api_add_related(subj_id, topic_id):
+    """Add a bidirectional relation between two topics."""
+    body = request.get_json(force=True)
+    related_id = body["relatedTopicId"]
+    data = load_data()
+
+    # Find both topics
+    topic_a = topic_b = None
+    for s in data["subjects"]:
+        for t in s["topics"]:
+            if t["id"] == topic_id:
+                topic_a = t
+            if t["id"] == related_id:
+                topic_b = t
+    if not topic_a or not topic_b:
+        return jsonify({"error": "Topic not found"}), 404
+
+    # Add bidirectionally
+    if related_id not in topic_a.get("relatedTopicIds", []):
+        topic_a.setdefault("relatedTopicIds", []).append(related_id)
+    if topic_id not in topic_b.get("relatedTopicIds", []):
+        topic_b.setdefault("relatedTopicIds", []).append(topic_id)
+
+    save_data(data)
+    return jsonify({"ok": True})
+
+
+@app.route("/api/subjects/<subj_id>/topics/<topic_id>/related/<related_id>", methods=["DELETE"])
+def api_remove_related(subj_id, topic_id, related_id):
+    """Remove a bidirectional relation between two topics."""
+    data = load_data()
+    for s in data["subjects"]:
+        for t in s["topics"]:
+            if t["id"] == topic_id:
+                t["relatedTopicIds"] = [r for r in t.get("relatedTopicIds", []) if r != related_id]
+            if t["id"] == related_id:
+                t["relatedTopicIds"] = [r for r in t.get("relatedTopicIds", []) if r != topic_id]
+    save_data(data)
+    return jsonify({"ok": True})
+
+
+# =============================================================================
+#  SUBJECT-LEVEL REVISION CYCLES
+# =============================================================================
+
+SUBJECT_CYCLE_CONFIGS = {
+    "R1": {"label": "Consolidation",   "durationDays": 12, "hoursPerDay": 3},
+    "R2": {"label": "Active Recall",   "durationDays": 12, "hoursPerDay": 3},
+    "R3": {"label": "Targeted Repair", "durationDays": 8,  "hoursPerDay": 4},
+    "R4": {"label": "Rapid Fire",      "durationDays": 4,  "hoursPerDay": 5},
+    "R5": {"label": "Final Review",    "durationDays": 2,  "hoursPerDay": 3},
+}
+
+
+@app.route("/api/subject-cycles", methods=["GET"])
+def api_get_subject_cycles():
+    data = load_data()
+    cycles = data.get("subjectCycles", [])
+    exam_dates = data["settings"].get("examDates", {})
+
+    # Build per-subject status summary
+    subject_status = {}
+    for subj in data["subjects"]:
+        sid = subj["id"]
+        total = len(subj["topics"])
+        learned = sum(1 for t in subj["topics"] if t["status"] in ("completed", "pipeline-complete"))
+        learning = sum(1 for t in subj["topics"] if t["status"] == "learning")
+        last_completed = None
+        for t in subj["topics"]:
+            if t.get("completionDate"):
+                if not last_completed or t["completionDate"] > last_completed:
+                    last_completed = t["completionDate"]
+
+        subj_cycles = [c for c in cycles if c["subjectId"] == sid]
+        cycle_map = {c["cycle"]: c for c in subj_cycles}
+
+        # Suggested dates
+        suggestions = {}
+        if last_completed and learned == total and total > 0:
+            suggestions["R1"] = add_days(last_completed, 14)
+        r1c = cycle_map.get("R1")
+        if r1c and r1c.get("endDate"):
+            suggestions["R2"] = add_days(r1c["endDate"], 28)
+
+        prelims = exam_dates.get("prelims", "")
+        if prelims:
+            suggestions["R3"] = add_days(prelims, -56)
+            suggestions["R4"] = add_days(prelims, -21)
+            suggestions["R5"] = add_days(prelims, -3)
+
+        subject_status[sid] = {
+            "subjectId": sid, "subjectName": subj["name"], "color": subj["color"],
+            "totalTopics": total, "learnedTopics": learned, "learningTopics": learning,
+            "r0Ready": learned == total and total > 0,
+            "cycles": subj_cycles,
+            "suggestions": suggestions,
+        }
+
+    return jsonify({
+        "cycles": cycles,
+        "subjectStatus": subject_status,
+        "configs": SUBJECT_CYCLE_CONFIGS,
+    })
+
+
+@app.route("/api/subject-cycles", methods=["POST"])
+def api_schedule_subject_cycle():
+    body = request.get_json(force=True)
+    data = load_data()
+    subj_id = body["subjectId"]
+    cycle = body["cycle"]
+    start_date = body["startDate"]
+
+    subj = next((s for s in data["subjects"] if s["id"] == subj_id), None)
+    if not subj:
+        return jsonify({"error": "Subject not found"}), 404
+
+    config = SUBJECT_CYCLE_CONFIGS.get(cycle)
+    if not config:
+        return jsonify({"error": "Invalid cycle"}), 400
+
+    entry = {
+        "id": gen_id(),
+        "subjectId": subj_id,
+        "subjectName": subj["name"],
+        "cycle": cycle,
+        "label": config["label"],
+        "startDate": start_date,
+        "endDate": add_days(start_date, config["durationDays"]),
+        "durationDays": config["durationDays"],
+        "hoursPerDay": config["hoursPerDay"],
+        "completed": False,
+        "completedAt": None,
+    }
+    data.setdefault("subjectCycles", []).append(entry)
+    save_data(data)
+
+    send_ntfy(
+        f"Subject Cycle Scheduled: {subj['name']} {cycle}",
+        f"Cycle: {config['label']}\n"
+        f"Subject: {subj['name']}\n"
+        f"Start: {start_date}\n"
+        f"Duration: {config['durationDays']} days\n"
+        f"Hours/day: {config['hoursPerDay']}h",
+        tags=["calendar", "books"],
+        priority=3,
+        subject_topic=subj.get("ntfyTopic") or None,
+    )
+    return jsonify(entry)
+
+
+@app.route("/api/subject-cycles/<cycle_id>/complete", methods=["POST"])
+def api_complete_subject_cycle(cycle_id):
+    data = load_data()
+    cycle = next((c for c in data.get("subjectCycles", []) if c["id"] == cycle_id), None)
+    if not cycle:
+        return jsonify({"error": "Cycle not found"}), 404
+    cycle["completed"] = True
+    cycle["completedAt"] = today_str()
+    save_data(data)
+    return jsonify({"ok": True})
+
+
+@app.route("/api/subject-cycles/<cycle_id>/uncomplete", methods=["POST"])
+def api_uncomplete_subject_cycle(cycle_id):
+    data = load_data()
+    cycle = next((c for c in data.get("subjectCycles", []) if c["id"] == cycle_id), None)
+    if not cycle:
+        return jsonify({"error": "Cycle not found"}), 404
+    cycle["completed"] = False
+    cycle["completedAt"] = None
+    save_data(data)
+    return jsonify({"ok": True})
+
+
+@app.route("/api/subject-cycles/<cycle_id>", methods=["DELETE"])
+def api_delete_subject_cycle(cycle_id):
+    data = load_data()
+    data["subjectCycles"] = [c for c in data.get("subjectCycles", []) if c["id"] != cycle_id]
+    save_data(data)
+    return jsonify({"ok": True})
+
+
+# =============================================================================
+#  WEEKLY REVIEW
+# =============================================================================
+
+@app.route("/api/weekly-review", methods=["GET"])
+def api_weekly_review():
+    """Compute weekly analytics: hours by subject, compliance, progress."""
+    data = load_data()
+    date_str = request.args.get("date", today_str())
+    dt = datetime.strptime(date_str, "%Y-%m-%d")
+    # Monday of the week
+    monday = dt - timedelta(days=dt.weekday())
+    sunday = monday + timedelta(days=6)
+    mon_str = monday.strftime("%Y-%m-%d")
+    sun_str = sunday.strftime("%Y-%m-%d")
+
+    # Previous week
+    prev_mon = (monday - timedelta(days=7)).strftime("%Y-%m-%d")
+    prev_sun = (monday - timedelta(days=1)).strftime("%Y-%m-%d")
+
+    # Study hours by subject this week
+    logs = data.get("studyLogs", [])
+    week_logs = [l for l in logs if mon_str <= l["date"] <= sun_str]
+    prev_logs = [l for l in logs if prev_mon <= l["date"] <= prev_sun]
+
+    # Build subject lookup
+    topic_to_subject = {}
+    for subj in data["subjects"]:
+        for topic in subj["topics"]:
+            topic_to_subject[topic["id"]] = {
+                "id": subj["id"], "name": subj["name"], "color": subj["color"],
+            }
+
+    hours_by_subject = {}
+    total_hours = 0
+    for log in week_logs:
+        s = topic_to_subject.get(log["topicId"], {"id": "unknown", "name": "Unknown", "color": "#666"})
+        hours_by_subject.setdefault(s["id"], {"name": s["name"], "color": s["color"], "hours": 0})
+        hours_by_subject[s["id"]]["hours"] = round(hours_by_subject[s["id"]]["hours"] + log["hours"], 1)
+        total_hours = round(total_hours + log["hours"], 1)
+
+    prev_total = round(sum(l["hours"] for l in prev_logs), 1)
+
+    # Revision compliance this week
+    resolved, _ = resolve_all_revision_schedules(data)
+    due_this_week = 0
+    done_on_time = 0
+    done_late = 0
+    still_overdue = 0
+    completed_revs = data.get("completedRevisions", {})
+
+    for tid, sched in resolved.items():
+        for key, rev in sched.items():
+            if mon_str <= rev["date"] <= sun_str:
+                due_this_week += 1
+                rev_key = f"{tid}_{rev['type']}"
+                if rev_key in completed_revs:
+                    val = completed_revs[rev_key]
+                    done_at = ""
+                    if isinstance(val, dict):
+                        ts = val.get("completedAt", 0)
+                        done_at = datetime.fromtimestamp(ts / 1000).strftime("%Y-%m-%d") if ts else ""
+                    if done_at and done_at <= rev["date"]:
+                        done_on_time += 1
+                    else:
+                        done_late += 1
+                elif rev["date"] < today_str():
+                    still_overdue += 1
+
+    compliance = round(done_on_time / due_this_week * 100) if due_this_week > 0 else 100
+
+    return jsonify({
+        "week": {"start": mon_str, "end": sun_str},
+        "totalHours": total_hours,
+        "prevWeekHours": prev_total,
+        "hoursDelta": round(total_hours - prev_total, 1),
+        "hoursBySubject": list(hours_by_subject.values()),
+        "revisions": {
+            "due": due_this_week, "onTime": done_on_time,
+            "late": done_late, "overdue": still_overdue,
+        },
+        "compliance": compliance,
+    })
 
 
 # =============================================================================
