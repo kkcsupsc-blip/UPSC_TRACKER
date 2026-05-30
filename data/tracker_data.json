@@ -1,17 +1,6 @@
 {
   "subjects": [
     {
-      "id": "bcee169fc098",
-      "name": "MODERN HISTORY",
-      "roi": "medium",
-      "color": "#eab308",
-      "ntfyTopic": "UPSC-MODERN_HISTORY",
-      "notes": "Stable zone.\nFreedom struggle personalities.\nActs, movements, chronology traps.\nUsually 8–12 questions.\nScoring subject if timeline clarity is strong.",
-      "topics": [],
-      "createdAt": "2026-02-22",
-      "defaultStages": null
-    },
-    {
       "id": "dea2220bf1c0",
       "name": "SCIENCE AND TECHNOLOGY",
       "roi": "medium",
