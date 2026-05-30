@@ -1,5 +1,17 @@
 {
-  "subjects": [],
+  "subjects": [
+    {
+      "id": "730387ae6543",
+      "name": "POLITY",
+      "roi": "very-high",
+      "color": "#22c55e",
+      "ntfyTopic": "",
+      "notes": "",
+      "defaultStages": null,
+      "topics": [],
+      "createdAt": "2026-05-31"
+    }
+  ],
   "settings": {
     "weekdayHours": 5,
     "weekendHours": 12,
