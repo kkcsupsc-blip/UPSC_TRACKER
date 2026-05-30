@@ -324,6 +324,19 @@
       "hoursPerDay": 4,
       "completed": false,
       "completedAt": null
+    },
+    {
+      "id": "b8d12864eb0f",
+      "subjectId": "730387ae6543",
+      "subjectName": "POLITY",
+      "cycle": "R4",
+      "label": "Rapid Fire",
+      "startDate": "2027-05-02",
+      "endDate": "2027-05-06",
+      "durationDays": 4,
+      "hoursPerDay": 5,
+      "completed": false,
+      "completedAt": null
     }
   ],
   "version": 3
