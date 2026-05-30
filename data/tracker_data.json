@@ -246,6 +246,20 @@
       "hours": 5.0
     }
   ],
-  "subjectCycles": [],
+  "subjectCycles": [
+    {
+      "id": "9d632c63e9b1",
+      "subjectId": "44c6c5d989ff",
+      "subjectName": "ECONOMY",
+      "cycle": "R1",
+      "label": "Consolidation",
+      "startDate": "2026-06-14",
+      "endDate": "2026-06-26",
+      "durationDays": 12,
+      "hoursPerDay": 3,
+      "completed": false,
+      "completedAt": null
+    }
+  ],
   "version": 3
 }
