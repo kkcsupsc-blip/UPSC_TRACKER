@@ -1,46 +1,5 @@
 {
-  "subjects": [
-    {
-      "id": "834c15a54fd2",
-      "name": "POLITY",
-      "roi": "very-high",
-      "color": "#6366f1",
-      "ntfyTopic": "",
-      "notes": "",
-      "defaultStages": null,
-      "topics": [
-        {
-          "id": "e9e8ffb4db51",
-          "name": "NCERT - CLASS 11",
-          "estimatedHours": 25.0,
-          "roi": "very-high",
-          "examType": "both",
-          "notes": "",
-          "status": "completed",
-          "startDate": "2026-05-31",
-          "completionDate": "2026-05-31",
-          "activeStages": [
-            "R1"
-          ],
-          "links": [],
-          "relatedTopicIds": [],
-          "createdAt": "2026-05-31"
-        }
-      ],
-      "createdAt": "2026-05-31"
-    },
-    {
-      "id": "8bbb496f64ad",
-      "name": "ECONOMY",
-      "roi": "very-high",
-      "color": "#6366f1",
-      "ntfyTopic": "",
-      "notes": "",
-      "defaultStages": null,
-      "topics": [],
-      "createdAt": "2026-05-31"
-    }
-  ],
+  "subjects": [],
   "settings": {
     "weekdayHours": 6,
     "weekendHours": 12,
@@ -54,16 +13,16 @@
     },
     "activityHours": {
       "R1": 1.5,
-      "PYQ": 1,
-      "ERA": 1,
-      "R3": 1,
+      "PYQ": 1.0,
+      "ERA": 1.0,
+      "R3": 1.0,
       "MN": 1.5,
       "MCQ": 0.5,
       "MCQA": 0.5,
       "R7": 1.5,
-      "MVA": 1,
+      "MVA": 1.0,
       "MAINS": 1.5,
-      "R30": 1,
+      "R30": 1.0,
       "sectionalBatch": 12,
       "subjectRevision": 24
     },
@@ -73,8 +32,8 @@
       "server": "https://ntfy.sh"
     },
     "examDates": {
-      "prelims": "2027-05-23",
-      "mains": "2027-08-20"
+      "prelims": "",
+      "mains": ""
     }
   },
   "completedRevisions": {},
