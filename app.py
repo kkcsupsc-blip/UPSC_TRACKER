@@ -249,6 +249,10 @@ def load_data():
             data["studyLogs"] = []
         if "subjectCycles" not in data:
             data["subjectCycles"] = []
+        # Clear old auto-triggered subject revisions — replaced by user-controlled R1-R5 cycles
+        cum = data.get("cumulativeRevisions", {})
+        if cum.get("subjectRevisions"):
+            cum["subjectRevisions"] = []
         for subj in data.get("subjects", []):
             if "defaultStages" not in subj:
                 subj["defaultStages"] = None
@@ -470,28 +474,7 @@ def schedule_sectional_batch(batch_creation_date, topics_info, occupied=None, ba
     }
 
 
-def schedule_subject_revision(subject_id, subject_name, trigger_date, occupied=None):
-    """Create subject-level revision sessions with expanding intervals.
-    Avoids weekends already booked by other sessions."""
-    if occupied is None:
-        occupied = {}
-    sessions = []
-    for i, days_after in enumerate(SUBJECT_INTERVALS):
-        base_date = add_days(trigger_date, days_after)
-        sched_date = find_available_weekend(base_date, occupied)
-        occupied[sched_date] = occupied.get(sched_date, 0) + 1
-        sessions.append({
-            "round": i + 1,
-            "scheduledDate": sched_date,
-            "completed": False,
-            "completedAt": None,
-        })
-    return {
-        "subjectId": subject_id,
-        "subjectName": subject_name,
-        "triggeredAt": trigger_date,
-        "sessions": sessions,
-    }
+# schedule_subject_revision() removed — replaced by user-controlled Subject Revision Cycles (R1-R5)
 
 
 def check_and_create_batches(data):
@@ -2602,20 +2585,7 @@ def api_dashboard():
                         "overdue": days_until < 0,
                         "isToday": days_until == 0,
                     })
-    for sr in cum.get("subjectRevisions", []):
-        for sess in sr["sessions"]:
-            if not sess["completed"]:
-                days_until = (datetime.strptime(sess["scheduledDate"], "%Y-%m-%d") - datetime.strptime(today, "%Y-%m-%d")).days
-                if -7 <= days_until <= 14:
-                    cum_upcoming.append({
-                        "type": "subject",
-                        "subjectId": sr["subjectId"],
-                        "subjectName": sr["subjectName"],
-                        "round": sess["round"],
-                        "date": sess["scheduledDate"],
-                        "overdue": days_until < 0,
-                        "isToday": days_until == 0,
-                    })
+    # Old subject revisions removed — subject revision is now via R1-R5 cycles
     cum_upcoming.sort(key=lambda x: x["date"])
 
     holidays = data.get("holidays", [])
@@ -3151,33 +3121,23 @@ def api_cumulative():
                     "date": sess["scheduledDate"],
                     "topicCount": len(batch["topicIds"]),
                 })
-    for sr in cum["subjectRevisions"]:
-        for sess in sr["sessions"]:
-            if not sess["completed"] and sess["scheduledDate"] >= today:
-                upcoming_sessions.append({
-                    "type": "subject",
-                    "subjectId": sr["subjectId"],
-                    "subjectName": sr["subjectName"],
-                    "round": sess["round"],
-                    "date": sess["scheduledDate"],
-                })
+    # Old subject revisions excluded — replaced by user-controlled Subject Revision Cycles
     upcoming_sessions.sort(key=lambda x: x["date"])
 
     return jsonify({
         "sectionalBatches": enriched_batches,
-        "subjectRevisions": enriched_subject,
+        "subjectRevisions": [],  # old system removed
         "pendingTopics": pending,
         "upcomingSessions": upcoming_sessions[:10],
         "stats": {
             "totalBatches": total_batches,
-            "totalSubjectRevisions": total_subject_revs,
+            "totalSubjectRevisions": 0,
             "pendingCount": len(pending),
             "upcomingCount": len(upcoming_sessions),
         },
         "today": today,
         "intervals": {
             "sectional": SECTIONAL_INTERVALS,
-            "subject": SUBJECT_INTERVALS,
             "minBatch": MIN_BATCH_SIZE,
             "maxBatch": MAX_BATCH_SIZE,
         },
