@@ -272,6 +272,19 @@
       "hoursPerDay": 3,
       "completed": false,
       "completedAt": null
+    },
+    {
+      "id": "0130aff7739e",
+      "subjectId": "44c6c5d989ff",
+      "subjectName": "ECONOMY",
+      "cycle": "R3",
+      "label": "Targeted Repair",
+      "startDate": "2027-03-28",
+      "endDate": "2027-04-05",
+      "durationDays": 8,
+      "hoursPerDay": 4,
+      "completed": false,
+      "completedAt": null
     }
   ],
   "version": 3
