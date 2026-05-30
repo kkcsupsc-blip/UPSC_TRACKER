@@ -8,7 +8,23 @@
       "ntfyTopic": "UPSC-POLITY",
       "notes": "",
       "defaultStages": null,
-      "topics": [],
+      "topics": [
+        {
+          "id": "7faf202c8f90",
+          "name": "kISHORE",
+          "estimatedHours": 5.0,
+          "roi": "very-high",
+          "examType": "both",
+          "notes": "",
+          "status": "not-started",
+          "startDate": null,
+          "completionDate": null,
+          "activeStages": null,
+          "links": [],
+          "relatedTopicIds": [],
+          "createdAt": "2026-05-31"
+        }
+      ],
       "createdAt": "2026-05-31"
     }
   ],
