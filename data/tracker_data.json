@@ -13,16 +13,16 @@
     },
     "activityHours": {
       "R1": 1.5,
-      "PYQ": 1.0,
-      "ERA": 1.0,
-      "R3": 1.0,
+      "PYQ": 1,
+      "ERA": 1,
+      "R3": 1,
       "MN": 1.5,
       "MCQ": 0.5,
       "MCQA": 0.5,
       "R7": 1.5,
-      "MVA": 1.0,
+      "MVA": 1,
       "MAINS": 1.5,
-      "R30": 1.0,
+      "R30": 1,
       "sectionalBatch": 12,
       "subjectRevision": 24
     },
@@ -32,8 +32,8 @@
       "server": "https://ntfy.sh"
     },
     "examDates": {
-      "prelims": "",
-      "mains": ""
+      "prelims": "2027-05-23",
+      "mains": "2027-08-20"
     }
   },
   "completedRevisions": {},
