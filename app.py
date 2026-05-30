@@ -2039,10 +2039,19 @@ def api_add_topic(subj_id):
     subj = next((s for s in data["subjects"] if s["id"] == subj_id), None)
     if not subj:
         return jsonify({"error": "Subject not found"}), 404
+    # Smart default: average actual hours of completed topics in this subject
+    default_hrs = 7.5
+    completed_in_subj = [t for t in subj["topics"]
+                         if t["status"] in ("completed", "pipeline-complete")
+                         and t.get("estimatedHours", 0) > 0]
+    if completed_in_subj:
+        avg = sum(t["estimatedHours"] for t in completed_in_subj) / len(completed_in_subj)
+        default_hrs = round(avg, 1)
+
     topic = {
         "id": gen_id(),
         "name": body["name"],
-        "estimatedHours": round(float(body.get("estimatedHours", 7.5)), 1),
+        "estimatedHours": round(float(body.get("estimatedHours", default_hrs)), 1),
         "roi": body.get("roi", "high"),
         "examType": body.get("examType", "both"),
         "notes": body.get("notes", ""),
@@ -2223,6 +2232,10 @@ def api_complete_topic(subj_id, topic_id):
         return jsonify({"error": "Topic not found"}), 404
     topic["status"] = "completed"
     topic["completionDate"] = today_str()
+    # Auto-update estimatedHours with actual logged hours (replaces the guess)
+    actual = get_actual_hours(data, topic_id)
+    if actual > 0:
+        topic["estimatedHours"] = round(actual, 1)
     save_data(data)
     schedule = calculate_revision_schedule(today_str(), data["settings"]["intervals"])
 
