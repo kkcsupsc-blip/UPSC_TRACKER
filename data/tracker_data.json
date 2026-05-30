@@ -199,6 +199,20 @@
       "hours": 3.0
     }
   ],
-  "subjectCycles": [],
+  "subjectCycles": [
+    {
+      "id": "3d27d84c84cb",
+      "subjectId": "39bccf300b69",
+      "subjectName": "POLITY",
+      "cycle": "R1",
+      "label": "Consolidation",
+      "startDate": "2026-06-14",
+      "endDate": "2026-06-26",
+      "durationDays": 12,
+      "hoursPerDay": 3,
+      "completed": false,
+      "completedAt": null
+    }
+  ],
   "version": 3
 }
