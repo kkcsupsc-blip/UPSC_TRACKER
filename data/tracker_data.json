@@ -1,7 +1,7 @@
 {
   "subjects": [],
   "settings": {
-    "weekdayHours": 5,
+    "weekdayHours": 6,
     "weekendHours": 12,
     "revisionMins": 60,
     "weekendRevHrs": 3,
@@ -9,27 +9,27 @@
       "r1": 1,
       "r3": 5,
       "r7": 14,
-      "r30": 30
+      "r30": 35
     },
     "activityHours": {
-      "R1": 1,
-      "PYQ": 0.5,
-      "ERA": 0.5,
-      "R3": 1,
+      "R1": 1.5,
+      "PYQ": 1.0,
+      "ERA": 1.0,
+      "R3": 1.0,
       "MN": 1.5,
-      "CA": 1,
+      "CA": 1.0,
       "MCQ": 0.5,
       "MCQA": 0.5,
       "R7": 1.5,
-      "MVA": 1,
+      "MVA": 1.0,
       "MAINS": 1.5,
-      "R30": 1.5,
+      "R30": 1.0,
       "sectionalBatch": 12,
-      "subjectRevision": 22
+      "subjectRevision": 24
     },
     "ntfy": {
-      "enabled": true,
-      "topic": "UPSC_2027",
+      "enabled": false,
+      "topic": "",
       "server": "https://ntfy.sh"
     },
     "examDates": {
@@ -39,13 +39,13 @@
   },
   "completedRevisions": {},
   "completedPractice": {},
-  "version": 2,
+  "holidays": [],
   "cumulativeRevisions": {
     "sectionalBatches": [],
     "subjectRevisions": [],
     "pendingTopics": []
   },
-  "holidays": [],
   "studyLogs": [],
-  "subjectCycles": []
+  "subjectCycles": [],
+  "version": 3
 }
