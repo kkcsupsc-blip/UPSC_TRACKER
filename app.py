@@ -389,7 +389,7 @@ def get_next_weekend_day(date_str):
 #
 # All sessions are scheduled on Saturdays (start of weekend) for 2-day blocks.
 
-SECTIONAL_INTERVALS = [0, 21, 56]  # days after previous round
+SECTIONAL_INTERVALS = [0, 21]  # days after previous round (synthesis + gap-check)
 SUBJECT_INTERVALS = [14, 42, 98, 168]  # days after trigger date
 MIN_BATCH_SIZE = 5
 MAX_BATCH_SIZE = 10
@@ -426,44 +426,43 @@ def find_available_weekend(base_date, occupied, max_per_weekend=MAX_CUM_SESSIONS
     return candidate  # fallback
 
 
-def schedule_sectional_batch(batch_creation_date, topics_info, occupied=None):
-    """Create a sectional batch with scientifically spaced weekend sessions.
-    Respects occupied weekends to avoid overloading."""
+def schedule_sectional_batch(batch_creation_date, topics_info, occupied=None, batch_name=""):
+    """Create a sectional batch with 2 spaced weekend sessions.
+
+    Round 1 (Synthesis): Cross-topic integration — see connections, build the big picture.
+    Round 2 (Gap-check): 3 weeks later — identify what you missed, fix weak links.
+
+    Per-topic R7/R30 handles long-term retention, so a 3rd round here is redundant.
+    Respects occupied weekends to avoid overloading.
+    """
     if occupied is None:
         occupied = {}
     sessions = []
-    # Round 1: next available weekend
+    # Round 1: Synthesis — next available weekend
     r1_base = add_days(batch_creation_date, 1)
     r1_date = find_available_weekend(r1_base, occupied)
     occupied[r1_date] = occupied.get(r1_date, 0) + 1
     sessions.append({
         "round": 1,
+        "label": "Synthesis",
         "scheduledDate": r1_date,
         "completed": False,
         "completedAt": None,
     })
-    # Round 2: 3 weeks after round 1
+    # Round 2: Gap-check — 3 weeks after round 1
     r2_base = add_days(r1_date, SECTIONAL_INTERVALS[1])
     r2_date = find_available_weekend(r2_base, occupied)
     occupied[r2_date] = occupied.get(r2_date, 0) + 1
     sessions.append({
         "round": 2,
+        "label": "Gap-check",
         "scheduledDate": r2_date,
-        "completed": False,
-        "completedAt": None,
-    })
-    # Round 3: 8 weeks after round 2
-    r3_base = add_days(r2_date, SECTIONAL_INTERVALS[2])
-    r3_date = find_available_weekend(r3_base, occupied)
-    occupied[r3_date] = occupied.get(r3_date, 0) + 1
-    sessions.append({
-        "round": 3,
-        "scheduledDate": r3_date,
         "completed": False,
         "completedAt": None,
     })
     return {
         "id": gen_id(),
+        "name": batch_name or f"Batch {batch_creation_date}",
         "topicIds": [t["topicId"] for t in topics_info],
         "topicDetails": topics_info,
         "createdAt": batch_creation_date,
@@ -496,61 +495,18 @@ def schedule_subject_revision(subject_id, subject_name, trigger_date, occupied=N
 
 
 def check_and_create_batches(data):
-    """Check if pending pipeline-complete topics can form a sectional batch.
-    Auto-creates batches when >= MIN_BATCH_SIZE topics are pending.
-    Also checks for subject-level revision triggers.
-    Respects weekend capacity limits — max 1 cumulative session per weekend.
+    """Check for subject-level revision triggers when topics reach pipeline-complete.
+
+    Sectional batches are NO LONGER auto-created — the user manually selects
+    which topics to group for cross-topic synthesis.
+    This function only handles subject-level mini/full revision triggers.
+
     Returns True if any changes were made."""
     changed = False
     cum = data["cumulativeRevisions"]
-    pending = cum["pendingTopics"]
 
     # Build a map of already-occupied weekends
     occupied = get_occupied_weekends(data)
-
-    # Auto-batch with subject diversity (max 2 topics per subject per batch)
-    MAX_PER_SUBJECT_PER_BATCH = 2
-    while len(pending) >= MIN_BATCH_SIZE:
-        # Build a diverse batch: prefer at most MAX_PER_SUBJECT_PER_BATCH per subject
-        subject_counts = {}
-        batch_topics = []
-        remaining = []
-        for topic in pending:
-            sid = topic["subjectId"]
-            if (subject_counts.get(sid, 0) < MAX_PER_SUBJECT_PER_BATCH
-                    and len(batch_topics) < MAX_BATCH_SIZE):
-                batch_topics.append(topic)
-                subject_counts[sid] = subject_counts.get(sid, 0) + 1
-            else:
-                remaining.append(topic)
-        if len(batch_topics) < MIN_BATCH_SIZE:
-            # Diversity impossible with current pending — fall back to first-N
-            batch_size = min(len(pending), MAX_BATCH_SIZE)
-            batch_topics = pending[:batch_size]
-            remaining = pending[batch_size:]
-        cum["pendingTopics"] = remaining
-        pending = remaining
-
-        batch = schedule_sectional_batch(today_str(), batch_topics, occupied)
-        cum["sectionalBatches"].append(batch)
-        changed = True
-
-        # Notify
-        topic_names = [t["topicName"] for t in batch_topics]
-        send_ntfy(
-            "Sectional Revision Batch Created!",
-            f"A new batch of {len(batch_topics)} pipeline-complete topics\n"
-            f"is ready for cumulative revision!\n"
-            f"━━━━━━━━━━━━━━━━━━\n"
-            f"Topics: {', '.join(topic_names[:5])}{'...' if len(topic_names) > 5 else ''}\n"
-            f"━━━━━━━━━━━━━━━━━━\n"
-            f"Sessions scheduled for weekends:\n"
-            + '\n'.join(f"  Round {s['round']}: {s['scheduledDate']}" for s in batch["sessions"])
-            + f"\n━━━━━━━━━━━━━━━━━━\n"
-            f"Interleaved cross-topic review!",
-            tags=["brain", "calendar"],
-            priority=4,
-        )
 
     # Check subject-level triggers
     MINI_SUBJECT_TRIGGER_N = 5  # mini revision every N mastered topics per subject
@@ -3392,21 +3348,55 @@ def api_uncomplete_subject_session(subj_id, round_num):
     return jsonify({"ok": True})
 
 
-@app.route("/api/cumulative/force-batch", methods=["POST"])
-def api_force_batch():
-    """Manually create a batch from pending topics (even if < MIN_BATCH_SIZE)."""
+@app.route("/api/cumulative/create-batch", methods=["POST"])
+def api_create_batch():
+    """Create a batch from user-selected topics.
+
+    The user decides which topics to group for cross-topic synthesis.
+    Topics must be in the pending pool (pipeline-complete).
+    Request body: { topicIds: [id1, id2, ...], name?: "optional batch name" }
+    """
+    body = request.get_json(force=True)
+    selected_ids = body.get("topicIds", [])
+    batch_name = body.get("name", "")
+
+    if not selected_ids or len(selected_ids) < 2:
+        return jsonify({"error": "Select at least 2 topics for a batch"}), 400
+
     data = load_data()
     cum = data["cumulativeRevisions"]
     pending = cum["pendingTopics"]
-    if len(pending) == 0:
-        return jsonify({"error": "No pending topics to batch"}), 400
+
+    # Validate all selected topics are in the pending pool
+    pending_ids = {t["topicId"] for t in pending}
+    invalid = [tid for tid in selected_ids if tid not in pending_ids]
+    if invalid:
+        return jsonify({"error": f"{len(invalid)} topic(s) not in pending pool"}), 400
+
+    # Extract selected topics from pending
+    batch_topics = [t for t in pending if t["topicId"] in selected_ids]
+    cum["pendingTopics"] = [t for t in pending if t["topicId"] not in selected_ids]
 
     occupied = get_occupied_weekends(data)
-    batch_topics = pending[:MAX_BATCH_SIZE]
-    cum["pendingTopics"] = pending[len(batch_topics):]
-    batch = schedule_sectional_batch(today_str(), batch_topics, occupied)
+    batch = schedule_sectional_batch(today_str(), batch_topics, occupied, batch_name)
     cum["sectionalBatches"].append(batch)
     save_data(data)
+
+    topic_names = [t["topicName"] for t in batch_topics]
+    send_ntfy(
+        "Revision Batch Created!",
+        f"Custom batch: {batch_name or 'Untitled'}\n"
+        f"━━━━━━━━━━━━━━━━━━\n"
+        f"Topics: {', '.join(topic_names)}\n"
+        f"━━━━━━━━━━━━━━━━━━\n"
+        f"R1 Synthesis: {batch['sessions'][0]['scheduledDate']}\n"
+        f"R2 Gap-check: {batch['sessions'][1]['scheduledDate']}\n"
+        f"━━━━━━━━━━━━━━━━━━\n"
+        f"Cross-topic integration!",
+        tags=["brain", "calendar"],
+        priority=4,
+    )
+
     return jsonify({"ok": True, "batch": batch})
 
 
