@@ -390,7 +390,7 @@ def get_next_weekend_day(date_str):
 # All sessions are scheduled on Saturdays (start of weekend) for 2-day blocks.
 
 SECTIONAL_INTERVALS = [0, 21]  # days after previous round (synthesis + gap-check)
-SUBJECT_INTERVALS = [14, 42, 98, 168]  # days after trigger date
+# SUBJECT_INTERVALS removed — subject revision is now via user-controlled R1-R5 cycles
 MIN_BATCH_SIZE = 5
 MAX_BATCH_SIZE = 10
 MAX_CUM_SESSIONS_PER_WEEKEND = 1  # max cumulative sessions on a single weekend
@@ -495,85 +495,16 @@ def schedule_subject_revision(subject_id, subject_name, trigger_date, occupied=N
 
 
 def check_and_create_batches(data):
-    """Check for subject-level revision triggers when topics reach pipeline-complete.
+    """Legacy hook — called when topics reach pipeline-complete.
 
-    Sectional batches are NO LONGER auto-created — the user manually selects
-    which topics to group for cross-topic synthesis.
-    This function only handles subject-level mini/full revision triggers.
+    Both sectional batches and subject-level revisions are now fully
+    user-controlled:
+    - Sectional batches: user selects topics via /api/cumulative/create-batch
+    - Subject revision: user schedules via Subject Revision Cycles (R1-R5)
 
-    Returns True if any changes were made."""
-    changed = False
-    cum = data["cumulativeRevisions"]
-
-    # Build a map of already-occupied weekends
-    occupied = get_occupied_weekends(data)
-
-    # Check subject-level triggers
-    MINI_SUBJECT_TRIGGER_N = 5  # mini revision every N mastered topics per subject
-
-    for subj in data["subjects"]:
-        mastered_in_subj = [t for t in subj["topics"] if t["status"] == "pipeline-complete"]
-        mastered_count = len(mastered_in_subj)
-        if mastered_count == 0:
-            continue
-
-        existing = [sr for sr in cum["subjectRevisions"] if sr["subjectId"] == subj["id"]]
-        # Treat legacy entries (no "type" field) as "full" for backwards compat
-        existing_mini = [sr for sr in existing if sr.get("type") == "mini"]
-        existing_full = [sr for sr in existing if sr.get("type", "full") == "full"]
-
-        # ── Progressive mini-revision: fire at every N-mastered milestone ──
-        next_milestone = (len(existing_mini) + 1) * MINI_SUBJECT_TRIGGER_N
-        while mastered_count >= next_milestone:
-            sr = schedule_subject_revision(subj["id"], subj["name"], today_str(), occupied)
-            sr["type"] = "mini"
-            sr["milestoneMastered"] = next_milestone
-            cum["subjectRevisions"].append(sr)
-            existing_mini.append(sr)
-            changed = True
-            send_ntfy(
-                f"Mini Subject Revision: {subj['name']} ({next_milestone} pipeline-complete)!",
-                f"{next_milestone} topics pipeline-complete in {subj['name']}.\n"
-                f"Progressive consolidation sessions scheduled:\n"
-                f"━━━━━━━━━━━━━━━━━━\n"
-                + '\n'.join(f"  Round {s['round']}: {s['scheduledDate']}" for s in sr["sessions"])
-                + f"\n━━━━━━━━━━━━━━━━━━\n"
-                f"Keep going — consolidating while you learn!",
-                tags=["books", "calendar"],
-                priority=3,
-                subject_topic=subj.get("ntfyTopic") or None,
-            )
-            next_milestone = (len(existing_mini) + 1) * MINI_SUBJECT_TRIGGER_N
-
-        # ── Full subject revision: fire once when ALL high+med ROI mastered ─
-        if existing_full:
-            continue
-
-        hm_topics = [t for t in subj["topics"] if t.get("roi") in ("very-high", "high", "medium")]
-        if len(hm_topics) == 0:
-            continue
-        all_mastered = all(t["status"] == "pipeline-complete" for t in hm_topics)
-        if all_mastered:
-            sr = schedule_subject_revision(subj["id"], subj["name"], today_str(), occupied)
-            sr["type"] = "full"
-            cum["subjectRevisions"].append(sr)
-            changed = True
-
-            send_ntfy(
-                f"Subject Revision Triggered: {subj['name']}!",
-                f"All VERY HIGH + HIGH + MEDIUM ROI topics in {subj['name']}\n"
-                f"are now PIPELINE COMPLETE!\n"
-                f"━━━━━━━━━━━━━━━━━━\n"
-                f"Full subject revision sessions scheduled:\n"
-                + '\n'.join(f"  Round {s['round']}: {s['scheduledDate']}" for s in sr["sessions"])
-                + f"\n━━━━━━━━━━━━━━━━━━\n"
-                f"Deep consolidation of entire subject!",
-                tags=["trophy", "calendar", "star"],
-                priority=5,
-                subject_topic=subj.get("ntfyTopic") or None,
-            )
-
-    return changed
+    This function only adds the topic to the pending pool (already done by caller).
+    Returns False (no auto-changes)."""
+    return False
 
 
 def reschedule_conflicting_sessions(data):
