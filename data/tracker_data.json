@@ -16,7 +16,7 @@
           "roi": "very-high",
           "examType": "both",
           "notes": "",
-          "status": "completed",
+          "status": "pipeline-complete",
           "startDate": "2026-05-31",
           "completionDate": "2026-05-31",
           "activeStages": null,
@@ -136,14 +136,60 @@
     "7faf202c8f90_R7": {
       "completedAt": 1780168013027,
       "confidence": 2
+    },
+    "7faf202c8f90_R30": {
+      "completedAt": 1780168016244,
+      "confidence": 2
     }
   },
   "completedPractice": {},
   "holidays": [],
   "cumulativeRevisions": {
     "sectionalBatches": [],
-    "subjectRevisions": [],
-    "pendingTopics": []
+    "subjectRevisions": [
+      {
+        "subjectId": "39bccf300b69",
+        "subjectName": "POLITY",
+        "triggeredAt": "2026-05-31",
+        "sessions": [
+          {
+            "round": 1,
+            "scheduledDate": "2026-06-20",
+            "completed": false,
+            "completedAt": null
+          },
+          {
+            "round": 2,
+            "scheduledDate": "2026-07-18",
+            "completed": false,
+            "completedAt": null
+          },
+          {
+            "round": 3,
+            "scheduledDate": "2026-09-12",
+            "completed": false,
+            "completedAt": null
+          },
+          {
+            "round": 4,
+            "scheduledDate": "2026-11-21",
+            "completed": false,
+            "completedAt": null
+          }
+        ],
+        "type": "full"
+      }
+    ],
+    "pendingTopics": [
+      {
+        "topicId": "7faf202c8f90",
+        "topicName": "kISHORE",
+        "subjectId": "39bccf300b69",
+        "subjectName": "POLITY",
+        "roi": "very-high",
+        "masteredAt": "2026-05-31"
+      }
+    ]
   },
   "studyLogs": [
     {
