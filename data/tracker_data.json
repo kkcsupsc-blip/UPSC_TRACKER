@@ -98,6 +98,21 @@
           "links": [],
           "relatedTopicIds": [],
           "createdAt": "2026-05-31"
+        },
+        {
+          "id": "c4797b564000",
+          "name": "Directive Principles of State Policy",
+          "estimatedHours": 6.0,
+          "roi": "very-high",
+          "examType": "both",
+          "notes": "",
+          "status": "not-started",
+          "startDate": null,
+          "completionDate": null,
+          "activeStages": null,
+          "links": [],
+          "relatedTopicIds": [],
+          "createdAt": "2026-05-31"
         }
       ],
       "createdAt": "2026-05-31"
