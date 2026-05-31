@@ -4558,19 +4558,24 @@ def _simulate_learning_for_date(data, target_date, resolved_schedules=None):
             logged = logged_by_topic.get(topic["id"], 0)
             if logged > 0:
                 remaining = max(0, est - logged)
+                # Logged hours already represent past days' study — start
+                # the simulation from today so past days don't re-consume
+                # the remaining budget and zero it out before reaching today.
+                sim_start = today
             else:
                 days_elapsed = max(0, day_diff(start, today))
                 remaining = max(0, est - days_elapsed * 2.5)
+                sim_start = start
             learning_items.append({
                 "topicId": topic["id"],
                 "topicName": topic["name"],
                 "subjectName": subj["name"],
                 "subjectId": subj["id"],
-                "start": start,
+                "start": sim_start,
                 "remaining": remaining,
             })
-            if earliest_start is None or start < earliest_start:
-                earliest_start = start
+            if earliest_start is None or sim_start < earliest_start:
+                earliest_start = sim_start
 
     if not learning_items or earliest_start > target_date:
         return {}
@@ -4612,6 +4617,33 @@ def _simulate_learning_for_date(data, target_date, resolved_schedules=None):
                     }
 
         current = add_days(current, 1)
+
+    # When computing for today: replace simulated allocations with ACTUAL
+    # logged hours for that day. This ensures the budget bar reflects real
+    # hours spent, not the shrinking "remaining" estimate. Without this,
+    # every log entry reduces remaining → simulation allocates less → bar
+    # appears to drop each time you log.
+    if target_date == today:
+        today_logs_by_topic = {}
+        for log in data.get("studyLogs", []):
+            if log["date"] == target_date:
+                tid = log["topicId"]
+                today_logs_by_topic[tid] = today_logs_by_topic.get(tid, 0) + log["hours"]
+        for subj in data["subjects"]:
+            for topic in subj["topics"]:
+                if topic["status"] != "learning":
+                    continue
+                tid = topic["id"]
+                if tid in today_logs_by_topic:
+                    total_logged = logged_by_topic.get(tid, 0)
+                    allocations[tid] = {
+                        "hours": round(today_logs_by_topic[tid], 1),
+                        "topicId": tid,
+                        "topicName": topic["name"],
+                        "subjectName": subj["name"],
+                        "subjectId": subj["id"],
+                        "remaining": round(max(0, topic.get("estimatedHours", 7.5) - total_logged), 1),
+                    }
 
     return allocations
 
@@ -4924,6 +4956,31 @@ def estimate_all_timelines(data):
                 1 for tp in topic_stages
                 if f"{t['id']}_{tp}" in data["completedRevisions"]
             )
+            # If estimated remaining hours is already 0 (started long enough ago
+            # without logs), treat as completing today so the revision pipeline is
+            # scheduled correctly instead of falling into the 400-day fallback.
+            if remaining_hrs <= 0:
+                schedule = calculate_revision_schedule_dynamic(
+                    today, intervals, act_hrs,
+                    daily_used, weekday_budget, weekend_budget,
+                    holidays=holidays,
+                    estimated_hours=t.get("estimatedHours", 5.0),
+                )
+                estimates[t["id"]] = {
+                    "topicName": t["name"],
+                    "subjectName": t["subjectName"],
+                    "subjectColor": t["subjectColor"],
+                    "roi": t["roi"],
+                    "startDate": start,
+                    "completionDate": today,
+                    "masteryDate": schedule["r30"]["date"],
+                    "revisionSchedule": {k: v["date"] for k, v in schedule.items()},
+                    "doneRevisions": done_count,
+                    "status": "learning",
+                    "isEstimate": True,
+                    "queuePosition": 0,
+                }
+                continue
             active_learning.append({
                 "id": t["id"], "name": t["name"],
                 "subjectId": t["subjectId"], "subjectName": t["subjectName"],
@@ -5992,6 +6049,12 @@ def api_reset_topic(subj_id, topic_id):
     keys_to_remove = [k for k in data["completedRevisions"] if k.startswith(topic_id)]
     for k in keys_to_remove:
         del data["completedRevisions"][k]
+    # Clear study logs for this topic so logged hours don't persist across resets
+    data["studyLogs"] = [l for l in data.get("studyLogs", []) if l["topicId"] != topic_id]
+    # Also remove from completedPractice if present
+    keys_to_remove_p = [k for k in data.get("completedPractice", {}) if k.startswith(topic_id)]
+    for k in keys_to_remove_p:
+        del data["completedPractice"][k]
     save_data(data)
 
     send_ntfy(
@@ -7302,6 +7365,12 @@ def api_schedule_subject_cycle():
     if not config:
         return jsonify({"error": "Invalid cycle"}), 400
 
+    # Allow caller to override defaults
+    duration_days = int(body.get("durationDays", config["durationDays"]))
+    hours_per_day = float(body.get("hoursPerDay", config["hoursPerDay"]))
+    duration_days = max(1, min(duration_days, 60))
+    hours_per_day = max(0.5, min(hours_per_day, 12))
+
     entry = {
         "id": gen_id(),
         "subjectId": subj_id,
@@ -7309,9 +7378,9 @@ def api_schedule_subject_cycle():
         "cycle": cycle,
         "label": config["label"],
         "startDate": start_date,
-        "endDate": add_days(start_date, config["durationDays"]),
-        "durationDays": config["durationDays"],
-        "hoursPerDay": config["hoursPerDay"],
+        "endDate": add_days(start_date, duration_days),
+        "durationDays": duration_days,
+        "hoursPerDay": hours_per_day,
         "completed": False,
         "completedAt": None,
     }

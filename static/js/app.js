@@ -270,8 +270,8 @@ async function startLearning(subjId, topicId) {
 
 async function completeLearning(subjId, topicId) {
   const result = await api(`/api/subjects/${subjId}/topics/${topicId}/complete`, 'POST');
-  showToast(`"${result.topic.name}" completed! Revision schedule created.`);
-  showTopicDetail(subjId, topicId);
+  showToast(`✅ "${result.topic.name}" completed! Revision schedule created.`, 'success');
+  renderToday();
   renderPage('subjects');
 }
 
@@ -1953,15 +1953,21 @@ async function renderSubjectCycles() {
           </div>
         </div>`;
       } else {
+        const inputId = `sched-${ss.subjectId}-${cyc}`;
         html += `<div class="timeline-node pending">
-          <div style="display:flex; justify-content:space-between; align-items:center;">
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
             <div>
               <div style="font-size:13px; font-weight:600; color:var(--text3);">${cyc} — ${cfg.label || cyc}</div>
-              <div style="font-size:11px; color:var(--text3);">${cfg.durationDays || '?'}d · ${cfg.hoursPerDay || '?'}h/day${suggestion ? ` · Suggested: ${formatDate(suggestion)}` : ''}</div>
+              <div style="font-size:11px; color:var(--text3);">Default: ${cfg.durationDays || '?'}d · ${cfg.hoursPerDay || '?'}h/day${suggestion ? ` · Suggested start: ${formatDate(suggestion)}` : ''}</div>
             </div>
-            <div>
+            <div style="display:flex; gap:4px; align-items:center; flex-wrap:wrap;">
+              <input type="date" id="${inputId}-date" value="${suggestion || ''}" class="form-input" style="width:130px; font-size:11px; padding:3px 6px;">
+              <input type="number" id="${inputId}-days" value="${cfg.durationDays || 7}" min="1" max="60" class="form-input" style="width:52px; font-size:11px; padding:3px 4px; text-align:center;" title="Duration (days)">
+              <span style="font-size:11px; color:var(--text3);">d</span>
+              <input type="number" id="${inputId}-hrs" value="${cfg.hoursPerDay || 3}" min="0.5" max="12" step="0.5" class="form-input" style="width:48px; font-size:11px; padding:3px 4px; text-align:center;" title="Hours per day">
+              <span style="font-size:11px; color:var(--text3);">h/d</span>
               ${suggestion
-                ? `<button class="btn btn-sm btn-primary" onclick="scheduleSubjectCycle('${ss.subjectId}','${cyc}','${suggestion}')">Schedule</button>`
+                ? `<button class="btn btn-sm btn-primary" onclick="scheduleSubjectCycle('${ss.subjectId}','${cyc}','${inputId}')">Schedule</button>`
                 : `<button class="btn btn-sm" disabled style="opacity:0.4;">Not ready</button>`
               }
             </div>
@@ -1976,11 +1982,13 @@ async function renderSubjectCycles() {
   container.innerHTML = html;
 }
 
-async function scheduleSubjectCycle(subjectId, cycle, suggestedDate) {
-  const startDate = prompt(`Schedule ${cycle} starting from:`, suggestedDate);
-  if (!startDate) return;
-  await api('/api/subject-cycles', 'POST', { subjectId, cycle, startDate });
-  showToast(`${cycle} cycle scheduled!`);
+async function scheduleSubjectCycle(subjectId, cycle, inputId) {
+  const startDate = document.getElementById(`${inputId}-date`)?.value;
+  const durationDays = parseInt(document.getElementById(`${inputId}-days`)?.value) || null;
+  const hoursPerDay = parseFloat(document.getElementById(`${inputId}-hrs`)?.value) || null;
+  if (!startDate) { showToast('Pick a start date', 'warning'); return; }
+  await api('/api/subject-cycles', 'POST', { subjectId, cycle, startDate, durationDays, hoursPerDay });
+  showToast(`${cycle} cycle scheduled! (${durationDays}d · ${hoursPerDay}h/day)`, 'success');
   renderCumulative();
   renderSubjectCycles();
 }
