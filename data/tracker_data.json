@@ -32,6 +32,17 @@
       "defaultStages": null,
       "topics": [],
       "createdAt": "2026-05-31"
+    },
+    {
+      "id": "409c681dfa12",
+      "name": "PHYSICAL GEOGRAPHY",
+      "roi": "very-high",
+      "color": "#ec4899",
+      "ntfyTopic": "",
+      "notes": "",
+      "defaultStages": null,
+      "topics": [],
+      "createdAt": "2026-05-31"
     }
   ],
   "settings": {
