@@ -256,6 +256,7 @@ def load_data():
         cum = data.get("cumulativeRevisions", {})
         if cum.get("subjectRevisions"):
             cum["subjectRevisions"] = []
+            save_data(data)  # persist cleanup so old sessions don't block budget
         for subj in data.get("subjects", []):
             if "defaultStages" not in subj:
                 subj["defaultStages"] = None
@@ -811,14 +812,7 @@ def _simulate_learning_for_date(data, target_date, resolved_schedules=None):
             batch_day_hrs = act_hrs.get("sectionalBatch", 12) / 2
             for d in (sat, add_days(sat, 1)):
                 non_learn_map[d] = non_learn_map.get(d, 0) + batch_day_hrs
-    for sr in cum.get("subjectRevisions", []):
-        for sess in sr["sessions"]:
-            if sess["completed"]:
-                continue
-            sat = sess["scheduledDate"]
-            subj_day_hrs = act_hrs.get("subjectRevision", 24) / 4
-            for d in (sat, add_days(sat, 1), add_days(sat, 7), add_days(sat, 8)):
-                non_learn_map[d] = non_learn_map.get(d, 0) + subj_day_hrs
+    # Old subject revisions removed from budget — replaced by R1-R5 cycles
 
     # --- Collect learning topics ----------------------------------------
     # Pre-compute logged hours per topic from study logs
@@ -999,25 +993,7 @@ def compute_daily_load(data, date_str, include_overdue=False, resolved_schedules
                     "priority": ACTIVITY_PRIORITY["cumulative_sectional"],
                 })
 
-    for sr in cum.get("subjectRevisions", []):
-        for sess in sr["sessions"]:
-            if sess["completed"]:
-                continue
-            sat = sess["scheduledDate"]
-            sun = add_days(sat, 1)
-            subj_day_hrs = act_hrs.get("subjectRevision", 24) / 4
-            sat2 = add_days(sat, 7)
-            sun2 = add_days(sat, 8)
-            if date_str in (sat, sun, sat2, sun2):
-                pending_demands.append({
-                    "category": "cumulative_subject",
-                    "subjectId": sr["subjectId"],
-                    "subjectName": sr["subjectName"],
-                    "round": sess["round"],
-                    "hours": subj_day_hrs,
-                    "done": False,
-                    "priority": ACTIVITY_PRIORITY["cumulative_subject"],
-                })
+    # Old subject revisions removed from daily load — replaced by R1-R5 cycles below
 
     # ── 4. Subject revision cycles ──────────────────────────────────────
     for cycle in data.get("subjectCycles", []):
@@ -1185,14 +1161,8 @@ def estimate_all_timelines(data):
                 per_day = act_hrs.get("sectionalBatch", 12) / 2
                 daily_used[sat] = daily_used.get(sat, 0) + per_day
                 daily_used[sun] = daily_used.get(sun, 0) + per_day
-    for sr in cum.get("subjectRevisions", []):
-        for sess in sr["sessions"]:
-            if not sess["completed"]:
-                sat = sess["scheduledDate"]
-                sun = add_days(sat, 1)
-                per_day = act_hrs.get("subjectRevision", 24) / 4
-                for d in [sat, sun, add_days(sat, 7), add_days(sat, 8)]:
-                    daily_used[d] = daily_used.get(d, 0) + per_day
+    # Old subject revisions removed — no longer consume budget
+    # Subject revision is now via user-controlled R1-R5 cycles (loaded below)
 
     # Add subject cycle loads to daily_used
     for cycle in data.get("subjectCycles", []):
