@@ -1905,7 +1905,18 @@ async function renderSubjectCycles() {
 
   const cycleOrder = ['R1','R2','R3','R4','R5'];
   const configs = data.configs || {};
+  const seq = data.sequencing || {};
   let html = '';
+
+  // Sequencing warning if R3 blocks overflow into R4 window
+  if (seq.r3Overflow) {
+    html += `<div style="padding:10px 14px; margin-bottom:12px; background:rgba(239,68,68,0.1); border-left:3px solid var(--red); border-radius:6px; font-size:12px;">
+      <strong style="color:var(--red);">R3 OVERFLOW:</strong> Not enough days to fit all subjects' R3 before R4 starts. Consider reducing R3 duration in some subjects or starting earlier.
+    </div>`;
+  }
+  if (seq.bufferDays) {
+    html += `<div style="font-size:11px; color:var(--text3); margin-bottom:12px;">R3→R5 auto-sequenced across subjects (one at a time, no overlap). Last ${seq.bufferDays} days before Prelims are your personal buffer.</div>`;
+  }
 
   statuses.forEach(ss => {
     const cycleMap = {};

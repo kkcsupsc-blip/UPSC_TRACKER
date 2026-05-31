@@ -3493,19 +3493,13 @@ def api_get_subject_cycles():
         subj_cycles = [c for c in cycles if c["subjectId"] == sid]
         cycle_map = {c["cycle"]: c for c in subj_cycles}
 
-        # Suggested dates
+        # Suggested dates for R1/R2 (forward-scheduled, per-subject)
         suggestions = {}
         if last_completed and learned == total and total > 0:
             suggestions["R1"] = add_days(last_completed, 14)
         r1c = cycle_map.get("R1")
         if r1c and r1c.get("endDate"):
             suggestions["R2"] = add_days(r1c["endDate"], 28)
-
-        prelims = exam_dates.get("prelims", "")
-        if prelims:
-            suggestions["R3"] = add_days(prelims, -56)
-            suggestions["R4"] = add_days(prelims, -21)
-            suggestions["R5"] = add_days(prelims, -3)
 
         subject_status[sid] = {
             "subjectId": sid, "subjectName": subj["name"], "color": subj["color"],
@@ -3515,10 +3509,68 @@ def api_get_subject_cycles():
             "suggestions": suggestions,
         }
 
+    # R3-R5 auto-sequencing: lay out subjects sequentially in the pre-exam window
+    # Subjects sorted by ROI priority (very-high first) then alphabetical
+    prelims = exam_dates.get("prelims", "")
+    buffer_days = data["settings"].get("examBufferDays", 10)
+    if prelims:
+        roi_order = {"very-high": 0, "high": 1, "medium": 2, "low": 3}
+        subject_order = sorted(
+            subject_status.keys(),
+            key=lambda sid: (roi_order.get(
+                next((s.get("roi", "medium") for s in data["subjects"] if s["id"] == sid), "medium"), 2),
+                subject_status[sid]["subjectName"]),
+        )
+
+        # R3 window: prelims - 56 days, each subject gets sequential blocks
+        r3_cursor = add_days(prelims, -56)
+        r3_deadline = add_days(prelims, -21)  # must finish R3 before R4 starts
+        for sid in subject_order:
+            if sid in subject_status:
+                existing_r3 = next((c for c in subject_status[sid]["cycles"] if c["cycle"] == "R3"), None)
+                if not existing_r3:
+                    subject_status[sid]["suggestions"]["R3"] = r3_cursor
+                    r3_cursor = add_days(r3_cursor, SUBJECT_CYCLE_CONFIGS["R3"]["durationDays"])
+                else:
+                    # Already scheduled — skip past it
+                    r3_cursor = max(r3_cursor, existing_r3.get("endDate", r3_cursor))
+
+        # R4 window: prelims - 21 days, sequential blocks
+        r4_cursor = add_days(prelims, -21)
+        r4_deadline = add_days(prelims, -buffer_days - 2)  # leave room for R5 + buffer
+        for sid in subject_order:
+            if sid in subject_status:
+                existing_r4 = next((c for c in subject_status[sid]["cycles"] if c["cycle"] == "R4"), None)
+                if not existing_r4:
+                    subject_status[sid]["suggestions"]["R4"] = r4_cursor
+                    r4_cursor = add_days(r4_cursor, SUBJECT_CYCLE_CONFIGS["R4"]["durationDays"])
+                else:
+                    r4_cursor = max(r4_cursor, existing_r4.get("endDate", r4_cursor))
+
+        # R5 window: work backward from prelims - buffer, sequential blocks
+        num_subjects = len(subject_order)
+        r5_total_days = num_subjects * SUBJECT_CYCLE_CONFIGS["R5"]["durationDays"]
+        r5_cursor = add_days(prelims, -buffer_days - r5_total_days)
+        for sid in subject_order:
+            if sid in subject_status:
+                existing_r5 = next((c for c in subject_status[sid]["cycles"] if c["cycle"] == "R5"), None)
+                if not existing_r5:
+                    subject_status[sid]["suggestions"]["R5"] = r5_cursor
+                    r5_cursor = add_days(r5_cursor, SUBJECT_CYCLE_CONFIGS["R5"]["durationDays"])
+                else:
+                    r5_cursor = max(r5_cursor, existing_r5.get("endDate", r5_cursor))
+
+        # Feasibility: does R3 overflow into R4 window?
+        r3_overflow = r3_cursor > r3_deadline if r3_cursor else False
+
     return jsonify({
         "cycles": cycles,
         "subjectStatus": subject_status,
         "configs": SUBJECT_CYCLE_CONFIGS,
+        "sequencing": {
+            "r3Overflow": r3_overflow if prelims else False,
+            "bufferDays": buffer_days,
+        } if prelims else {},
     })
 
 
