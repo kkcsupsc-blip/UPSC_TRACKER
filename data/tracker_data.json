@@ -1,60 +1,5 @@
 {
-  "subjects": [
-    {
-      "id": "826b91d76078",
-      "name": "POLITY",
-      "roi": "very-high",
-      "color": "#22c55e",
-      "ntfyTopic": "",
-      "notes": "",
-      "defaultStages": null,
-      "topics": [
-        {
-          "id": "d627cdc2563d",
-          "name": "KISHORE",
-          "estimatedHours": 3.0,
-          "roi": "very-high",
-          "examType": "both",
-          "notes": "",
-          "status": "learning",
-          "startDate": "2026-05-31",
-          "completionDate": null,
-          "activeStages": null,
-          "links": [],
-          "relatedTopicIds": [],
-          "createdAt": "2026-05-31"
-        }
-      ],
-      "createdAt": "2026-05-31"
-    },
-    {
-      "id": "a9c5384c0c84",
-      "name": "ECONOMY",
-      "roi": "very-high",
-      "color": "#06b6d4",
-      "ntfyTopic": "",
-      "notes": "",
-      "defaultStages": null,
-      "topics": [
-        {
-          "id": "5f371867ca87",
-          "name": "MONEY",
-          "estimatedHours": 3.0,
-          "roi": "very-high",
-          "examType": "both",
-          "notes": "",
-          "status": "learning",
-          "startDate": "2026-05-31",
-          "completionDate": null,
-          "activeStages": null,
-          "links": [],
-          "relatedTopicIds": [],
-          "createdAt": "2026-05-31"
-        }
-      ],
-      "createdAt": "2026-05-31"
-    }
-  ],
+  "subjects": [],
   "settings": {
     "weekdayHours": 6,
     "weekendHours": 12,
@@ -68,16 +13,16 @@
     },
     "activityHours": {
       "R1": 1.5,
-      "PYQ": 1,
-      "ERA": 1,
-      "R3": 1,
+      "PYQ": 1.0,
+      "ERA": 1.0,
+      "R3": 1.0,
       "MN": 1.5,
       "MCQ": 0.5,
       "MCQA": 0.5,
       "R7": 1.5,
-      "MVA": 1,
+      "MVA": 1.0,
       "MAINS": 1.5,
-      "R30": 1,
+      "R30": 1.0,
       "sectionalBatch": 12,
       "subjectRevision": 24
     },
@@ -87,8 +32,8 @@
       "server": "https://ntfy.sh"
     },
     "examDates": {
-      "prelims": "2027-05-23",
-      "mains": "2027-08-20"
+      "prelims": "",
+      "mains": ""
     },
     "examBufferDays": 10
   },
@@ -100,38 +45,7 @@
     "subjectRevisions": [],
     "pendingTopics": []
   },
-  "studyLogs": [
-    {
-      "id": "99dfbd2e1542",
-      "topicId": "d627cdc2563d",
-      "date": "2026-05-31",
-      "hours": 2.5
-    },
-    {
-      "id": "adc5bbbc989e",
-      "topicId": "5f371867ca87",
-      "date": "2026-05-31",
-      "hours": 2.0
-    },
-    {
-      "id": "dba9d050e83e",
-      "topicId": "d627cdc2563d",
-      "date": "2026-05-31",
-      "hours": 2.0
-    },
-    {
-      "id": "82b2636b5992",
-      "topicId": "d627cdc2563d",
-      "date": "2026-05-31",
-      "hours": 2.0
-    },
-    {
-      "id": "d5605bdc0d0b",
-      "topicId": "5f371867ca87",
-      "date": "2026-05-31",
-      "hours": 2.0
-    }
-  ],
+  "studyLogs": [],
   "subjectCycles": [],
   "version": 3
 }
