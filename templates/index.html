@@ -368,6 +368,12 @@
             <input type="date" class="form-input" id="set-exam-mains">
           </div>
         </div>
+        <div class="form-row" style="margin-top:8px;">
+          <div class="form-group">
+            <label class="form-label">Pre-Exam Buffer (days) <span style="font-weight:400; text-transform:none; font-size:10px; color:var(--text3);">nothing scheduled in last N days</span></label>
+            <input type="number" class="form-input" id="set-exam-buffer" value="10" min="0" max="30" step="1">
+          </div>
+        </div>
         <button class="btn btn-primary" onclick="saveSettings()" style="margin-top: 8px;">Save Exam Dates</button>
       </div>
 

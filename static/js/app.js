@@ -640,7 +640,8 @@ async function logStudyHours(topicId, hours) {
   if (!h || h <= 0) { showToast('Enter valid hours', 'warning'); return; }
   await api('/api/study-logs', 'POST', { topicId, hours: h });
   showToast(`Logged ${h}h!`, 'success');
-  renderPage(document.querySelector('.nav-item.active')?.dataset?.page || 'today');
+  // Re-render today page to update time budget live
+  renderToday();
 }
 
 // ===== RENDER HELPERS =====
@@ -1549,10 +1550,11 @@ async function renderSettings() {
   document.getElementById('set-act-sectional').value = ah.sectionalBatch || 12;
   document.getElementById('set-act-subject').value = ah.subjectRevision || 24;
 
-  // Exam dates
+  // Exam dates + buffer
   const examDates = s.examDates || {};
   document.getElementById('set-exam-prelims').value = examDates.prelims || '';
   document.getElementById('set-exam-mains').value = examDates.mains || '';
+  document.getElementById('set-exam-buffer').value = s.examBufferDays || 10;
 
   // ntfy settings
   const ntfy = s.ntfy || {};
@@ -1615,6 +1617,7 @@ async function saveSettings() {
       prelims: document.getElementById('set-exam-prelims').value || '',
       mains: document.getElementById('set-exam-mains').value || '',
     },
+    examBufferDays: parseInt(document.getElementById('set-exam-buffer').value) || 10,
   };
   await api('/api/settings', 'PUT', settings);
   showToast('Settings saved!');

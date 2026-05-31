@@ -167,6 +167,7 @@ def default_data():
                 "prelims": "",
                 "mains": "",
             },
+            "examBufferDays": 10,  # personal prep time — nothing scheduled in last N days before exam
         },
         "completedRevisions": {},
         "completedPractice": {},
@@ -245,6 +246,8 @@ def load_data():
         # v3 migration: examDates, studyLogs, subjectCycles, per-topic/subject fields
         if "examDates" not in data["settings"]:
             data["settings"]["examDates"] = {"prelims": "", "mains": ""}
+        if "examBufferDays" not in data["settings"]:
+            data["settings"]["examBufferDays"] = 10
         if "studyLogs" not in data:
             data["studyLogs"] = []
         if "subjectCycles" not in data:
@@ -2620,52 +2623,46 @@ def api_dashboard():
         exam_info["milestones"]["r4Window"] = add_days(prelims, -21)
         exam_info["milestones"]["r5Window"] = add_days(prelims, -3)
 
-    # Feasibility check: compare timeline projections against exam dates
-    exam_info["feasibility"] = {"status": "ok", "warnings": []}
-    if prelims or exam_dates.get("mains", ""):
+    # Feasibility check: compare MASTERY dates (R30) against exam dates
+    # Only meaningful with enough topics to be a real signal
+    EXAM_BUFFER_DAYS = data["settings"].get("examBufferDays", 10)
+    exam_info["feasibility"] = {"status": "ok", "warnings": [], "bufferDays": EXAM_BUFFER_DAYS}
+    if prelims:
         try:
             tl = estimate_all_timelines(data)
             estimates = tl.get("estimates", {})
-            # Check each topic's projected dates against exam
-            topics_past_prelims = []
-            topics_past_mains = []
-            overall_finish = tl.get("summary", {}).get("overallFinishDate")
+            total_estimated = sum(1 for e in estimates.values() if e.get("isEstimate"))
+
+            # Effective deadline = Prelims minus buffer
+            effective_deadline = add_days(prelims, -EXAM_BUFFER_DAYS)
+
+            # Check which topics' MASTERY (R30) won't complete before deadline
+            topics_past = []
             for tid, est in estimates.items():
                 mastery = est.get("masteryDate")
-                completion = est.get("completionDate")
-                name = est.get("topicName", "Unknown")
-                subj = est.get("subjectName", "")
-                # Check if learning won't complete before prelims
-                if prelims and completion and est.get("isEstimate"):
-                    if completion > prelims:
-                        topics_past_prelims.append(f"{subj}: {name}")
-            if topics_past_prelims:
+                if mastery and est.get("isEstimate") and mastery > effective_deadline:
+                    name = est.get("topicName", "Unknown")
+                    subj = est.get("subjectName", "")
+                    topics_past.append(f"{subj}: {name}")
+
+            if topics_past:
                 exam_info["feasibility"]["status"] = "behind"
                 exam_info["feasibility"]["warnings"].append({
-                    "type": "learning_overflow",
-                    "message": f"{len(topics_past_prelims)} topic(s) won't complete learning before Prelims",
-                    "topics": topics_past_prelims[:10],  # cap at 10 for display
+                    "type": "mastery_overflow",
+                    "message": f"{len(topics_past)} topic(s) won't complete full pipeline before Prelims (incl. {EXAM_BUFFER_DAYS}d buffer)",
+                    "topics": topics_past[:10],
                 })
-            if prelims and overall_finish and overall_finish > prelims:
-                prelims_gap = day_diff(prelims, overall_finish)
+
+            # Overall: does the last topic's R30 finish after the effective deadline?
+            overall_finish = tl.get("summary", {}).get("overallFinishDate")
+            if overall_finish and overall_finish > effective_deadline:
+                gap = day_diff(effective_deadline, overall_finish)
                 exam_info["feasibility"]["status"] = "behind"
                 exam_info["feasibility"]["warnings"].append({
                     "type": "overall_behind",
-                    "message": f"Full pipeline finishes {prelims_gap} days AFTER Prelims",
+                    "message": f"Full pipeline finishes {gap} days past your prep deadline ({EXAM_BUFFER_DAYS}d before Prelims)",
                     "finishDate": overall_finish,
                 })
-            # Subject-level: which subjects have not-started topics
-            subj_behind = {}
-            for tid, est in estimates.items():
-                if est.get("status") == "not-started" and est.get("isEstimate"):
-                    sn = est.get("subjectName", "Unknown")
-                    subj_behind[sn] = subj_behind.get(sn, 0) + 1
-            if subj_behind:
-                for sn, count in subj_behind.items():
-                    exam_info["feasibility"]["warnings"].append({
-                        "type": "subject_backlog",
-                        "message": f"{sn}: {count} topic(s) not yet started",
-                    })
         except Exception:
             pass
 
