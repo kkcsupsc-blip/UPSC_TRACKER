@@ -8,7 +8,23 @@
       "ntfyTopic": "",
       "notes": "",
       "defaultStages": null,
-      "topics": [],
+      "topics": [
+        {
+          "id": "2a797dcd1940",
+          "name": "Historical Background of the Constitution",
+          "estimatedHours": 3.0,
+          "roi": "high",
+          "examType": "prelims",
+          "notes": "",
+          "status": "not-started",
+          "startDate": null,
+          "completionDate": null,
+          "activeStages": null,
+          "links": [],
+          "relatedTopicIds": [],
+          "createdAt": "2026-05-31"
+        }
+      ],
       "createdAt": "2026-05-31"
     },
     {
