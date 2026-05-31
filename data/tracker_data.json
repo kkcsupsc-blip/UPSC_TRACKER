@@ -68,6 +68,21 @@
           "links": [],
           "relatedTopicIds": [],
           "createdAt": "2026-05-31"
+        },
+        {
+          "id": "ed66e5c6e108",
+          "name": "Citizenship",
+          "estimatedHours": 3.0,
+          "roi": "high",
+          "examType": "both",
+          "notes": "",
+          "status": "not-started",
+          "startDate": null,
+          "completionDate": null,
+          "activeStages": null,
+          "links": [],
+          "relatedTopicIds": [],
+          "createdAt": "2026-05-31"
         }
       ],
       "createdAt": "2026-05-31"
