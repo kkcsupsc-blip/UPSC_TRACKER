@@ -113,6 +113,21 @@
           "links": [],
           "relatedTopicIds": [],
           "createdAt": "2026-05-31"
+        },
+        {
+          "id": "48e9c5735991",
+          "name": "Fundamental Duties",
+          "estimatedHours": 2.0,
+          "roi": "medium",
+          "examType": "mains",
+          "notes": "",
+          "status": "not-started",
+          "startDate": null,
+          "completionDate": null,
+          "activeStages": null,
+          "links": [],
+          "relatedTopicIds": [],
+          "createdAt": "2026-05-31"
         }
       ],
       "createdAt": "2026-05-31"
