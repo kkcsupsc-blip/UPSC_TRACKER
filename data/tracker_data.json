@@ -54,6 +54,17 @@
       "defaultStages": null,
       "topics": [],
       "createdAt": "2026-05-31"
+    },
+    {
+      "id": "ee72b2173586",
+      "name": "POLITY",
+      "roi": "very-high",
+      "color": "#22c55e",
+      "ntfyTopic": "",
+      "notes": "",
+      "defaultStages": null,
+      "topics": [],
+      "createdAt": "2026-05-31"
     }
   ],
   "settings": {
