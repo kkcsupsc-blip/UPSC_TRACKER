@@ -1,33 +1,6 @@
 {
   "subjects": [
     {
-      "id": "a81814afc64c",
-      "name": "POLITY",
-      "roi": "very-high",
-      "color": "#6366f1",
-      "ntfyTopic": "",
-      "notes": "",
-      "defaultStages": null,
-      "topics": [
-        {
-          "id": "82e58811a87d",
-          "name": "Parliament",
-          "estimatedHours": 5.5,
-          "roi": "very-high",
-          "examType": "both",
-          "notes": "",
-          "status": "learning",
-          "startDate": "2026-05-31",
-          "completionDate": null,
-          "activeStages": null,
-          "links": [],
-          "relatedTopicIds": [],
-          "createdAt": "2026-05-31"
-        }
-      ],
-      "createdAt": "2026-05-31"
-    },
-    {
       "id": "69a68f0a2c36",
       "name": "economy",
       "roi": "very-high",
