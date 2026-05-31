@@ -43,6 +43,17 @@
       "defaultStages": null,
       "topics": [],
       "createdAt": "2026-05-31"
+    },
+    {
+      "id": "fbf047ed27b9",
+      "name": "INDIAN GEOGRAPHY",
+      "roi": "very-high",
+      "color": "#ef4444",
+      "ntfyTopic": "",
+      "notes": "",
+      "defaultStages": null,
+      "topics": [],
+      "createdAt": "2026-05-31"
     }
   ],
   "settings": {
