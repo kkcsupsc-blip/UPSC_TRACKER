@@ -89,7 +89,8 @@
     "examDates": {
       "prelims": "2027-05-23",
       "mains": "2027-08-20"
-    }
+    },
+    "examBufferDays": 10
   },
   "completedRevisions": {},
   "completedPractice": {},
