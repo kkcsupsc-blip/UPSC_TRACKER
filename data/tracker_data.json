@@ -94,7 +94,11 @@
           "status": "completed",
           "startDate": "2026-05-31",
           "completionDate": "2026-05-31",
-          "activeStages": null,
+          "activeStages": [
+            "R1",
+            "R7",
+            "R30"
+          ],
           "links": [],
           "relatedTopicIds": [],
           "createdAt": "2026-05-31"
