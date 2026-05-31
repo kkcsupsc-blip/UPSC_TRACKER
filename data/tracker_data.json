@@ -54,6 +54,17 @@
       "defaultStages": null,
       "topics": [],
       "createdAt": "2026-05-31"
+    },
+    {
+      "id": "b7f58540ef81",
+      "name": "WORLD GEOGRAPHY",
+      "roi": "very-high",
+      "color": "#eab308",
+      "ntfyTopic": "",
+      "notes": "",
+      "defaultStages": null,
+      "topics": [],
+      "createdAt": "2026-05-31"
     }
   ],
   "settings": {
