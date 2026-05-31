@@ -26,6 +26,17 @@
         }
       ],
       "createdAt": "2026-05-31"
+    },
+    {
+      "id": "69a68f0a2c36",
+      "name": "economy",
+      "roi": "very-high",
+      "color": "#6366f1",
+      "ntfyTopic": "",
+      "notes": "",
+      "defaultStages": null,
+      "topics": [],
+      "createdAt": "2026-05-31"
     }
   ],
   "settings": {
