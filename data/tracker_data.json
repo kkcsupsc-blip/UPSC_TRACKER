@@ -35,7 +35,23 @@
       "ntfyTopic": "",
       "notes": "",
       "defaultStages": null,
-      "topics": [],
+      "topics": [
+        {
+          "id": "5f371867ca87",
+          "name": "MONEY",
+          "estimatedHours": 3.0,
+          "roi": "very-high",
+          "examType": "both",
+          "notes": "",
+          "status": "not-started",
+          "startDate": null,
+          "completionDate": null,
+          "activeStages": null,
+          "links": [],
+          "relatedTopicIds": [],
+          "createdAt": "2026-05-31"
+        }
+      ],
       "createdAt": "2026-05-31"
     }
   ],
