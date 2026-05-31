@@ -21,6 +21,17 @@
       "defaultStages": null,
       "topics": [],
       "createdAt": "2026-05-31"
+    },
+    {
+      "id": "662d8de81830",
+      "name": "ENVIRONMENT AND ECOLOGY",
+      "roi": "very-high",
+      "color": "#f97316",
+      "ntfyTopic": "",
+      "notes": "",
+      "defaultStages": null,
+      "topics": [],
+      "createdAt": "2026-05-31"
     }
   ],
   "settings": {
