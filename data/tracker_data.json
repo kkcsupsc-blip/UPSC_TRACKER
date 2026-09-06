@@ -8,7 +8,23 @@
       "ntfyTopic": "",
       "notes": "",
       "defaultStages": null,
-      "topics": [],
+      "topics": [
+        {
+          "id": "795a9a4a88eb",
+          "name": "money bills",
+          "estimatedHours": 3.0,
+          "roi": "very-high",
+          "examType": "both",
+          "notes": "",
+          "status": "not-started",
+          "startDate": null,
+          "completionDate": null,
+          "activeStages": null,
+          "links": [],
+          "relatedTopicIds": [],
+          "createdAt": "2026-09-06"
+        }
+      ],
       "createdAt": "2026-05-31"
     },
     {
