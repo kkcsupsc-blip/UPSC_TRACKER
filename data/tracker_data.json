@@ -8,7 +8,23 @@
       "ntfyTopic": "",
       "notes": "",
       "defaultStages": null,
-      "topics": [],
+      "topics": [
+        {
+          "id": "43b6f57ea72d",
+          "name": "Example 2",
+          "estimatedHours": 6.0,
+          "roi": "very-high",
+          "examType": "both",
+          "notes": "",
+          "status": "not-started",
+          "startDate": null,
+          "completionDate": null,
+          "activeStages": null,
+          "links": [],
+          "relatedTopicIds": [],
+          "createdAt": "2026-10-14"
+        }
+      ],
       "createdAt": "2026-05-31"
     },
     {
