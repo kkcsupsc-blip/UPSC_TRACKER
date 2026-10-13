@@ -20,7 +20,15 @@
           "startDate": "2026-10-14",
           "completionDate": null,
           "activeStages": null,
-          "links": [],
+          "links": [
+            {
+              "id": "424804c12391",
+              "url": "https://indianexpress.com/article/upsc-current-affairs/upsc-key-jantar-mantar-governor-and-macroeconomic-stabilisation-10920081/",
+              "title": "Example",
+              "dateAdded": "2026-10-14",
+              "read": false
+            }
+          ],
           "relatedTopicIds": [],
           "createdAt": "2026-10-14"
         }
