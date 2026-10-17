@@ -1,96 +1,5 @@
 {
-  "subjects": [
-    {
-      "id": "11e0549d1a31",
-      "name": "ECONOMY",
-      "roi": "very-high",
-      "color": "#06b6d4",
-      "ntfyTopic": "",
-      "notes": "",
-      "defaultStages": null,
-      "topics": [
-        {
-          "id": "43b6f57ea72d",
-          "name": "Example 2",
-          "estimatedHours": 6.0,
-          "roi": "very-high",
-          "examType": "both",
-          "notes": "",
-          "status": "learning",
-          "startDate": "2026-10-14",
-          "completionDate": null,
-          "activeStages": null,
-          "links": [
-            {
-              "id": "424804c12391",
-              "url": "https://indianexpress.com/article/upsc-current-affairs/upsc-key-jantar-mantar-governor-and-macroeconomic-stabilisation-10920081/",
-              "title": "Example",
-              "dateAdded": "2026-10-14",
-              "read": false
-            }
-          ],
-          "relatedTopicIds": [],
-          "createdAt": "2026-10-14"
-        }
-      ],
-      "createdAt": "2026-05-31"
-    },
-    {
-      "id": "662d8de81830",
-      "name": "ENVIRONMENT AND ECOLOGY",
-      "roi": "very-high",
-      "color": "#f97316",
-      "ntfyTopic": "",
-      "notes": "",
-      "defaultStages": null,
-      "topics": [],
-      "createdAt": "2026-05-31"
-    },
-    {
-      "id": "409c681dfa12",
-      "name": "PHYSICAL GEOGRAPHY",
-      "roi": "very-high",
-      "color": "#ec4899",
-      "ntfyTopic": "",
-      "notes": "",
-      "defaultStages": null,
-      "topics": [],
-      "createdAt": "2026-05-31"
-    },
-    {
-      "id": "fbf047ed27b9",
-      "name": "INDIAN GEOGRAPHY",
-      "roi": "very-high",
-      "color": "#ef4444",
-      "ntfyTopic": "",
-      "notes": "",
-      "defaultStages": null,
-      "topics": [],
-      "createdAt": "2026-05-31"
-    },
-    {
-      "id": "b7f58540ef81",
-      "name": "WORLD GEOGRAPHY",
-      "roi": "very-high",
-      "color": "#eab308",
-      "ntfyTopic": "",
-      "notes": "",
-      "defaultStages": null,
-      "topics": [],
-      "createdAt": "2026-05-31"
-    },
-    {
-      "id": "ee72b2173586",
-      "name": "POLITY",
-      "roi": "very-high",
-      "color": "#22c55e",
-      "ntfyTopic": "",
-      "notes": "",
-      "defaultStages": null,
-      "topics": [],
-      "createdAt": "2026-05-31"
-    }
-  ],
+  "subjects": [],
   "settings": {
     "weekdayHours": 6,
     "weekendHours": 12,
@@ -104,16 +13,16 @@
     },
     "activityHours": {
       "R1": 1.5,
-      "PYQ": 1,
-      "ERA": 1,
-      "R3": 1,
+      "PYQ": 1.0,
+      "ERA": 1.0,
+      "R3": 1.0,
       "MN": 1.5,
       "MCQ": 0.5,
       "MCQA": 0.5,
       "R7": 1.5,
-      "MVA": 1,
+      "MVA": 1.0,
       "MAINS": 1.5,
-      "R30": 1,
+      "R30": 1.0,
       "sectionalBatch": 12,
       "subjectRevision": 24
     },
@@ -123,8 +32,8 @@
       "server": "https://ntfy.sh"
     },
     "examDates": {
-      "prelims": "2027-05-23",
-      "mains": "2027-08-20"
+      "prelims": "",
+      "mains": ""
     },
     "examBufferDays": 10
   },
