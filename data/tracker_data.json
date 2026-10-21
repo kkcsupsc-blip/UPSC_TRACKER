@@ -1,7 +1,50 @@
 {
-  "subjects": [],
+  "subjects": [
+    {
+      "id": "3c78c6407fb4",
+      "name": "POLITY",
+      "roi": "very-high",
+      "color": "#6366f1",
+      "ntfyTopic": "",
+      "notes": "",
+      "defaultStages": null,
+      "topics": [
+        {
+          "id": "ec71fb9db828",
+          "name": "KISHORE",
+          "estimatedHours": 1.5,
+          "roi": "very-high",
+          "examType": "both",
+          "notes": "",
+          "status": "completed",
+          "startDate": "2026-05-31",
+          "completionDate": "2026-05-31",
+          "activeStages": null,
+          "links": [],
+          "relatedTopicIds": [],
+          "createdAt": "2026-05-31"
+        },
+        {
+          "id": "e88eb256e41c",
+          "name": "CHANDRA",
+          "estimatedHours": 5.0,
+          "roi": "very-high",
+          "examType": "both",
+          "notes": "",
+          "status": "completed",
+          "startDate": "2026-05-31",
+          "completionDate": "2026-05-31",
+          "activeStages": null,
+          "links": [],
+          "relatedTopicIds": [],
+          "createdAt": "2026-05-31"
+        }
+      ],
+      "createdAt": "2026-05-31"
+    }
+  ],
   "settings": {
-    "weekdayHours": 5,
+    "weekdayHours": 6,
     "weekendHours": 12,
     "revisionMins": 60,
     "weekendRevHrs": 3,
@@ -32,8 +75,8 @@
       "server": "https://ntfy.sh"
     },
     "examDates": {
-      "prelims": "2028-05-21",
-      "mains": "2028-08-20"
+      "prelims": "2027-05-23",
+      "mains": "2027-08-20"
     },
     "examBufferDays": 10
   },
@@ -45,7 +88,47 @@
     "subjectRevisions": [],
     "pendingTopics": []
   },
-  "studyLogs": [],
-  "subjectCycles": [],
+  "studyLogs": [
+    {
+      "id": "bd66963e6104",
+      "topicId": "ec71fb9db828",
+      "date": "2026-05-31",
+      "hours": 1.5
+    },
+    {
+      "id": "19335230e6db",
+      "topicId": "e88eb256e41c",
+      "date": "2026-05-31",
+      "hours": 5.0
+    }
+  ],
+  "subjectCycles": [
+    {
+      "id": "f3785e8f49e1",
+      "subjectId": "3c78c6407fb4",
+      "subjectName": "POLITY",
+      "cycle": "R1",
+      "label": "Consolidation",
+      "startDate": "2026-06-23",
+      "endDate": "2026-06-29",
+      "durationDays": 6,
+      "hoursPerDay": 3.0,
+      "completed": true,
+      "completedAt": "2026-05-31"
+    },
+    {
+      "id": "46fe6d0cf8de",
+      "subjectId": "3c78c6407fb4",
+      "subjectName": "POLITY",
+      "cycle": "R2",
+      "label": "Active Recall",
+      "startDate": "2026-07-27",
+      "endDate": "2026-08-08",
+      "durationDays": 12,
+      "hoursPerDay": 3.0,
+      "completed": true,
+      "completedAt": "2026-05-31"
+    }
+  ],
   "version": 3
 }
