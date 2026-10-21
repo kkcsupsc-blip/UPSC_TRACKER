@@ -22,15 +22,18 @@ function parseDate(s) {
 }
 
 function daysBetween(d1, d2) {
+  if (!d1 || !d2) return 0;
   return Math.round((new Date(d2) - new Date(d1)) / 86400000);
 }
 
 function formatDate(dateString) {
+  if (!dateString) return 'Not scheduled';
   const d = parseDate(dateString);
   return d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
 }
 
 function formatDateShort(dateString) {
+  if (!dateString) return 'Not scheduled';
   const d = parseDate(dateString);
   return d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
 }
@@ -52,6 +55,21 @@ function addDays(dateString, days) {
   const d = parseDate(dateString);
   d.setDate(d.getDate() + days);
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
+
+function schedulingWarnings(errors) {
+  const escape = value => String(value ?? '').replace(/[&<>"']/g, character => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+  })[character]);
+  if (!errors?.length) return '';
+  const groups = new Map();
+  errors.forEach(entry => {
+    const message = String(entry.error || entry.message || entry);
+    groups.set(message, (groups.get(message) || 0) + 1);
+  });
+  const rows = Array.from(groups, ([message, count]) => `${count > 1 ? `<strong>${count} topics</strong>: ` : ''}${escape(message)}`);
+  const extra = rows.length > 5 ? `<details style="margin-top:8px;"><summary>${rows.length - 5} more warning types</summary>${rows.slice(5).join('<br>')}</details>` : '';
+  return `<div role="alert" style="border-left:3px solid var(--red);padding:10px;margin-bottom:14px;color:var(--red);font-size:12px;">${rows.slice(0, 5).join('<br>')}${extra}</div>`;
 }
 
 // ===== NAVIGATION =====
@@ -372,7 +390,7 @@ async function markRevisionDone(topicId, type) {
 }
 
 // ===== SHOW TOPIC DETAIL / TIMELINE =====
-async function showTopicDetail(subjId, topicId) {
+async function showTopicDetail(subjId, topicId, focusLinks = false) {
   const detail = await api(`/api/subjects/${subjId}/topics/${topicId}/detail`);
   if (detail.error) return;
 
@@ -406,11 +424,12 @@ async function showTopicDetail(subjId, topicId) {
 
   // Estimated timeline (for not-started and learning topics)
   const estimate = detail.estimate;
-  if (estimate && estimate.isEstimate) {
+  if (estimate?.schedulingError) html += schedulingWarnings([{ error: estimate.schedulingError }]);
+  if (estimate && estimate.isEstimate && !estimate.schedulingError) {
     html += `<div style="background: rgba(99,102,241,0.08); border: 1px solid rgba(99,102,241,0.15); border-radius: 8px; padding: 14px; margin-bottom: 16px;">`;
     html += `<div style="font-weight:600; font-size:13px; color:var(--accent2); margin-bottom:10px;">📊 Progressive Time Estimate</div>`;
     if (estimate.queuePosition) {
-      html += `<div style="font-size:12px; color:var(--text2); margin-bottom:6px;">Queue Position: <strong>#${estimate.queuePosition}</strong> (${MAX_PARALLEL || 2} topics run in parallel)</div>`;
+      html += `<div style="font-size:12px; color:var(--text2); margin-bottom:6px;">Queue Position: <strong>#${estimate.queuePosition}</strong></div>`;
     }
     const daysToMastery = daysBetween(todayStr(), estimate.masteryDate);
 
@@ -424,12 +443,12 @@ async function showTopicDetail(subjId, topicId) {
         <div style="font-size:13px; font-weight:600; color:var(--yellow); margin-top:2px;">${formatDateShort(estimate.completionDate)}</div>
       </div>
       <div style="text-align:center; padding:8px; background:var(--bg); border-radius:6px;">
-        <div style="font-size:10px; color:var(--text3); text-transform:uppercase; letter-spacing:0.5px;">Mastery</div>
+        <div style="font-size:10px; color:var(--text3); text-transform:uppercase; letter-spacing:0.5px;">Pipeline finish</div>
         <div style="font-size:13px; font-weight:600; color:var(--green); margin-top:2px;">${formatDateShort(estimate.masteryDate)}</div>
       </div>
     </div>`;
 
-    html += `<div style="font-size:11px; color:var(--text3);">~${daysToMastery} days from today to full mastery (learning + 12 revision stages)</div>`;
+    html += `<div style="font-size:11px; color:var(--text3);">~${daysToMastery} days to pipeline finish · ${detail.resolvedStages?.length || 0} planned activities</div>`;
 
     // Show estimated revision stages
     if (estimate.revisionSchedule) {
@@ -508,6 +527,12 @@ async function showTopicDetail(subjId, topicId) {
     <button class="btn btn-sm btn-primary" style="margin-top:8px;" onclick="saveTopicStages('${subjId}','${topicId}')">Save Stages</button>
   </details>`;
 
+  const evidence = detail.evidence;
+  html += `<div style="margin:14px 0;display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+    <button class="btn btn-sm" onclick="openPreparation('${subjId}','${topicId}')">Strategy &amp; Evidence</button>
+    <span style="font-size:12px;color:var(--text2);">${evidence?.attempts || 0} assessments | ${evidence?.openRepairs || 0} open repairs</span>
+  </div>`;
+
   // CA Links
   const links = topic.links || [];
   html += `<div style="margin-top:14px;">
@@ -577,6 +602,11 @@ async function showTopicDetail(subjId, topicId) {
 
   document.getElementById('detail-content').innerHTML = html;
   openModal('topic-detail');
+  if (focusLinks) {
+    const urlInput = document.getElementById(`link-url-${topicId}`);
+    urlInput.scrollIntoView({ block: 'center' });
+    urlInput.focus({ preventScroll: true });
+  }
 
   // Populate related topic dropdown (async after render)
   const allData = await api('/api/data');
@@ -764,7 +794,7 @@ async function renderDashboard() {
     const spillDetail = spillItems.map(s => `${s.label} ${s.hours}h`).join(', ');
     const spilloverText = spillover > 0
       ? `<div style="margin-top:8px; padding:6px 10px; background:rgba(255,165,0,0.1); border-left:3px solid var(--orange, orange); border-radius:4px; font-size:11px; color:var(--text2);">
-          ↪ <strong>${spillover}h</strong> spills to tomorrow: ${spillDetail}
+          ↪ Unallocated work: <strong>${spillover}h</strong> · ${spillDetail}
         </div>`
       : '';
 
@@ -781,7 +811,7 @@ async function renderDashboard() {
         <div style="text-align:center; padding:8px; background:var(--bg); border-radius:6px;">
           <div style="font-size:10px; color:var(--text3); text-transform:uppercase;">Learning</div>
           <div style="font-size:18px; font-weight:700; color:var(--accent2);">${tb.learningHours}h</div>
-          ${spillover > 0 ? `<div style="font-size:9px; color:orange;">+${spillover}h tmrw</div>` : ''}
+          ${spillover > 0 ? `<div style="font-size:9px; color:orange;">Unallocated work: ${spillover}h</div>` : ''}
         </div>
         <div style="text-align:center; padding:8px; background:var(--bg); border-radius:6px;">
           <div style="font-size:10px; color:var(--text3); text-transform:uppercase;">Cumulative</div>
@@ -891,7 +921,7 @@ async function renderDashboard() {
         <div style="font-size:18px; font-weight:700; color:var(--text1);">${tlSummary.parallelSlots}</div>
       </div>
       <div style="text-align:center; padding:8px; background:var(--bg); border-radius:6px;">
-        <div style="font-size:10px; color:var(--text3);">ALL DONE BY</div>
+        <div style="font-size:10px; color:var(--text3);">PIPELINE FINISH</div>
         <div style="font-size:13px; font-weight:600; color:var(--green); margin-top:2px;">${tlSummary.overallFinishDate ? formatDateShort(tlSummary.overallFinishDate) : '—'}</div>
       </div>
     </div>`;
@@ -902,7 +932,7 @@ async function renderDashboard() {
         <span>${statusIcon}</span>
         <div style="flex:1; min-width:0;">
           <div style="font-size:12px; font-weight:500; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${t.topicName}</div>
-          <div style="font-size:10px; color:var(--text3);">${t.subjectName} · Mastery ~${formatDateShort(t.masteryDate)}</div>
+          <div style="font-size:10px; color:var(--text3);">${t.subjectName} · Pipeline finish ~${formatDateShort(t.masteryDate)}</div>
         </div>
         <span style="font-size:11px; color:var(--text3); white-space:nowrap;">${daysLeft}d</span>
       </div>`;
@@ -953,7 +983,7 @@ async function renderSubjects() {
           </div>
         </div>
         <div style="display:flex; align-items:center; gap:8px;">
-          <div style="width:80px;" title="Completion: ${pct}% · Mastery: ${masteryPct}%">
+          <div style="width:80px;" title="Learning completion: ${pct}% · Pipeline completion: ${masteryPct}%">
             <div class="progress-bar" style="margin-bottom:3px;"><div class="progress-fill" style="width:${pct}%; background:${subj.color};"></div></div>
             <div class="progress-bar"><div class="progress-fill" style="width:${masteryPct}%; background:var(--cyan);"></div></div>
           </div>
@@ -981,24 +1011,27 @@ async function renderSubjects() {
                 : `<button class="btn btn-sm" disabled title="Complete a learning topic first (${learningCount}/${timeline.summary?.parallelSlots || 2} slots used)" style="opacity:0.45;cursor:not-allowed;">🔒 Start</button>`;
               else if (t.status === 'learning') actions += `<button class="btn btn-sm btn-success" onclick="event.stopPropagation();completeLearning('${subj.id}','${t.id}');">Done</button>`;
               else actions += `<button class="btn btn-sm" onclick="event.stopPropagation();showTopicDetail('${subj.id}','${t.id}');">Plan</button>`;
+              actions += ` <button class="btn btn-sm" onclick="event.stopPropagation();showTopicDetail('${subj.id}','${t.id}',true);" title="Manage current affairs links">CA Links (${(t.links || []).length})</button>`;
 
               // Timeline estimate column
               const est = estimates[t.id];
               let estHtml = `<span style="color:var(--text3);">${t.estimatedHours || '?'}h</span>`;
-              if (est) {
+              if (est?.schedulingError) {
+                estHtml = schedulingWarnings([{ error: est.schedulingError }]);
+              } else if (est) {
                 if (t.status === 'pipeline-complete') {
                   estHtml = '<span style="color:var(--green);font-weight:600;">✓ Pipeline Complete</span>';
                 } else if (t.status === 'completed') {
                   estHtml = `<div style="font-size:11px;line-height:1.5;">
-                    <span style="color:var(--green);">Mastery</span><br>
+                    <span style="color:var(--green);">Pipeline finish</span><br>
                     <span style="color:var(--text2);font-weight:500;">${formatDateShort(est.masteryDate)}</span><br>
-                    <span style="color:var(--text3);">${est.doneRevisions}/12 done</span>
+                    <span style="color:var(--text3);">${est.doneRevisions} activities done</span>
                   </div>`;
                 } else if (t.status === 'learning') {
                   const daysToMastery = daysBetween(todayStr(), est.masteryDate);
                   estHtml = `<div style="font-size:11px;line-height:1.5;">
                     <span style="color:var(--yellow);">Done ~${formatDateShort(est.completionDate)}</span><br>
-                    <span style="color:var(--text2);">Mastery ${formatDateShort(est.masteryDate)}</span><br>
+                    <span style="color:var(--text2);">Pipeline finish ${formatDateShort(est.masteryDate)}</span><br>
                     <span style="color:var(--text3);">${daysToMastery}d left</span>
                   </div>`;
                 } else {
@@ -1007,7 +1040,7 @@ async function renderSubjects() {
                   const daysToMastery = daysBetween(todayStr(), est.masteryDate);
                   estHtml = `<div style="font-size:11px;line-height:1.5;">
                     <span style="color:var(--accent2);">Start ~${formatDateShort(est.startDate)}</span><br>
-                    <span style="color:var(--text2);">Mastery ~${formatDateShort(est.masteryDate)}</span><br>
+                    <span style="color:var(--text2);">Pipeline finish ~${formatDateShort(est.masteryDate)}</span><br>
                     <span style="color:var(--text3);">Q#${qPos} · ${daysToMastery}d</span>
                   </div>`;
                 }
@@ -1063,7 +1096,7 @@ async function renderToday() {
           <span>📖 Learning: ${tb.learningHours}h</span>
           <span>🔄 Cumulative: ${tb.cumulativeHours}h</span>
         </div>
-        ${tpSpillover > 0 ? `<div style="margin-top:8px; padding:6px 10px; background:rgba(255,165,0,0.1); border-left:3px solid orange; border-radius:4px; font-size:11px; color:var(--text2);">↪ <strong>${tpSpillover}h</strong> spills to tomorrow: ${(tb.spilloverItems||[]).map(s => s.label + ' ' + s.hours + 'h').join(', ')}</div>` : ''}
+        ${tpSpillover > 0 ? `<div style="margin-top:8px; padding:6px 10px; background:rgba(255,165,0,0.1); border-left:3px solid orange; border-radius:4px; font-size:11px; color:var(--text2);">↪ Unallocated work: <strong>${tpSpillover}h</strong> · ${(tb.spilloverItems||[]).map(s => s.label + ' ' + s.hours + 'h').join(', ')}</div>` : ''}
       </div>`;
   }
 
@@ -1168,7 +1201,7 @@ async function renderToday() {
         <div class="time-block-title">Final Revision</div>
         <div class="time-block-time">${r30Tasks.length} item(s) · ~${r30Hrs}h</div>
       </div>
-      <div style="font-size: 11px; color: var(--text2); margin-bottom: 10px;">30-day deep revision — full topic recall before mastery.</div>
+      <div style="font-size: 11px; color: var(--text2); margin-bottom: 10px;">Final planned revision activity before pipeline completion.</div>
       ${r30Tasks.map(t => renderTaskItem(t)).join('')}
     </div>`;
   }
@@ -1209,7 +1242,12 @@ async function renderToday() {
     html += `</div>`;
   }
 
-  document.getElementById('today-time-blocks').innerHTML = timeSummaryHtml + html;
+  const repairs = data.repairTasks || [];
+  const repairReminder = repairs.length ? `<div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;padding:12px 0;margin-bottom:12px;border-bottom:1px solid var(--border);">
+    <span style="font-size:13px;color:var(--yellow);">${repairs.length} error-repair task(s) due</span>
+    <button class="btn btn-sm" onclick="openPreparation()">Review Repairs</button>
+  </div>` : '';
+  document.getElementById('today-time-blocks').innerHTML = repairReminder + timeSummaryHtml + html;
 }
 
 // ===== RENDER: CALENDAR =====
@@ -1369,7 +1407,7 @@ async function showCalDay(dateStr, skipHighlight = false) {
       + '<div style="height:100%; width:' + Math.min(100, pct) + '%; background:' + barColor + '; border-radius:4px;"></div>'
       + '</div>'
       + '<div style="font-size:10px; color:var(--text3); text-align:center;">' + tb.totalHours + 'h / ' + tb.budget + 'h used (' + pct + '%)</div>'
-      + ((tb.spilloverHours || 0) > 0 ? '<div style="margin-top:6px; padding:5px 8px; background:rgba(255,165,0,0.1); border-left:3px solid orange; border-radius:4px; font-size:10px; color:var(--text2);">↪ <strong>' + tb.spilloverHours + 'h</strong> spills to next day: ' + (tb.spilloverItems||[]).map(function(s){return s.label+' '+s.hours+'h'}).join(', ') + '</div>' : '')
+      + ((tb.spilloverHours || 0) > 0 ? '<div style="margin-top:6px; padding:5px 8px; background:rgba(255,165,0,0.1); border-left:3px solid orange; border-radius:4px; font-size:10px; color:var(--text2);">↪ Unallocated work: <strong>' + tb.spilloverHours + 'h</strong> · ' + (tb.spilloverItems||[]).map(function(s){return s.label+' '+s.hours+'h'}).join(', ') + '</div>' : '')
       + (tb.activities && tb.activities.length > 0 ? renderTimeBudgetActivities(tb.activities) : '')
       + '</div>';
   }
@@ -1485,7 +1523,7 @@ async function renderAnalytics() {
     : '<div style="font-size:13px; color:var(--text3); text-align:center; padding:20px;">No subjects to display</div>';
 
   // Revision compliance breakdown
-  const types = ['R1', 'PYQ', 'ERA', 'R3', 'MN', 'CA', 'MCQ', 'MCQA', 'R7', 'MVA', 'MAINS', 'R30'];
+  const types = Object.keys(data.revStats);
   const colors = { R1: 'var(--red)', PYQ: 'var(--cyan)', ERA: 'var(--pink)', R3: 'var(--orange)', MN: 'var(--lime)', CA: 'var(--purple)', MCQ: 'var(--teal)', MCQA: 'var(--indigo)', R7: 'var(--yellow)', MVA: 'var(--emerald)', MAINS: 'var(--accent)', R30: 'var(--blue)' };
   document.getElementById('analytics-revision-stats').innerHTML = types.map(type => {
     const rs = data.revStats[type];
@@ -2064,13 +2102,13 @@ async function renderTimeline() {
   document.getElementById('tl-stats').innerHTML = `
     <div class="stat-card blue"><div class="stat-label">Total Topics</div><div class="stat-value">${summary.totalTopics || 0}</div><div class="stat-sub">${summary.parallelSlots || 2} parallel slots</div></div>
     <div class="stat-card orange"><div class="stat-label">In Pipeline</div><div class="stat-value">${summary.inPipeline || 0}</div><div class="stat-sub">${summary.notStarted || 0} queued · ${summary.learning || 0} learning</div></div>
-    <div class="stat-card green"><div class="stat-label">Overall Finish</div><div class="stat-value">${summary.overallFinishDate ? formatDateShort(summary.overallFinishDate) : '—'}</div><div class="stat-sub">${summary.overallFinishDate ? daysBetween(today, summary.overallFinishDate) + ' days' : 'no topics'}</div></div>
+    <div class="stat-card green"><div class="stat-label">Pipeline Finish</div><div class="stat-value" style="font-size:24px;">${summary.overallFinishDate ? formatDate(summary.overallFinishDate) : '—'}</div><div class="stat-sub">${summary.overallFinishDate ? daysBetween(today, summary.overallFinishDate) + ' days' : 'Not scheduled'}</div></div>
   `;
 
   // Overall timeline visualization
   const estArr = Object.values(estimates).sort((a, b) => (a.masteryDate || '').localeCompare(b.masteryDate || ''));
   if (estArr.length === 0) {
-    document.getElementById('tl-overall').innerHTML = '<div class="empty-state" style="padding:20px 0;"><div class="empty-state-text">No topics added yet. Add topics to see projections.</div></div>';
+    document.getElementById('tl-overall').innerHTML = '<div class="empty-state" style="padding:20px 0;"><div class="empty-state-text">Not scheduled</div></div>';
   } else {
     // Group by subject for a visual overview
     const bySubject = {};
@@ -2079,27 +2117,33 @@ async function renderTimeline() {
       bySubject[e.subjectName].topics.push(e);
     });
 
-    let overallHtml = '';
+    const forecastCount = summary.scheduledTopics ?? estArr.filter(topic => topic.masteryDate).length;
+    let overallHtml = `<div style="display:flex;flex-wrap:wrap;gap:12px;font-size:12px;color:var(--text2);margin-bottom:14px;">
+      <span>${forecastCount}/${estArr.length} topics forecast</span>
+      ${summary.weeklyStudyHours !== undefined ? `<span>${summary.weeklyStudyHours}h/week</span>` : ''}
+      ${summary.remainingLearningHours !== undefined ? `<span>${summary.remainingLearningHours}h learning</span><span>${summary.remainingFollowUpHours}h follow-up activities</span>` : ''}
+    </div>` + schedulingWarnings(summary.schedulingErrors);
     for (const [subjName, info] of Object.entries(bySubject)) {
       const subjTopics = info.topics;
-      const latestMastery = subjTopics.reduce((max, t) => t.masteryDate > max ? t.masteryDate : max, '');
+      const latestMastery = subjTopics.every(topic => topic.masteryDate)
+        ? subjTopics.reduce((max, topic) => topic.masteryDate > max ? topic.masteryDate : max, '') : null;
       const completed = subjTopics.filter(t => t.status === 'pipeline-complete').length;
       const total = subjTopics.length;
       const pct = total > 0 ? Math.round(completed / total * 100) : 0;
 
       overallHtml += `<div style="margin-bottom:14px;">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+        <div style="display:flex;flex-wrap:wrap;gap:6px;justify-content:space-between;align-items:center;margin-bottom:4px;">
           <span style="font-size:13px; font-weight:500; display:flex; align-items:center; gap:6px;">
             <span style="width:8px; height:8px; border-radius:2px; background:${info.color}; display:inline-block;"></span>
             ${subjName}
           </span>
-          <span style="font-size:11px; color:var(--text3);">${completed}/${total} pipeline-complete · Finish ~${latestMastery ? formatDateShort(latestMastery) : '?'}</span>
+          <span style="font-size:11px; color:var(--text3);">${completed}/${total} pipeline-complete · Pipeline finish ${latestMastery ? '~' + formatDate(latestMastery) : 'Not scheduled'}</span>
         </div>
         <div class="progress-bar"><div class="progress-fill" style="width:${pct}%; background:${info.color};"></div></div>
         <div style="display:flex; flex-wrap:wrap; gap:4px; margin-top:6px;">
           ${subjTopics.map(t => {
             const statusColor = t.status === 'pipeline-complete' ? 'var(--green)' : t.status === 'completed' ? 'var(--cyan)' : t.status === 'learning' ? 'var(--yellow)' : 'var(--text3)';
-            return `<span style="font-size:10px; padding:2px 6px; border-radius:3px; background:var(--bg); border-left:3px solid ${statusColor};" title="${t.topicName}: Mastery ~${t.masteryDate}">${t.topicName.slice(0, 15)}${t.topicName.length > 15 ? '…' : ''}</span>`;
+            return `<span style="font-size:10px; padding:2px 6px; border-radius:3px; background:var(--bg); border-left:3px solid ${statusColor};" title="${t.topicName}: Pipeline finish ~${t.masteryDate}">${t.topicName.slice(0, 15)}${t.topicName.length > 15 ? '…' : ''}</span>`;
           }).join('')}
         </div>
       </div>`;
@@ -2112,11 +2156,11 @@ async function renderTimeline() {
   const filtered = estArr.filter(e => filter === 'all' || e.status === filter);
 
   if (filtered.length === 0) {
-    document.getElementById('tl-topic-list').innerHTML = `<div style="padding:20px; text-align:center; font-size:12px; color:var(--text3);">No topics matching this filter.</div>`;
+    document.getElementById('tl-topic-list').innerHTML = `<div style="padding:20px; text-align:center; font-size:12px; color:var(--text3);">${estArr.length === 0 ? 'Not scheduled' : 'No topics matching this filter.'}</div>`;
   } else {
     let tableHtml = `<table><thead><tr>
       <th>#</th><th>Topic</th><th>Subject</th><th>ROI</th><th>Status</th>
-      <th>Est. Start</th><th>Est. Complete</th><th>Est. Mastery</th><th>Days Left</th>
+      <th>Est. Start</th><th>Est. Complete</th><th>Pipeline Finish</th><th>Days Left</th>
     </tr></thead><tbody>`;
 
     filtered.forEach((e, idx) => {
@@ -2134,14 +2178,14 @@ async function renderTimeline() {
 
       tableHtml += `<tr>
         <td style="font-size:11px;color:var(--text3);">${idx + 1}${qLabel}</td>
-        <td style="font-weight:500;font-size:12px;">${e.topicName}</td>
+        <td style="font-weight:500;font-size:12px;">${e.topicName}${e.schedulingError ? schedulingWarnings([{ error: e.schedulingError }]) : ''}</td>
         <td><span style="display:inline-flex;align-items:center;gap:4px;font-size:12px;"><span style="width:6px;height:6px;border-radius:2px;background:${e.subjectColor};display:inline-block;"></span>${e.subjectName}</span></td>
         <td>${roiBadge}</td>
         <td>${statusBadge}</td>
         <td style="font-size:11px;color:var(--text2);">${tilde}${formatDateShort(e.startDate)}</td>
         <td style="font-size:11px;color:var(--text2);">${tilde}${formatDateShort(e.completionDate)}</td>
-        <td style="font-size:11px;font-weight:600;color:${e.status === 'pipeline-complete' ? 'var(--green)' : 'var(--accent2)'};">${tilde}${formatDateShort(e.masteryDate)}</td>
-        <td style="font-size:11px;color:${daysLeft <= 0 ? 'var(--green)' : daysLeft <= 7 ? 'var(--yellow)' : 'var(--text3)'};">${e.status === 'pipeline-complete' ? '✓' : daysLeft + 'd'}</td>
+        <td style="font-size:11px;font-weight:600;color:${e.status === 'pipeline-complete' ? 'var(--green)' : 'var(--accent2)'};">${e.masteryDate ? tilde + formatDate(e.masteryDate) : 'Not scheduled'}</td>
+        <td style="font-size:11px;color:${daysLeft <= 0 ? 'var(--green)' : daysLeft <= 7 ? 'var(--yellow)' : 'var(--text3)'};">${!e.masteryDate ? 'Not scheduled' : e.status === 'pipeline-complete' ? '✓' : daysLeft + 'd'}</td>
       </tr>`;
     });
 
@@ -2204,6 +2248,7 @@ function renderPage(page) {
   switch (page) {
     case 'dashboard': renderDashboard(); break;
     case 'subjects': renderSubjects(); break;
+    case 'preparation': renderPreparation(); break;
     case 'today': renderToday(); break;
     case 'calendar': renderCalendar(); break;
     case 'analytics': renderAnalytics(); renderWeeklyReview(); break;

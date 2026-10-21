@@ -159,6 +159,13 @@ input, select, textarea { font-family: inherit; }
 .main { flex: 1; margin-left: 240px; padding: 24px 32px; max-width: 1200px; }
 .page { display: none; }
 .page.active { display: block; }
+.main:has(#page-timeline.active) { min-width: 0; }
+#page-timeline { width: 100%; min-width: 0; }
+
+@media (max-width: 768px) {
+  #tl-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  #tl-stats .stat-card:last-child { grid-column: 1 / -1; }
+}
 
 /* ===== CARDS & COMPONENTS ===== */
 .card {
