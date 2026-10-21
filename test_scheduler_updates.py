@@ -71,8 +71,12 @@ class SchedulerUpdatesTests(unittest.TestCase):
         load = self.backend["compute_daily_load"](
             self.data, "2026-10-21", resolved_schedules=schedules,
         )
-        self.assertEqual(load["revisionHours"], hours)
-        self.assertEqual(load["learningHours"], 6 - hours)
+        plan = self.backend["_build_preparation_plan"](self.data)
+        self.assertEqual(load, plan["days"]["2026-10-21"])
+        sessions = plan["schedules"]["topic"]["r1"]["sessions"]
+        self.assertAlmostEqual(sum(session["hours"] for session in sessions), hours)
+        self.assertLessEqual(load["revisionHours"] + load["learningHours"], 6)
+        self.assertTrue(any(item["category"] == "reserve" for item in load["activities"]))
 
     def test_no_log_learning_does_not_invent_elapsed_progress(self):
         self.topic(status="learning", estimatedHours=10,
@@ -80,8 +84,8 @@ class SchedulerUpdatesTests(unittest.TestCase):
         allocations = self.backend["_simulate_learning_for_date"](
             self.data, "2026-10-21", resolved_schedules={},
         )
-        self.assertEqual(allocations["topic"]["hours"], 6)
-        self.assertEqual(allocations["topic"]["remaining"], 4)
+        self.assertAlmostEqual(allocations["topic"]["hours"], 4.0002)
+        self.assertAlmostEqual(allocations["topic"]["remaining"], 5.9998)
 
     def test_learning_reserves_subject_cycle_and_sectional_capacity(self):
         self.data["settings"].update(weekdayHours=12, weekendHours=12)
@@ -104,21 +108,23 @@ class SchedulerUpdatesTests(unittest.TestCase):
         allocations = self.backend["_simulate_learning_for_date"](
             self.data, "2026-10-21", resolved_schedules={},
         )
-        self.assertEqual(sum(item["hours"] for item in allocations.values()),
-                         max(0, 12 - 2 - per_day))
+        load = self.backend["compute_daily_load"](self.data, "2026-10-21")
+        self.assertEqual(load["cumulativeHours"], 2 + per_day)
+        self.assertEqual(sum(item["hours"] for item in allocations.values()), load["learningHours"])
+        self.assertLessEqual(load["totalHours"], 12)
+        self.assertLess(load["learningHours"], max(0, 12 - 2 - per_day))
 
-    def test_dynamic_and_existing_schedulers_share_stage_placement(self):
+    def test_resolver_and_forecast_share_canonical_stage_placement(self):
         self.topic(activeStages=["R1", "PYQ", "ERA", "R3", "MN", "MCQ",
                                  "MCQA", "R7", "MVA", "MAINS", "R30"])
         resolved, used = self.backend["resolve_all_revision_schedules"](self.data)
-        dynamic_used = {}
-        dynamic = self.backend["calculate_revision_schedule_dynamic"](
-            "2026-10-20", self.data["settings"]["intervals"],
-            self.backend["get_activity_hours"](self.data["settings"]),
-            dynamic_used, 6, 6, estimated_hours=20,
-        )
-        self.assertEqual(dynamic, resolved["topic"])
-        self.assertEqual(dynamic_used, used)
+        plan = self.backend["_build_preparation_plan"](self.data)
+        self.assertEqual(plan["schedules"]["topic"], resolved["topic"])
+        forecast = self.backend["estimate_all_timelines"](self.data)["estimates"]["topic"]
+        self.assertEqual(forecast["revisionSchedule"], {key: step["date"] for key, step in resolved["topic"].items()})
+        for day, hours in used.items():
+            self.assertAlmostEqual(hours, plan["days"][day]["revisionHours"])
+            self.assertLessEqual(hours, 6)
 
     def test_future_topics_respect_custom_stages_without_r30(self):
         for status, hours, start in [("learning", 10, "2026-10-01"),
@@ -146,7 +152,9 @@ class SchedulerUpdatesTests(unittest.TestCase):
         self.assertGreater(schedule["r3"]["date"], "2026-11-11")
         self.assertEqual(schedule["mcq"]["date"], "2026-11-11")
         self.assertGreaterEqual(schedule["mcqa"]["date"], "2026-11-11")
-        self.assertNotIn("2026-11-11", used)
+        self.assertEqual(schedule["r1"]["sessions"], [])
+        self.assertEqual(schedule["mcq"]["sessions"], [])
+        self.assertEqual(used["2026-11-11"], 0.5)
 
     def test_impossible_task_reports_error_without_partial_reservation(self):
         used = {"2026-10-22": 0.2}
@@ -250,28 +258,34 @@ class SchedulerUpdatesTests(unittest.TestCase):
                    startDate="2026-10-21", completionDate=None)
         self.cycle(hours=2)
         resolved, used = self.backend["resolve_all_revision_schedules"](self.data)
-        self.assertEqual(used["2026-10-21"], 3.5)
+        plan = self.backend["_build_preparation_plan"](self.data)
+        self.assertEqual(used["2026-10-21"], plan["days"]["2026-10-21"]["cumulativeHours"]
+                 + plan["days"]["2026-10-21"]["revisionHours"])
         for date, hours in used.items():
             self.assertLessEqual(hours, 6)
         estimate = self.backend["estimate_all_timelines"](self.data)["estimates"]["learner"]
         self.assertEqual(estimate["completionDate"], "2026-10-22")
-        self.assertEqual(resolved["topic"]["r1"]["date"], "2026-10-21")
+        self.assertEqual(resolved["topic"]["r1"]["originalDate"], "2026-10-21")
+        self.assertAlmostEqual(sum(session["hours"] for session in resolved["topic"]["r1"]["sessions"]), 1.5)
 
-    def test_completed_half_cluster_reserves_only_pending_work(self):
+    def test_completed_half_cluster_consumes_today_without_repeating_future_work(self):
         self.data["settings"].update(weekdayHours=1, weekendHours=1)
         self.topic(estimatedHours=5, activeStages=["PYQ", "ERA"])
         self.data["completedRevisions"]["topic_PYQ"] = {"completedAt": "2026-10-21"}
         resolved, used = self.backend["resolve_all_revision_schedules"](self.data)
-        self.assertEqual(resolved["topic"]["era"]["date"], "2026-10-21")
-        self.assertEqual(used, {"2026-10-21": 1})
+        self.assertEqual(resolved["topic"]["pyq"]["sessions"], [])
+        self.assertEqual(resolved["topic"]["era"]["sessions"][0]["date"], "2026-10-22")
+        self.assertAlmostEqual(used["2026-10-21"], 1)
+        self.assertAlmostEqual(sum(used.values()), 2)
+        self.assertTrue(all(hours <= 1 for hours in used.values()))
 
     def test_final_date_is_latest_active_stage_not_r30(self):
-        self.data["settings"]["activityHours"] = {"PYQ": 3, "ERA": 3}
-        self.topic(activeStages=["R1", "R30", "PYQ", "ERA"])
+        self.data["settings"]["activityHours"] = {"MAINS": 300}
+        self.topic(activeStages=["R1", "R30", "MAINS"])
         self.cycle(start="2026-10-20", duration=60, hours=1)
         estimate = self.backend["estimate_all_timelines"](self.data)["estimates"]["topic"]
         schedule = estimate["revisionSchedule"]
-        self.assertGreater(schedule["pyq"], schedule["r30"])
+        self.assertGreater(schedule["mains"], schedule["r30"])
         self.assertEqual(estimate["masteryDate"], max(schedule.values()))
 
     def test_actual_practice_completions_anchor_notes_and_consolidation(self):
@@ -286,17 +300,18 @@ class SchedulerUpdatesTests(unittest.TestCase):
         self.assertGreaterEqual(resolved["topic"]["r7"]["date"], "2026-12-06")
         self.assertEqual(resolved["topic"]["mcqa"]["date"], "2026-12-01")
 
-    def test_flexible_failure_releases_rigid_reservations_and_reports_daily_error(self):
+    def test_large_stages_split_without_overbooking_or_partial_failure(self):
         self.data["settings"].update(weekdayHours=1.5, weekendHours=1.5)
         self.topic(estimatedHours=5, activeStages=["R1", "PYQ", "ERA"])
         errors = []
         resolved, used = self.backend["resolve_all_revision_schedules"](self.data, errors)
-        self.assertEqual(resolved["topic"], {})
-        self.assertEqual(used, {})
-        self.assertEqual(errors[0]["topicId"], "topic")
+        self.assertTrue(all(step["date"] for step in resolved["topic"].values()))
+        self.assertTrue(any(len(step["sessions"]) > 1 for step in resolved["topic"].values()))
+        self.assertTrue(all(hours <= 1.5 for hours in used.values()))
+        self.assertEqual(errors, [])
         loads = self.backend["build_daily_schedule"](self.data, days_ahead=2)
-        self.assertTrue(all(load["schedulingErrors"] for load in loads))
-        self.assertTrue(all(load["totalHours"] == 0 for load in loads))
+        self.assertTrue(all(not load["schedulingErrors"] for load in loads))
+        self.assertTrue(all(load["totalHours"] <= 1.5 for load in loads))
 
     def test_placement_does_not_overbook_after_120_full_days(self):
         first_day = "2026-10-22"

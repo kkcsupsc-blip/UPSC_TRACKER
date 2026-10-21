@@ -3745,6 +3745,8 @@ import secrets
 import atexit
 import tempfile
 import copy
+import planner as preparation_planner
+from planner_api import create_planner_blueprint
 
 # Indian Standard Time (UTC+5:30)
 IST = timezone(timedelta(hours=5, minutes=30))
@@ -4496,7 +4498,7 @@ def reconcile_topic_progress(data, topic):
 #  PROGRESSIVE TIME ESTIMATOR
 # =============================================================================
 
-MAX_PARALLEL_TOPICS = 3  # Max topics being learned simultaneously
+MAX_PARALLEL_TOPICS = 2
 MIN_STAGGER_DAYS = 1     # Min days between new topic starts (prevents revision wave sync)
 
 # =============================================================================
@@ -4526,7 +4528,8 @@ def get_activity_hours(settings):
 
 def get_actual_hours(data, topic_id):
     """Return total actual hours logged for a topic from study logs, or 0 if none."""
-    return sum(log["hours"] for log in data.get("studyLogs", []) if log["topicId"] == topic_id)
+    return sum(log["hours"] for log in data.get("studyLogs", [])
+               if log["topicId"] == topic_id and preparation_planner.log_stage(log) == "learning")
 
 
 def get_effective_hours(data, topic):
@@ -4604,328 +4607,67 @@ def _fixed_schedule_loads(data):
     return loads
 
 
+def _build_preparation_plan(data):
+    """Cache the canonical plan by content, local day, and scheduling callbacks."""
+    callbacks = (get_topic_scaled_hours, get_activity_hours, get_effective_hours,
+                 get_topic_stages, get_confidence_multiplier, preparation_planner.build_plan)
+    fingerprint = hashlib.sha256(json.dumps(data, sort_keys=True, separators=(",", ":"),
+                                            default=str).encode("utf-8")).hexdigest()
+    key = (today_str(), fingerprint, callbacks)
+    cache = getattr(_build_preparation_plan, "_cache", {})
+    if key not in cache:
+        learning_snapshot = {**data, "studyLogs": [entry for entry in data.get("studyLogs", [])
+                                                  if preparation_planner.log_stage(entry) == "learning"]}
+        plan = preparation_planner.build_plan(
+            data, key[0],
+            lambda snapshot, topic: get_topic_scaled_hours(
+                get_activity_hours(snapshot["settings"]), get_effective_hours(learning_snapshot, topic)),
+            get_topic_stages, get_confidence_multiplier,
+        )
+        if len(cache) >= 4:
+            cache.pop(next(iter(cache)))
+        cache[key] = plan
+        _build_preparation_plan._cache = cache
+    return cache[key]
+
+
 def _simulate_learning_for_date(data, target_date, resolved_schedules=None):
-    """Simulate day-by-day learning allocation up to target_date.
-
-    Learning topics consume ALL available budget (after non-learning tasks),
-    distributed proportionally by remaining hours.  Topics finish as fast as
-    the daily budget allows — no artificial 2.5 h/day cap.
-
-    Returns {topicId: {"hours": float, "topicId", "topicName", "subjectName",
-                        "subjectId", "remaining": float}}
-    """
-    settings = data["settings"]
-    act_hrs = get_activity_hours(settings)
-    wkday_budget = settings.get("weekdayHours", 6)
-    wkend_budget = settings.get("weekendHours", 12)
-    today = today_str()
-
-    if resolved_schedules is None:
-        resolved_schedules, _ = resolve_all_revision_schedules(data)
-
-    # --- Pre-build non-learning demand map (date → hours) ---------------
-    non_learn_map = _fixed_schedule_loads(data)
-    completed_revs = data.get("completedRevisions", {})
-    for subj in data["subjects"]:
-        for topic in subj["topics"]:
-            if topic["status"] not in ("completed", "pipeline-complete"):
-                continue
-            sched = resolved_schedules.get(topic["id"])
-            if not sched:
-                continue
-            topic_hours = get_topic_scaled_hours(act_hrs, get_effective_hours(data, topic))
-            for _key, rev in sched.items():
-                d = rev["date"]
-                rev_key = f"{topic['id']}_{rev['type']}"
-                if rev_key not in completed_revs:
-                    non_learn_map[d] = non_learn_map.get(d, 0) + topic_hours.get(rev["type"], 1.0)
-    # Old subject revisions removed from budget — replaced by R1-R5 cycles
-
-    # --- Collect learning topics ----------------------------------------
-    # Pre-compute logged hours per topic from study logs
-    logged_by_topic = {}
-    for log in data.get("studyLogs", []):
-        logged_by_topic[log["topicId"]] = logged_by_topic.get(log["topicId"], 0) + log["hours"]
-
-    learning_items = []
-    earliest_start = None
-    for subj in data["subjects"]:
-        for topic in subj["topics"]:
-            if topic["status"] != "learning":
-                continue
-            start = topic.get("startDate") or today
-            est = topic.get("estimatedHours", 7.5)
-            logged = logged_by_topic.get(topic["id"], 0)
-            if logged > 0:
-                remaining = max(0, est - logged)
-                # Logged hours already represent past days' study — start
-                # the simulation from today so past days don't re-consume
-                # the remaining budget and zero it out before reaching today.
-                sim_start = today
-            else:
-                remaining = est
-                sim_start = max(start, today)
-            learning_items.append({
-                "topicId": topic["id"],
-                "topicName": topic["name"],
-                "subjectName": subj["name"],
-                "subjectId": subj["id"],
-                "start": sim_start,
-                "remaining": remaining,
-            })
-            if earliest_start is None or sim_start < earliest_start:
-                earliest_start = sim_start
-
-    if not learning_items or earliest_start > target_date:
-        return {}
-
-    holidays = set(data.get("holidays", []))
-
-    # --- Day-by-day simulation ------------------------------------------
+    """Read learning allocations from the same day plan used by the forecast."""
+    load = compute_daily_load(data, target_date)
     allocations = {}
-    current = earliest_start
-    for _ in range(365):                     # safety cap
-        if current > target_date:
-            break
-
-        budget = wkend_budget if is_weekend(current, holidays) else wkday_budget
-        non_learn = non_learn_map.get(current, 0)
-        available = max(0, budget - non_learn)
-
-        active = [lt for lt in learning_items
-                  if lt["start"] <= current and lt["remaining"] > 0.01]
-        if not active:
-            current = add_days(current, 1)
+    for item in load["activities"]:
+        if item["category"] != "learning":
             continue
-
-        total_remaining = sum(lt["remaining"] for lt in active)
-        to_allocate = min(available, total_remaining)
-
-        if to_allocate > 0.01:
-            for lt in active:
-                share = (lt["remaining"] / total_remaining) * to_allocate
-                lt["remaining"] = round(lt["remaining"] - share, 2)
-                if current == target_date:
-                    allocations[lt["topicId"]] = {
-                        "hours": round(share, 1),
-                        "topicId": lt["topicId"],
-                        "topicName": lt["topicName"],
-                        "subjectName": lt["subjectName"],
-                        "subjectId": lt["subjectId"],
-                        "remaining": round(lt["remaining"], 1),
-                    }
-
-        current = add_days(current, 1)
-
-    # When computing for today: replace simulated allocations with ACTUAL
-    # logged hours for that day. This ensures the budget bar reflects real
-    # hours spent, not the shrinking "remaining" estimate. Without this,
-    # every log entry reduces remaining → simulation allocates less → bar
-    # appears to drop each time you log.
-    if target_date == today:
-        today_logs_by_topic = {}
-        for log in data.get("studyLogs", []):
-            if log["date"] == target_date:
-                tid = log["topicId"]
-                today_logs_by_topic[tid] = today_logs_by_topic.get(tid, 0) + log["hours"]
-        for subj in data["subjects"]:
-            for topic in subj["topics"]:
-                if topic["status"] != "learning":
-                    continue
-                tid = topic["id"]
-                if tid in today_logs_by_topic:
-                    total_logged = logged_by_topic.get(tid, 0)
-                    allocations[tid] = {
-                        "hours": round(today_logs_by_topic[tid], 1),
-                        "topicId": tid,
-                        "topicName": topic["name"],
-                        "subjectName": subj["name"],
-                        "subjectId": subj["id"],
-                        "remaining": round(max(0, topic.get("estimatedHours", 7.5) - total_logged), 1),
-                    }
-
+        previous = allocations.get(item["topicId"], {}).get("hours", 0)
+        allocations[item["topicId"]] = {
+            key: item[key] for key in ("topicId", "topicName", "subjectId", "subjectName",
+                                      "stream", "remaining", "isSuggested")
+        }
+        allocations[item["topicId"]].update(hours=round(previous + item["hours"], 6),
+                                            name=item["topicName"], subject=item["subjectName"])
     return allocations
 
 
 def compute_daily_load(data, date_str, include_overdue=False, resolved_schedules=None,
                        scheduling_errors=None):
-    """Compute all scheduled activities and total hours for a given date.
-
-    Uses priority-based budget allocation:
-      Revision (R1>R3>R7>R30) > Learning > MN > MCQ,PYQ,ERA,MCQA,CA > MVA,MAINS > Cumulative
-    Items that don't fit the daily budget are marked as spillover.
-    """
-    # Priority map: lower number = higher priority = stays on today
-    ACTIVITY_PRIORITY = {
-        "R1": 10, "R3": 11, "R7": 12, "R30": 13,
-        "learning": 20,
-        "MN": 30,
-        "PYQ": 40, "ERA": 40, "MCQ": 40, "MCQA": 40,
-        "MVA": 50, "MAINS": 50,
-        "cumulative_sectional": 60, "cumulative_subject": 60,
-    }
-
-    settings = data["settings"]
-    act_hrs = get_activity_hours(settings)
-    holidays = set(data.get("holidays", []))
-    wknd = is_weekend(date_str, holidays)
-    budget = settings.get("weekendHours", 12) if wknd else settings.get("weekdayHours", 6)
-    today = today_str()
-
-    if scheduling_errors is None:
-        scheduling_errors = []
-    if resolved_schedules is None:
-        resolved_schedules, _ = resolve_all_revision_schedules(data, scheduling_errors)
-
-    done_activities = []    # completed revisions (display only, no budget)
-    pending_demands = []    # all uncompleted items with full hours + priority
-
-    # ── 1. Revision tasks from completed/pipeline-complete topics ───────
-    for subj in data["subjects"]:
-        for topic in subj["topics"]:
-            if topic["status"] not in ("completed", "pipeline-complete"):
-                continue
-            if not topic.get("completionDate"):
-                continue
-            schedule = resolved_schedules.get(topic["id"])
-            if not schedule:
-                continue
-            topic_hours = get_topic_scaled_hours(act_hrs, get_effective_hours(data, topic))
-            for key, rev in schedule.items():
-                target_date = rev["date"]
-                rev_key = f"{topic['id']}_{rev['type']}"
-                done = rev_key in data["completedRevisions"]
-
-                is_overdue = target_date < today and not done
-                show = (target_date == date_str) or (
-                    include_overdue and date_str == today and is_overdue
-                )
-                if not show:
-                    continue
-
-                hrs = topic_hours.get(rev["type"], 1.0)
-                item = {
-                    "category": "revision",
-                    "revType": rev["type"],
-                    "topicId": topic["id"],
-                    "topicName": topic["name"],
-                    "subjectName": subj["name"],
-                    "hours": hrs,
-                    "done": done,
-                    "overdue": is_overdue,
-                    "priority": ACTIVITY_PRIORITY.get(rev["type"], 50),
-                }
-                if done:
-                    done_activities.append(item)
-                else:
-                    pending_demands.append(item)
-
-    # ── 2. Learning activities (topics currently in learning status) ────
-    #    Simulates day-by-day from start dates so ALL free budget goes to
-    #    learning, distributed proportionally by remaining hours.
-    learning_allocs = _simulate_learning_for_date(data, date_str, resolved_schedules)
-    for alloc in learning_allocs.values():
-        pending_demands.append({
-            "category": "learning",
-            "topicId": alloc["topicId"],
-            "topicName": alloc["topicName"],
-            "subjectName": alloc["subjectName"],
-            "hours": alloc["hours"],
-            "done": False,
-            "priority": ACTIVITY_PRIORITY["learning"],
-        })
-
-    # ── 3. Cumulative sessions ──────────────────────────────────────────
-    cum = data.get("cumulativeRevisions", {})
-    for batch in cum.get("sectionalBatches", []):
-        for sess in batch["sessions"]:
-            if sess["completed"]:
-                continue
-            sat = sess["scheduledDate"]
-            sun = add_days(sat, 1)
-            batch_day_hrs = act_hrs.get("sectionalBatch", 12) / 2
-            if date_str in (sat, sun):
-                pending_demands.append({
-                    "category": "cumulative_sectional",
-                    "batchId": batch["id"],
-                    "round": sess["round"],
-                    "topicCount": len(batch.get("topicIds", [])),
-                    "hours": batch_day_hrs,
-                    "done": False,
-                    "priority": ACTIVITY_PRIORITY["cumulative_sectional"],
-                })
-
-    # Old subject revisions removed from daily load — replaced by R1-R5 cycles below
-
-    # ── 4. Subject revision cycles ──────────────────────────────────────
-    for cycle in data.get("subjectCycles", []):
-        if cycle["completed"]:
-            continue
-        if cycle["startDate"] <= date_str <= cycle["endDate"]:
-            pending_demands.append({
-                "category": "subject_cycle",
-                "subjectName": cycle["subjectName"],
-                "cycle": cycle["cycle"],
-                "label": f"{cycle['subjectName']} {cycle['cycle']} — {cycle['label']}",
-                "hours": cycle["hoursPerDay"],
-                "done": False,
-                "priority": 25,
-                "cycleId": cycle["id"],
-            })
-
-    # ── 5. Priority-based budget allocation ─────────────────────────────
-    pending_demands.sort(key=lambda a: a["priority"])
-
-    activities = list(done_activities)   # done items always appear (display only)
-    total_hours = 0.0
-    spillover_hours = 0.0
-    total_demand = round(sum(a["hours"] for a in pending_demands), 1)
-    spillover_items = []   # items (or partial) that didn't fit
-
-    for item in pending_demands:
-        if total_hours + item["hours"] <= budget + 0.01:
-            # Fits entirely
-            activities.append(item)
-            total_hours += item["hours"]
-        elif total_hours < budget:
-            # Partially fits — split: today gets what fits, rest spills
-            fits = round(budget - total_hours, 1)
-            spills = round(item["hours"] - fits, 1)
-            today_item = dict(item, hours=fits)
-            activities.append(today_item)
-            total_hours += fits
-            spillover_hours += spills
-            spill_label = item.get("revType") or item["category"]
-            spillover_items.append({"label": spill_label, "hours": spills})
-        else:
-            # Doesn't fit at all — full spillover
-            spillover_hours += item["hours"]
-            spill_label = item.get("revType") or item["category"]
-            spillover_items.append({"label": spill_label, "hours": item["hours"]})
-
-    total_hours = round(total_hours, 1)
-    spillover_hours = round(spillover_hours, 1)
-    rev_hrs = round(sum(a["hours"] for a in activities if a["category"] == "revision" and not a["done"]), 1)
-    learn_hrs = round(sum(a["hours"] for a in activities if a["category"] == "learning"), 1)
-    cum_hrs = round(sum(a["hours"] for a in activities if a["category"].startswith("cumulative")), 1)
-    return {
-        "date": date_str,
-        "isWeekend": wknd,
-        "budget": budget,
-        "totalHours": total_hours,
-        "totalDemand": total_demand,
-        "remaining": round(max(0, budget - total_hours), 1),
-        "overloaded": total_demand > budget,
-        "overloadHours": round(max(0, total_demand - budget), 1),
-        "spilloverHours": spillover_hours,
-        "spilloverItems": spillover_items,
-        "activities": activities,
-        "utilization": round(min(100, total_hours / budget * 100)) if budget > 0 else 0,
-        "revisionHours": rev_hrs,
-        "learningHours": learn_hrs,
-        "cumulativeHours": cum_hrs,
-        "schedulingErrors": scheduling_errors,
-    }
+    """Return the canonical day; overdue annotations never reserve capacity twice."""
+    plan = _build_preparation_plan(data)
+    load = preparation_planner.plan_day(plan, data, date_str)
+    if scheduling_errors:
+        for error in scheduling_errors:
+            if error not in load["schedulingErrors"]:
+                load["schedulingErrors"].append(error)
+    if include_overdue and date_str == today_str():
+        for task in get_overdue_tasks(data):
+            existing = next((item for item in load["activities"] if item.get("topicId") == task["topicId"]
+                             and item.get("revType") == task["type"]), None)
+            if existing:
+                existing.update(overdue=True, originalDate=task["date"], backlogHours=task["hours"])
+            else:
+                load["activities"].append({**task, "category": "revision", "revType": task["type"],
+                                           "originalDate": task["date"], "backlogHours": task["hours"],
+                                           "hours": 0, "displayOnly": True})
+    return load
 
 
 def build_daily_schedule(data, days_ahead=14):
@@ -4944,385 +4686,9 @@ def build_daily_schedule(data, days_ahead=14):
 
 
 def estimate_all_timelines(data):
-    """Capacity-aware timeline estimator.
-
-    Simulates day-by-day scheduling considering:
-    - Time budgets: weekday (6h) vs weekend (12h)
-    - Activity durations: each revision type has a specific hour cost
-    - Revision load: already-completed topics create fixed revision obligations
-    - Learning capacity: only learns when daily budget has room after revisions
-    - Spillover: if a day is full, learning spills to next day
-    - Weekend utilization: free weekend hours used for extra learning
-
-    Returns estimated dates for all topics through the full pipeline.
-    """
-    today = today_str()
-    settings = data["settings"]
-    intervals = settings["intervals"]
-    act_hrs = get_activity_hours(settings)
-    weekday_budget = settings.get("weekdayHours", 6)
-    weekend_budget = settings.get("weekendHours", 12)
-    holidays = set(data.get("holidays", []))
-    roi_order = {"very-high": 0, "high": 1, "medium": 2, "low": 3}
-
-    # ── Collect all topics ────────────────────────────────────────────────
-    all_topics = []
-    insertion_idx = 0
-    for subj in data["subjects"]:
-        for topic in subj["topics"]:
-            all_topics.append({
-                "id": topic["id"],
-                "name": topic["name"],
-                "status": topic["status"],
-                "roi": topic.get("roi", "medium"),
-                "estimatedHours": topic.get("estimatedHours", 7.5),
-                "startDate": topic.get("startDate"),
-                "completionDate": topic.get("completionDate"),
-                "subjectId": subj["id"],
-                "subjectName": subj["name"],
-                "subjectColor": subj["color"],
-                "insertionOrder": insertion_idx,
-                "prerequisiteIds": topic.get("prerequisiteIds", []),
-            })
-            insertion_idx += 1
-
-    # ── Step 1 + 2: Completed/Mastered — budget-aware scheduling ────────
-    # Use the shared dynamic resolver so cross-topic stacking respects
-    # daily hour caps. Also produces the daily_used map for simulation.
-    scheduling_errors = []
-    resolved_schedules, daily_used = resolve_all_revision_schedules(data, scheduling_errors)
-    errors_by_topic = {entry["topicId"]: entry["error"] for entry in scheduling_errors}
-
-    def schedule_future(topic, completion_date):
-        context = _revision_context(data, topic["id"])
-        try:
-            return calculate_revision_schedule_dynamic(
-                completion_date, intervals, act_hrs, daily_used,
-                weekday_budget, weekend_budget, holidays=holidays,
-                estimated_hours=topic["estimatedHours"], **context,
-            )
-        except ValueError as error:
-            errors_by_topic[topic["id"]] = str(error)
-            return {
-                stage.lower(): {"date": date, "type": stage, "label": stage}
-                for stage, date in context["completed_dates"].items()
-            }
-
-    def final_date(topic_id, schedule, completion_date):
-        if topic_id in errors_by_topic:
-            return None
-        return max((step["date"] for step in schedule.values()), default=completion_date)
-
-    estimates = {}
-    for t in all_topics:
-        if t["status"] in ("completed", "pipeline-complete") and t["completionDate"]:
-            schedule = resolved_schedules.get(t["id"])
-            if schedule is None:
-                continue
-            mastery_date = max((step["date"] for step in schedule.values()), default=t["completionDate"])
-            if t["id"] in errors_by_topic:
-                mastery_date = None
-            active = get_topic_stages(data, t["id"])
-            done_count = sum(
-                1 for tp in active
-                if f"{t['id']}_{tp}" in data["completedRevisions"]
-            )
-            estimates[t["id"]] = {
-                "topicName": t["name"],
-                "subjectName": t["subjectName"],
-                "subjectColor": t["subjectColor"],
-                "roi": t["roi"],
-                "startDate": t["startDate"],
-                "completionDate": t["completionDate"],
-                "masteryDate": mastery_date,
-                "revisionSchedule": {k: v["date"] for k, v in schedule.items()},
-                "doneRevisions": done_count,
-                "status": t["status"],
-                "isEstimate": False,
-                "schedulingError": errors_by_topic.get(t["id"]),
-            }
-
-    # ── Step 3: Prepare learning & not-started queues ────────────────────
-    # Pre-compute logged hours per topic
-    logged_by_topic = {}
-    for log in data.get("studyLogs", []):
-        logged_by_topic[log["topicId"]] = logged_by_topic.get(log["topicId"], 0) + log["hours"]
-
-    active_learning = []
-    for t in all_topics:
-        if t["status"] == "learning":
-            start = t["startDate"] or today
-            logged = logged_by_topic.get(t["id"], 0)
-            if logged > 0:
-                remaining_hrs = max(0, t["estimatedHours"] - logged)
-            else:
-                remaining_hrs = t["estimatedHours"]
-            topic_stages = get_topic_stages(data, t["id"])
-            done_count = sum(
-                1 for tp in topic_stages
-                if f"{t['id']}_{tp}" in data["completedRevisions"]
-            )
-            if remaining_hrs <= 0:
-                completion_date = max(start, today)
-                schedule = schedule_future(t, completion_date)
-                estimates[t["id"]] = {
-                    "topicName": t["name"],
-                    "subjectName": t["subjectName"],
-                    "subjectColor": t["subjectColor"],
-                    "roi": t["roi"],
-                    "startDate": start,
-                    "completionDate": completion_date,
-                    "masteryDate": final_date(t["id"], schedule, completion_date),
-                    "revisionSchedule": {k: v["date"] for k, v in schedule.items()},
-                    "doneRevisions": done_count,
-                    "status": "learning",
-                    "isEstimate": True,
-                    "queuePosition": 0,
-                    "schedulingError": errors_by_topic.get(t["id"]),
-                }
-                continue
-            active_learning.append({
-                "id": t["id"], "name": t["name"],
-                "subjectId": t["subjectId"], "subjectName": t["subjectName"],
-                "subjectColor": t["subjectColor"], "roi": t["roi"],
-                "estimatedHours": t["estimatedHours"],
-                "startDate": start, "remainingHours": remaining_hrs,
-                "doneRevisions": done_count,
-            })
-
-    # Not-started topics sorted by ROI then insertion order (addition order)
-    waiting_queue = sorted(
-        [t for t in all_topics if t["status"] == "not-started"],
-        key=lambda t: (roi_order.get(t["roi"], 2), t["insertionOrder"]),
-    )
-    # Track queue position and original status
-    queue_positions = {}
-    original_status = {}  # track real status for not-started topics
-    for idx, t in enumerate(waiting_queue):
-        queue_positions[t["id"]] = idx + 1
-        original_status[t["id"]] = "not-started"
-
-    # ── Step 4: Day-by-day simulation ────────────────────────────────────
-    weekly_hours = max(0, weekday_budget) * 5 + max(0, weekend_budget) * 2
-    learning_hours = sum(
-        max(0, topic["estimatedHours"] - logged_by_topic.get(topic["id"], 0))
-        for topic in all_topics if topic["status"] in ("learning", "not-started")
-    )
-    follow_up_hours = sum(
-        get_topic_scaled_hours(act_hrs, topic["estimatedHours"]).get(stage, 1)
-        for topic in all_topics if topic["status"] in ("learning", "not-started")
-        for stage in get_topic_stages(data, topic["id"])
-        if f"{topic['id']}_{stage}" not in data["completedRevisions"]
-    )
-    reserved_hours = sum(hours for day, hours in daily_used.items() if day >= today)
-    work_days = math.ceil((learning_hours + follow_up_hours + reserved_hours) * 7 / weekly_hours) if weekly_hours else 0
-    latest_constraint = max([today, *[day for day in daily_used if day >= today],
-                             *[topic["startDate"] for topic in active_learning if topic["startDate"] > today]])
-    spacing_days = len(all_topics) * max(1, MIN_STAGGER_DAYS) + max(intervals.values(), default=35) * 2 + 14
-    max_days = min(3650, max(400, math.ceil(work_days + spacing_days + day_diff(today, latest_constraint))))
-    completed_ids = set()
-    last_topic_start_date = None  # stagger tracker — prevents revision wave synchronization
-
-    for day_offset in range(max_days):
-        current_date = add_days(today, day_offset)
-        wknd = is_weekend(current_date, holidays)
-        budget = weekend_budget if wknd else weekday_budget
-
-        # Total revision load for this day (dynamic scheduler keeps daily_used current)
-        rev_load = daily_used.get(current_date, 0)
-
-        # Available hours for learning after revisions
-        available = max(0, budget - rev_load)
-
-        # Advance active learning topics (priority: existing learners first)
-        newly_completed = []
-        for lt in active_learning:
-            if lt["remainingHours"] <= 0 or lt["startDate"] > current_date:
-                continue
-            # Spend as much available time as possible on this topic
-            spend = min(available, lt["remainingHours"])
-            if spend <= 0:
-                continue
-            lt["remainingHours"] = round(lt["remainingHours"] - spend, 1)
-            available = round(available - spend, 1)
-            daily_used[current_date] = daily_used.get(current_date, 0) + spend
-
-            if lt["remainingHours"] <= 0:
-                    # Topic completes — dynamically pack revisions into budget
-                    completion_date = current_date
-                    schedule = schedule_future(lt, completion_date)
-                    mastery_date = final_date(lt["id"], schedule, completion_date)
-                    available = max(0, budget - daily_used.get(current_date, 0))
-
-                    estimates[lt["id"]] = {
-                        "topicName": lt["name"],
-                        "subjectName": lt["subjectName"],
-                        "subjectColor": lt["subjectColor"],
-                        "roi": lt["roi"],
-                        "startDate": lt["startDate"],
-                        "completionDate": completion_date,
-                        "masteryDate": mastery_date,
-                        "revisionSchedule": {k: v["date"] for k, v in schedule.items()},
-                        "doneRevisions": lt.get("doneRevisions", 0),
-                        "status": original_status.get(lt["id"], lt.get("actualStatus", "learning")),
-                        "isEstimate": True,
-                        "queuePosition": queue_positions.get(lt["id"], 0),
-                        "schedulingError": errors_by_topic.get(lt["id"]),
-                    }
-                    newly_completed.append(lt["id"])
-                    completed_ids.add(lt["id"])
-
-        # Remove completed from active learning
-        active_learning = [lt for lt in active_learning if lt["id"] not in completed_ids]
-
-        # Start new topics from waiting queue
-        # MIN_STAGGER_DAYS gap between starts prevents revision pipeline wave synchronization
-        while (len(active_learning) < MAX_PARALLEL_TOPICS
-               and waiting_queue
-               and available > 0
-               and (last_topic_start_date is None
-                    or day_diff(last_topic_start_date, current_date) >= MIN_STAGGER_DAYS)):
-            known_topics = {entry["id"]: entry for entry in all_topics}
-            def prerequisites_ready(candidate):
-                for prerequisite_id in candidate.get("prerequisiteIds", []):
-                    dependency = known_topics.get(prerequisite_id)
-                    if not dependency:
-                        return False
-                    if dependency["status"] in ("completed", "pipeline-complete"):
-                        continue
-                    forecast = estimates.get(prerequisite_id, {})
-                    if not forecast.get("completionDate") or forecast["completionDate"] > current_date:
-                        return False
-                return True
-
-            eligible = next((index for index, candidate in enumerate(waiting_queue)
-                             if prerequisites_ready(candidate)), None)
-            if eligible is None:
-                break
-            new_t = waiting_queue.pop(eligible)
-            last_topic_start_date = current_date
-            est_hrs = new_t.get("estimatedHours", 7.5)
-            lt = {
-                "id": new_t["id"], "name": new_t["name"],
-                "subjectId": new_t["subjectId"], "subjectName": new_t["subjectName"],
-                "subjectColor": new_t["subjectColor"], "roi": new_t["roi"],
-                "estimatedHours": est_hrs,
-                "startDate": current_date,
-                "remainingHours": est_hrs,
-                "doneRevisions": 0,
-                "actualStatus": "not-started",
-            }
-
-            # Deduct first session of learning
-            spend = min(available, lt["remainingHours"])
-            lt["remainingHours"] = round(lt["remainingHours"] - spend, 1)
-            available = round(available - spend, 1)
-            daily_used[current_date] = daily_used.get(current_date, 0) + spend
-
-            if lt["remainingHours"] <= 0:
-                # Completes same day (1-day topic)
-                completion_date = current_date
-                schedule = schedule_future(lt, completion_date)
-                mains_date = final_date(lt["id"], schedule, completion_date)
-                available = max(0, budget - daily_used.get(current_date, 0))
-
-                estimates[lt["id"]] = {
-                    "topicName": lt["name"],
-                    "subjectName": lt["subjectName"],
-                    "subjectColor": lt["subjectColor"],
-                    "roi": lt["roi"],
-                    "startDate": current_date,
-                    "completionDate": current_date,
-                    "masteryDate": mains_date,
-                    "revisionSchedule": {k: v["date"] for k, v in schedule.items()},
-                    "doneRevisions": 0,
-                    "status": "not-started",
-                    "isEstimate": True,
-                    "queuePosition": queue_positions.get(lt["id"], 0),
-                    "schedulingError": errors_by_topic.get(lt["id"]),
-                }
-                completed_ids.add(lt["id"])
-            else:
-                active_learning.append(lt)
-
-        # Exit early if everything is done
-        if not active_learning and not waiting_queue:
-            break
-
-    # Handle any topics still in active learning (didn't complete in simulation window)
-    for lt in active_learning:
-        if lt["id"] not in estimates:
-            errors_by_topic[lt["id"]] = (
-                "No study hours configured; set weekday or weekend hours above zero"
-                if weekly_hours == 0 else f"Forecast exceeds the {max_days}-day planning horizon"
-            )
-            estimates[lt["id"]] = {
-                "topicName": lt["name"],
-                "subjectName": lt["subjectName"],
-                "subjectColor": lt["subjectColor"],
-                "roi": lt["roi"],
-                "startDate": lt["startDate"],
-                "completionDate": None,
-                "masteryDate": None,
-                "revisionSchedule": {},
-                "doneRevisions": lt.get("doneRevisions", 0),
-                "status": original_status.get(lt["id"], lt.get("actualStatus", "learning")),
-                "isEstimate": True,
-                "queuePosition": queue_positions.get(lt["id"], 0),
-                "schedulingError": errors_by_topic[lt["id"]],
-            }
-
-    # Handle remaining queued topics
-    for idx, t in enumerate(waiting_queue):
-        if t["id"] not in estimates:
-            errors_by_topic[t["id"]] = (
-                "No study hours configured; set weekday or weekend hours above zero"
-                if weekly_hours == 0 else f"Forecast exceeds the {max_days}-day planning horizon"
-            )
-            estimates[t["id"]] = {
-                "topicName": t["name"],
-                "subjectName": t["subjectName"],
-                "subjectColor": t["subjectColor"],
-                "roi": t["roi"],
-                "startDate": None,
-                "completionDate": None,
-                "masteryDate": None,
-                "revisionSchedule": {},
-                "doneRevisions": 0,
-                "status": "not-started",
-                "isEstimate": True,
-                "queuePosition": queue_positions.get(t["id"], 0),
-                "schedulingError": errors_by_topic[t["id"]],
-            }
-
-    # ── Summary stats ────────────────────────────────────────────────────
-    all_mastery_dates = [e["masteryDate"] for e in estimates.values() if e.get("masteryDate")]
-    overall_finish = max(all_mastery_dates) if all_mastery_dates and not errors_by_topic else None
-    total_not_started = sum(1 for t in all_topics if t["status"] == "not-started")
-    total_learning = sum(1 for t in all_topics if t["status"] == "learning")
-    total_pipeline = total_not_started + total_learning
-
-    return {
-        "estimates": estimates,
-        "summary": {
-            "totalTopics": len(all_topics),
-            "inPipeline": total_pipeline,
-            "notStarted": total_not_started,
-            "learning": total_learning,
-            "overallFinishDate": overall_finish,
-            "parallelSlots": MAX_PARALLEL_TOPICS,
-            "simulationDays": max_days,
-            "weeklyStudyHours": weekly_hours,
-            "remainingLearningHours": round(learning_hours, 1),
-            "remainingFollowUpHours": round(follow_up_hours, 1),
-            "scheduledTopics": sum(bool(estimate.get("masteryDate")) for estimate in estimates.values()),
-            "unscheduledTopics": len(errors_by_topic),
-            "schedulingErrors": [
-                {"topicId": topic_id, "error": error}
-                for topic_id, error in errors_by_topic.items()
-            ],
-        },
-    }
+    """Expose the canonical plan's estimates and compatibility summary."""
+    plan = _build_preparation_plan(data)
+    return copy.deepcopy({"estimates": plan["estimates"], "summary": plan["summary"]})
 
 
 def find_topic_info(data, topic_id):
@@ -5523,115 +4889,63 @@ def calculate_revision_schedule_dynamic(completion_date, intervals, act_hrs,
 
 
 def resolve_all_revision_schedules(data, scheduling_errors=None):
-    """Place all rigid stages before practice, including fixed capacity loads.
-
-    Unplaceable topics retain actual completions but reserve no pending hours.
-    Optional diagnostics keep the existing two-value return contract intact.
-    """
-    settings = data["settings"]
-    act_hrs = get_activity_hours(settings)
-    daily_used = _fixed_schedule_loads(data)
-    topics = sorted(
-        (topic for subject in data["subjects"] for topic in subject["topics"]
-         if topic["status"] in ("completed", "pipeline-complete") and topic.get("completionDate")),
-        key=lambda topic: topic["completionDate"],
-    )
-    resolved = {}
-    failed = set()
-    for phase in ("rigid", "flexible"):
-        for topic in topics:
-            topic_id = topic["id"]
-            if topic_id in failed:
-                continue
-            context = _revision_context(data, topic_id)
-            try:
-                resolved[topic_id] = calculate_revision_schedule_dynamic(
-                    topic["completionDate"], settings["intervals"], act_hrs, daily_used,
-                    settings.get("weekdayHours", 6), settings.get("weekendHours", 12),
-                    holidays=data.get("holidays", []),
-                    estimated_hours=get_effective_hours(data, topic),
-                    phase=phase, schedule=resolved.get(topic_id), **context,
-                )
-            except ValueError as error:
-                topic_hours = get_topic_scaled_hours(act_hrs, get_effective_hours(data, topic))
-                for revision in resolved.get(topic_id, {}).values():
-                    if revision["type"] not in context["completed_stages"]:
-                        date = revision["date"]
-                        daily_used[date] -= topic_hours.get(revision["type"], 1)
-                        if abs(daily_used[date]) < 0.001:
-                            del daily_used[date]
-                resolved[topic_id] = {
-                    stage.lower(): {"date": date, "type": stage, "label": stage}
-                    for stage, date in context["completed_dates"].items()
-                }
-                failed.add(topic_id)
-                if scheduling_errors is not None:
-                    scheduling_errors.append({"topicId": topic_id, "error": str(error)})
-    return resolved, daily_used
+    """Return learned-topic schedules and their fixed/session capacity, once."""
+    plan = _build_preparation_plan(data)
+    learned = {topic["id"] for subject in data["subjects"] for topic in subject["topics"]
+               if topic.get("status") in ("completed", "pipeline-complete") and topic.get("completionDate")}
+    resolved = {topic_id: copy.deepcopy(schedule) for topic_id, schedule in plan["schedules"].items()
+                if topic_id in learned}
+    used = {}
+    for day, load in plan["days"].items():
+        hours = sum(item["hours"] for item in load["activities"]
+                    if item["category"] in ("subject_cycle", "cumulative_sectional")
+                    or (item["category"] == "revision" and item.get("topicId") in learned))
+        if hours:
+            used[day] = round(hours, 6)
+    if scheduling_errors is not None:
+        scheduling_errors.extend(copy.deepcopy(plan["summary"]["schedulingErrors"]))
+    return resolved, used
 
 
 def get_tasks_for_date(data, date_str, resolved_schedules=None):
-    """Return all revision / practice tasks scheduled for a specific date."""
-    if resolved_schedules is None:
-        resolved_schedules, _ = resolve_all_revision_schedules(data)
-    tasks = []
-    for subj in data["subjects"]:
-        for topic in subj["topics"]:
-            if topic["status"] != "completed" or not topic.get("completionDate"):
-                continue
-            schedule = resolved_schedules.get(topic["id"])
-            if not schedule:
-                continue
-            for key, rev in schedule.items():
-                if rev["date"] == date_str:
-                    rev_key = f"{topic['id']}_{rev['type']}"
-                    done = rev_key in data["completedRevisions"]
-                    overdue = date_str < today_str() and not done
-                    tasks.append({
-                        "topicId": topic["id"],
-                        "subjectId": subj["id"],
-                        "subjectName": subj["name"],
-                        "subjectColor": subj["color"],
-                        "topicName": topic["name"],
-                        "topicROI": topic.get("roi", "medium"),
-                        "type": rev["type"],
-                        "label": rev["label"],
-                        "date": rev["date"],
-                        "done": done,
-                        "overdue": overdue,
-                    })
-    return tasks
+    """Return stage sessions only; projected topics cannot be marked complete."""
+    plan = _build_preparation_plan(data)
+    load = preparation_planner.plan_day(plan, data, date_str)
+    topics = {topic["id"]: topic for subject in data["subjects"] for topic in subject["topics"]}
+    tasks = {}
+    for item in load["activities"]:
+        if item["category"] != "revision":
+            continue
+        key = (item["topicId"], item["revType"])
+        previous = tasks.get(key, {}).get("hours", 0)
+        tasks[key] = {
+            **item, "type": item["revType"], "date": date_str,
+            "topicROI": topics[item["topicId"]].get("roi", "medium"),
+            "overdue": item.get("overdue", False), "hours": round(previous + item["hours"], 6),
+        }
+    return list(tasks.values())
 
 
 def get_overdue_tasks(data, resolved_schedules=None):
-    """Return all tasks from past dates that haven't been completed."""
-    if resolved_schedules is None:
-        resolved_schedules, _ = resolve_all_revision_schedules(data)
+    """Keep unmet original due dates visible even when sessions move forward."""
+    plan = _build_preparation_plan(data)
     today = today_str()
     tasks = []
     for subj in data["subjects"]:
         for topic in subj["topics"]:
-            if topic["status"] != "completed" or not topic.get("completionDate"):
+            if topic.get("status") not in ("completed", "pipeline-complete") or not topic.get("completionDate"):
                 continue
-            schedule = resolved_schedules.get(topic["id"])
-            if not schedule:
-                continue
-            for key, rev in schedule.items():
-                if rev["date"] < today:
-                    rev_key = f"{topic['id']}_{rev['type']}"
-                    if rev_key not in data["completedRevisions"]:
-                        tasks.append({
-                            "topicId": topic["id"],
-                            "subjectId": subj["id"],
-                            "subjectName": subj["name"],
-                            "subjectColor": subj["color"],
-                            "topicName": topic["name"],
-                            "type": rev["type"],
-                            "label": rev["label"],
-                            "date": rev["date"],
-                            "done": False,
-                            "overdue": True,
-                        })
+            for rev in plan["schedules"].get(topic["id"], {}).values():
+                due = rev.get("originalDate") or rev.get("dueDate")
+                if due and due < today and not rev["done"]:
+                    tasks.append({
+                        "topicId": topic["id"], "subjectId": subj["id"], "subjectName": subj["name"],
+                        "subjectColor": subj.get("color", ""), "topicName": topic["name"],
+                        "stream": plan["estimates"][topic["id"]]["stream"], "type": rev["type"],
+                        "label": rev["label"], "date": due, "scheduledDate": rev["date"],
+                        "hours": rev["remainingHours"], "done": False, "overdue": True,
+                        "isProjected": False, "canMark": True,
+                    })
     tasks.sort(key=lambda t: t["date"])
     return tasks
 
@@ -5902,6 +5216,7 @@ def api_edit_topic(subj_id, topic_id):
     if "estimatedHours" in body:
         old_hrs = topic.get("estimatedHours", 7.5)
         topic["estimatedHours"] = max(0.5, min(100, round(float(body["estimatedHours"]), 1)))
+        topic["estimateSource"] = "user-estimate"
         if old_hrs != topic["estimatedHours"]:
             changes.append(f"Est. Hours: {old_hrs}h → {topic['estimatedHours']}h")
     if "roi" in body and body["roi"] in ("very-high", "high", "medium", "low"):
@@ -5978,22 +5293,6 @@ def api_delete_topic(subj_id, topic_id):
 @app.route("/api/subjects/<subj_id>/topics/<topic_id>/start", methods=["POST"])
 def api_start_topic(subj_id, topic_id):
     data = load_data()
-    # Enforce parallel learning limit: count all currently-learning topics
-    learning_count = sum(
-        1
-        for s in data["subjects"]
-        for t in s.get("topics", [])
-        if t["status"] == "learning"
-    )
-    if learning_count >= MAX_PARALLEL_TOPICS:
-        return jsonify({
-            "error": f"You already have {learning_count} topics in progress. "
-                     f"Complete (mark Done) a current topic before starting a new one.",
-            "limitReached": True,
-            "currentlyLearning": learning_count,
-            "maxParallel": MAX_PARALLEL_TOPICS,
-        }), 409
-
     subj = next((s for s in data["subjects"] if s["id"] == subj_id), None)
     if not subj:
         return jsonify({"error": "Subject not found"}), 404
@@ -6002,6 +5301,14 @@ def api_start_topic(subj_id, topic_id):
         return jsonify({"error": "Topic not found"}), 404
     if topic["status"] != "not-started":
         return jsonify({"error": "This topic has already been started"}), 409
+    stream = preparation_planner.subject_stream(subj)
+    active = [entry["name"] for subject in data["subjects"]
+              if preparation_planner.subject_stream(subject) == stream
+              for entry in subject["topics"] if entry["status"] == "learning"]
+    if active:
+        return jsonify({"error": f"The {stream.upper()} learning stream is occupied by: " + ", ".join(active)
+                        + ". Complete its initial learning before starting another topic in this stream.",
+                        "streamBusy": True, "stream": stream}), 409
     all_topics = {entry["id"]: entry for subject in data["subjects"] for entry in subject["topics"]}
     blocked = [all_topics[entry]["name"] for entry in topic.get("prerequisiteIds", [])
                if entry in all_topics and all_topics[entry]["status"] not in ("completed", "pipeline-complete")]
@@ -6042,8 +5349,9 @@ def api_complete_topic(subj_id, topic_id):
     actual = get_actual_hours(data, topic_id)
     if actual > 0:
         topic["estimatedHours"] = round(actual, 1)
+        topic["estimateSource"] = "actual-logged"
     save_data(data)
-    schedule = calculate_revision_schedule(today_str(), data["settings"]["intervals"])
+    schedule = copy.deepcopy(_build_preparation_plan(data)["schedules"].get(topic_id, {}))
 
     # Build beautiful schedule summary
     sched_lines = []
@@ -6051,7 +5359,7 @@ def api_complete_topic(subj_id, topic_id):
     for rev in schedule.values():
         if rev["type"] not in active:
             continue
-        sched_lines.append(f"{rev['type']}: {rev['date']}")
+        sched_lines.append(f"{rev['type']}: {rev.get('date') or 'Not scheduled'}")
 
     send_ntfy(
         "Topic Completed!",
@@ -6460,48 +5768,30 @@ def api_dashboard():
         exam_info["milestones"]["r4Window"] = add_days(prelims, -21)
         exam_info["milestones"]["r5Window"] = add_days(prelims, -3)
 
-    # Feasibility check: compare MASTERY dates (R30) against exam dates
-    # Only meaningful with enough topics to be a real signal
     EXAM_BUFFER_DAYS = data["settings"].get("examBufferDays", 10)
+    summary = _build_preparation_plan(data)["summary"]
+    exam_info["plannedMilestones"] = summary["milestones"]
     exam_info["feasibility"] = {"status": "ok", "warnings": [], "bufferDays": EXAM_BUFFER_DAYS}
-    if prelims:
-        try:
-            tl = estimate_all_timelines(data)
-            estimates = tl.get("estimates", {})
-            total_estimated = sum(1 for e in estimates.values() if e.get("isEstimate"))
-
-            # Effective deadline = Prelims minus buffer
-            effective_deadline = add_days(prelims, -EXAM_BUFFER_DAYS)
-
-            # Check which topics' MASTERY (R30) won't complete before deadline
-            topics_past = []
-            for tid, est in estimates.items():
-                mastery = est.get("masteryDate")
-                if mastery and est.get("isEstimate") and mastery > effective_deadline:
-                    name = est.get("topicName", "Unknown")
-                    subj = est.get("subjectName", "")
-                    topics_past.append(f"{subj}: {name}")
-
-            if topics_past:
-                exam_info["feasibility"]["status"] = "behind"
-                exam_info["feasibility"]["warnings"].append({
-                    "type": "mastery_overflow",
-                    "message": f"{len(topics_past)} topic(s) won't complete full pipeline before Prelims (incl. {EXAM_BUFFER_DAYS}d buffer)",
-                    "topics": topics_past[:10],
-                })
-
-            # Overall: does the last topic's R30 finish after the effective deadline?
-            overall_finish = tl.get("summary", {}).get("overallFinishDate")
-            if overall_finish and overall_finish > effective_deadline:
-                gap = day_diff(effective_deadline, overall_finish)
-                exam_info["feasibility"]["status"] = "behind"
-                exam_info["feasibility"]["warnings"].append({
-                    "type": "overall_behind",
-                    "message": f"Full pipeline finishes {gap} days past your prep deadline ({EXAM_BUFFER_DAYS}d before Prelims)",
-                    "finishDate": overall_finish,
-                })
-        except Exception:
-            pass
+    for exam in ("prelims", "mains"):
+        if not exam_dates.get(exam):
+            continue
+        milestone = summary["milestones"][exam]
+        late = milestone.get("lateTopics", [])
+        unknown = milestone.get("unscheduledTopics", [])
+        if late:
+            exam_info["feasibility"]["status"] = "behind"
+            exam_info["feasibility"]["warnings"].append({
+                "type": f"{exam}_overflow", "exam": exam,
+                "message": f"{len(late)} topic(s) have {exam.title()}-relevant activities planned after {milestone['deadline']}",
+                "topics": [f"{entry['subjectName']}: {entry['topicName']}" for entry in late],
+            })
+        if unknown or not milestone.get("finishDate"):
+            if exam_info["feasibility"]["status"] == "ok":
+                exam_info["feasibility"]["status"] = "unknown"
+            exam_info["feasibility"]["warnings"].append({
+                "type": f"{exam}_unknown", "exam": exam,
+                "message": f"{exam.title()}-scoped activity completion cannot be fully forecast; review missing scope or scheduling warnings",
+            })
 
     return jsonify({
         "today": today,
@@ -6509,6 +5799,7 @@ def api_dashboard():
         "isHoliday": today in holidays,
         "stats": {
             "totalTopics": total_topics,
+            "totalSubjects": len(data["subjects"]),
             "learning": learning,
             "completed": completed,
             "todayTasks": len(today_tasks),
@@ -6523,6 +5814,7 @@ def api_dashboard():
         "cumulativeUpcoming": cum_upcoming,
         "timeBudget": compute_daily_load(data, today, include_overdue=True),
         "examInfo": exam_info,
+        "learningPlan": list(_simulate_learning_for_date(data, today).values()),
     })
 
 
@@ -6618,6 +5910,7 @@ def api_today():
         ],
         "cumulativeSessions": cum_today,
         "timeBudget": compute_daily_load(data, today, include_overdue=True),
+        "learningPlan": list(_simulate_learning_for_date(data, today).values()),
         "repairTasks": [entry for entry in data.get("repairItems", [])
                         if entry.get("status") == "open" and entry.get("dueDate", "") <= today],
     })
@@ -6632,10 +5925,15 @@ def api_calendar(year, month):
     data = load_data()
     days_in_month = calendar.monthrange(year, month)[1]
     events = {}
+    learning_by_date = {}
+    reserves_by_date = {}
     for day in range(1, days_in_month + 1):
         d = datetime(year, month, day)
         ds = d.strftime("%Y-%m-%d")
         tasks = get_tasks_for_date(data, ds)
+        load = compute_daily_load(data, ds)
+        learning_by_date[ds] = list(_simulate_learning_for_date(data, ds).values())
+        reserves_by_date[ds] = [entry for entry in load["activities"] if entry["category"] == "reserve"]
         if tasks:
             events[ds] = tasks
     return jsonify({
@@ -6644,6 +5942,8 @@ def api_calendar(year, month):
         "firstDayOfWeek": datetime(year, month, 1).weekday(),  # Mon=0
         "daysInMonth": days_in_month,
         "events": events,
+        "learningByDate": learning_by_date,
+        "reservesByDate": reserves_by_date,
         "today": today_str(),
     })
 
@@ -6681,6 +5981,10 @@ def api_calendar_day(date_str):
         "pending": total - done,
         "tasks": tasks,
         "timeBudget": tb,
+        "learningPlan": list(_simulate_learning_for_date(data, date_str).values()),
+        "learningTopics": [{**topic, "subjectId": subject["id"], "subjectName": subject["name"],
+                    "stream": preparation_planner.subject_stream(subject)}
+                   for subject in data["subjects"] for topic in subject["topics"] if topic["status"] == "learning"],
     })
 
 
@@ -6783,7 +6087,7 @@ def api_topic_detail(subj_id, topic_id):
             for key, rev in schedule.items():
                 rev_key = f"{topic['id']}_{rev['type']}"
                 rev["done"] = rev_key in data["completedRevisions"]
-                rev["overdue"] = rev["date"] < today and not rev["done"]
+                rev["overdue"] = bool(rev.get("date") and rev["date"] < today and not rev["done"])
                 rev["isToday"] = rev["date"] == today
 
     # Compute timeline estimate for this topic
@@ -6794,10 +6098,7 @@ def api_topic_detail(subj_id, topic_id):
     resolved_stages = get_topic_stages(data, topic["id"])
 
     # Study log aggregation
-    logged_hours = sum(
-        log["hours"] for log in data.get("studyLogs", [])
-        if log["topicId"] == topic["id"]
-    )
+    logged_hours = get_actual_hours(data, topic["id"])
 
     # Resolve related topic details
     related = []
@@ -7171,13 +6472,29 @@ def api_get_study_logs():
 
 @app.route("/api/study-logs", methods=["POST"])
 def api_add_study_log():
-    body = request.get_json(force=True)
+    body = request.get_json(silent=True)
+    if not isinstance(body, dict):
+        return jsonify({"error": "Expected a study log"}), 400
     data = load_data()
+    topic = next((topic for subject in data["subjects"] for topic in subject["topics"] if topic["id"] == body.get("topicId")), None)
+    if not topic:
+        return jsonify({"error": "Topic not found"}), 404
+    try:
+        hours = float(body.get("hours"))
+        log_date = datetime.strptime(body.get("date", today_str()), "%Y-%m-%d").strftime("%Y-%m-%d")
+        if isinstance(body.get("hours"), bool) or not math.isfinite(hours) or not 0 < hours <= 24 or log_date > today_str():
+            raise ValueError("Invalid log")
+    except (TypeError, ValueError):
+        return jsonify({"error": "Use positive hours up to 24 and a valid non-future date"}), 400
+    stage = body.get("stage", "learning")
+    if stage != "learning" and (stage not in get_topic_stages(data, topic["id"]) or not topic.get("completionDate")):
+        return jsonify({"error": "Choose an active stage on a learned topic"}), 400
     entry = {
         "id": gen_id(),
-        "topicId": body["topicId"],
-        "date": body.get("date", today_str()),
-        "hours": round(float(body["hours"]), 1),
+        "topicId": topic["id"],
+        "date": log_date,
+        "hours": round(hours, 4),
+        "stage": stage,
     }
     data["studyLogs"].append(entry)
     save_data(data)
@@ -7597,6 +6914,9 @@ def api_weekly_review():
 app.register_blueprint(create_preparation_blueprint(
     lambda: load_data(), lambda data: save_data(data), lambda: today_str(),
     lambda data, topic: reconcile_topic_progress(data, topic),
+))
+app.register_blueprint(create_planner_blueprint(
+    lambda: load_data(), lambda data: save_data(data), lambda: today_str(),
 ))
 
 

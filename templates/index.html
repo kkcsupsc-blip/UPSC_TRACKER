@@ -13,6 +13,7 @@
 <link rel="apple-touch-icon" href="/static/images/icon-192.png">
 <link rel="stylesheet" href="/static/css/style.css?v={{ cache_bust }}">
 <link rel="stylesheet" href="/static/css/preparation.css?v={{ cache_bust }}">
+<link rel="stylesheet" href="/static/css/planner.css?v={{ cache_bust }}">
 </head>
 <body>
 <div class="app">
@@ -48,19 +49,19 @@
       <p>Spaced Repetition System</p>
     </div>
     <nav class="sidebar-nav">
-      <button class="nav-item active" data-page="dashboard">
+      <button class="nav-item active" data-page="dashboard" aria-label="Dashboard" title="Dashboard">
         <span class="nav-icon"></span><span>Dashboard</span>
       </button>
-      <button class="nav-item" data-page="subjects">
+      <button class="nav-item" data-page="subjects" aria-label="Subjects" title="Subjects">
         <span class="nav-icon"></span><span>Subjects</span>
       </button>
       <button class="nav-item" data-page="preparation" aria-label="Strategy and Evidence" title="Strategy and Evidence">
         <span class="nav-icon" aria-hidden="true">&#9776;</span><span>Strategy &amp; Evidence</span>
       </button>
-      <button class="nav-item" data-page="today">
+      <button class="nav-item" data-page="today" aria-label="Today's Plan" title="Today's Plan">
         <span class="nav-icon"></span><span>Today's Plan</span>
       </button>
-      <button class="nav-item" data-page="calendar">
+      <button class="nav-item" data-page="calendar" aria-label="Calendar" title="Calendar">
         <span class="nav-icon"></span><span>Calendar</span>
       </button>
       <button class="nav-item" data-page="analytics">
@@ -69,10 +70,10 @@
       <button class="nav-item" data-page="cumulative">
         <span class="nav-icon"></span><span>Cumulative Rev</span>
       </button>
-      <button class="nav-item" data-page="timeline">
+      <button class="nav-item" data-page="timeline" aria-label="Timeline" title="Timeline">
         <span class="nav-icon"></span><span>Timeline</span>
       </button>
-      <button class="nav-item" data-page="settings">
+      <button class="nav-item" data-page="settings" aria-label="Settings" title="Settings">
         <span class="nav-icon"></span><span>Settings</span>
       </button>
       <button class="nav-item" data-page="htmlpages">
@@ -84,7 +85,7 @@
 
     </nav>
     <div class="sidebar-footer">
-      <span>Target: UPSC 2027</span>
+      <span id="target-attempt">Target: UPSC</span>
     </div>
   </aside>
 
@@ -104,7 +105,7 @@
         <div class="card-header"><span class="card-title">⏱️ Today's Time Budget</span></div>
         <div id="dash-time-budget"></div>
       </div>
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+      <div class="planner-dashboard-grid">
         <div class="card">
           <div class="card-header"><span class="card-title">Due Today</span><span class="badge badge-red" id="dash-due-count">0</span></div>
           <div id="dash-due-list"></div>
@@ -165,7 +166,7 @@
         <button class="btn btn-sm" onclick="calNav(-1)">◀ Prev</button>
         <span class="cal-nav-month" id="cal-month-label"></span>
         <button class="btn btn-sm" onclick="calNav(1)">Next ▶</button>
-        <button class="btn btn-sm" onclick="calGoToday()" style="margin-left: auto;">Today</button>
+        <button class="btn btn-sm" onclick="calGoToday()">Today</button>
       </div>
       <div class="cal-layout">
         <div class="card" style="flex:1; min-width:0;">
@@ -353,6 +354,11 @@
     <div class="page" id="page-settings">
       <h2 class="page-title">Settings</h2>
       <p class="page-subtitle">Configure your study schedule and preferences</p>
+
+      <section id="planner-settings" aria-labelledby="planner-settings-title" aria-busy="false">
+        <h3 id="planner-settings-title">Two-Stream Planner</h3>
+        <div id="planner-settings-body"></div>
+      </section>
 
       <!-- Theme Picker -->
       <div class="card" style="margin-bottom: 16px;">
@@ -765,6 +771,7 @@
 <!-- ===== FLOATING THEME BUTTON ===== -->
 <button class="theme-fab" onclick="cycleTheme()" title="Switch Theme">🎨</button>
 
+<script src="/static/js/planner.js?v={{ cache_bust }}"></script>
 <script src="/static/js/app.js?v={{ cache_bust }}"></script>
 <script src="/static/js/preparation.js?v={{ cache_bust }}"></script>
 <script>

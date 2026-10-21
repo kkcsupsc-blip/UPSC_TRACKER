@@ -58,7 +58,7 @@ The fresh dataset contains **211 main topics from seven subject PDFs**. Subtopic
 | Sociology Paper II | 21 | Mains Only |
 | **Total** | **211** | |
 
-Topics retain their PDF code, layer, and page reference. Their initial learning estimates are **7.5 hours each**, with neutral **medium ROI**. These are editable planning defaults, not measured learning times or verified importance ratings.
+Topics retain their PDF code, layer, and page reference. Their initial learning estimates are **7.5 hours each**, with neutral **medium ROI**. The 211-topic baseline is still uncalibrated: these are editable planning defaults, not measured learning times or verified importance ratings. The planner counts unfinished topics as provisional unless their estimate source is `user-estimate` or `actual-logged`; that count is not a new topic total or an assessment of readiness.
 
 The seeded coverage checklist mirrors the documents. It is **not independently verified against the official UPSC syllabus**. Subjects or papers without a source document were not invented; separately account for CSAT, Essay, Ethics, and any remaining syllabus areas.
 
@@ -87,12 +87,12 @@ Leave that terminal running while using the application. This is a **Flask** app
 | Dashboard | Review active learning, due work, overdue work, capacity, and a forecast summary |
 | Subjects | Browse topics; start or finish learning; edit estimates, ROI, and exam type; open topic details |
 | Strategy & Evidence | Configure subject sources, coverage, topic scope and prerequisites; record assessments; resolve repairs |
-| Today's Plan | Carry out due work, log learning hours, and review due repair reminders |
-| Calendar | Inspect scheduled activities on particular dates |
+| Today's Plan | Use the GS/Optional learning lanes, log learning or stage-session hours, and review due work and repairs |
+| Calendar | Inspect sessions on particular dates using the same planner as Today's Plan and Timeline |
 | Analytics | Review recorded activity progress and weekly study/revision reporting |
 | Cumulative Rev | Arrange synthesis batches and subject-level revision cycles |
-| Timeline | Inspect projected topic and subject completion dates under the current workload |
-| Settings | Set available hours, dates, activity durations, intervals, notifications, and backup/import options |
+| Timeline | Compare first-pass coverage, full activity pipelines, exam-scoped dates, and workload warnings |
+| Settings | Configure the planner, hours, exam dates, activity durations, intervals, notifications, and backups |
 | HTML Pages | Open supported uploaded HTML study pages; this is separate from assessment evidence |
 | Help & Logic | Read the application's built-in explanation of its current rules |
 
@@ -111,11 +111,14 @@ Leave that terminal running while using the application. This is a **Flask** app
 
 | Action | What It Records |
 | --- | --- |
-| **Log** in the New Learning Block | Actual hours spent on learning that topic |
-| **Mark Done** for an activity | That you performed the selected activity |
+| **Log** in the learning lane | Actual initial-learning hours for that topic, not its later activities |
+| **Session hours today** + **Log** beside a stage | Actual partial activity time today, without completing the stage |
+| **Mark Done** / stage completion checkbox | Completion of the **entire activity across all sessions**, not just today's allocation |
 | **Record attempt** in Strategy & Evidence | Counts, score, timing, feedback, and errors from an assessment |
 
-These actions are separate. Recording a test does not automatically mark PYQ, MCQ, or MAINS done. Marking an activity done does not invent a test score.
+These are three kinds of record: time, completion, and assessment. Learning and stage-session logs are separate; stage hours do not reduce remaining initial learning or inflate its logged total. The frontend records sessions for today; the API also accepts past dates but rejects future study logs. Recording a test does not automatically mark PYQ, MCQ, or MAINS done. Marking an activity done does not invent a test score.
+
+**Completion without a time log is not measured time.** If a stage is marked done today without a same-day stage log, the planner reserves its remaining estimated duration after earlier sessions as **Estimated time used**. This keeps that capacity from being offered again; it creates no actual-time log. A same-day actual stage log replaces that estimate. Read **Logged**, **Estimated time used**, and **Remaining planned** separately.
 
 ## 6. The Topic Stages
 
@@ -151,11 +154,13 @@ Learning happens first. The following codes describe the available follow-up act
 
 - R1, R3, R7, and R30 are stage names, **not promises of exactly Day 1, 3, 7, and 30**.
 - Built-in interval defaults are 1, 5, 14, and 35 days from learning completion. Your Settings may differ.
-- Capacity, minimum gaps, selected stages, recorded completion dates, and confidence ratings affect actual dates.
-- R7 is placed on a weekend. MN avoids sharing a date with that topic's practice clusters.
-- PYQ + ERA and MCQ + MCQA are placed as practice clusters when both are pending. The combined duration must fit an available day.
+- Capacity, minimum gaps, selected stages, completion dates, and confidence ratings affect dates. A stage can be split across several sessions; it need not fit entirely into one day.
+- R3 waits for R1, **not for PYQ or ERA**. Recall need not wait for the whole practice chain.
+- R7 waits for MCQA when active, or MCQ if MCQA is absent, then the next selected fallback. **Weekend consolidation** is enabled by default and can be switched off in the planner.
+- R30 follows the selected recall chain; it is **not gated by MVA or MAINS**. MVA and then writing can begin after initial practice/analysis without waiting for R7 or R30.
+- Recall and practice pools share capacity fairly between GS and Optional according to their learning weights and outstanding demand, with earliest-due work first within each stream. GS file order does not consume the whole pool first.
 - Hard/Okay/Easy ratings adjust relevant later recall offsets. MCQ scores and writing marks do **not** currently drive automatic rescheduling.
-- A stage appointment is not a learning lock: completing a checkbox is not an assessment gate.
+- Completing initial learning releases that stream's learning lane while its follow-up stages continue. An activity checkbox is not an assessment gate.
 
 ## 7. Standard, Compact, And Custom Activities
 
@@ -188,13 +193,29 @@ To return an explicitly customised topic to inheritance, clear its selections in
 
 An activity duration is a planning estimate, not a score or required study achievement. Recall and note-making durations scale with topic depth; practice/writing slots are time-boxed. Do not lower estimates merely to make the finish date look better.
 
+In **Settings**, configure the planner and click **Save Planner**. If no planner settings have been saved, the implicit defaults are **attempt year 2028**, **Auto** phase, and **one GS learner + one Optional learner concurrently**.
+
+- Review each subject's **Learning stream** and the **GS subject queue / Optional subject queue**. Explicit `studyStream` wins; otherwise Sociology profiles (`sociology1`/`sociology2`) or names containing Sociology/Optional classify as Optional, and other subjects as GS. Mains Only does not itself mean Optional.
+- Move subjects up/down to set explicit queues. Without an explicit position, stable fallback order is Economy, Environment, Geography, History, Polity, then Sociology I/II, with name/ID tie-breaks. Topic prerequisites still apply.
+- Review **Phase allocation (%)**. Each row must total 100%, with positive GS and Optional allocations. Integrated defaults are below; Prelims defaults are 35/5/25/30/5 and Mains defaults 10/10/20/55/5 in the same column order. All three rows are configurable.
+
+| Integrated Pool | Default Share | Approximate Hours At 45h/Week |
+| --- | ---: | ---: |
+| GS learning | 40% | 18 |
+| Optional learning | 26.67% | 12 |
+| Recall | 15.56% | 7 |
+| Practice | 11.11% | 5 |
+| Current affairs | 6.66% | 3 |
+
+These shares divide the existing daily budget; they are not extra hours or measured study. Fixed reservations and logged time consume capacity. Idle learning quota can support other learning or follow-ups, subject to the backlog guard.
+
 ### Step 2: Set Exam Dates Carefully
 
-1. Enter your confirmed target Prelims and Mains dates.
+1. Enter your own target Prelims and Mains dates; neither the attempt year nor an example date is an official UPSC schedule claim.
 2. Choose a realistic **Pre-Exam Buffer**.
 3. Click **Save Exam Dates**.
 
-Dates support countdowns, feasibility checks, and some subject-cycle suggestions. They do not automatically switch the whole application into an exam phase or universally prevent all work from falling inside the buffer or after the exam. Verify the actual Timeline.
+With **Phase: Auto**, the planner uses Integrated until the configured Prelims focus window (default **112 days**, including Prelims day), then Mains after Prelims through the configured Mains date, or onward if none is set. Outside those windows it uses Integrated. You can select a phase explicitly. The buffer sets exam-scoped planning deadlines, not a hard ban on later work; verify the Timeline and shortfalls.
 
 ### Step 3: Review One Subject Strategy
 
@@ -237,17 +258,17 @@ Use **Indian Monsoon Mechanism & Seasons of India** as an example.
 1. **Find it:** Open Subjects, expand Geography, and select the topic.
 2. **Check scope:** Review its source reference, relevant chapters, exam type, selected activities, and learning-hour estimate. Adjust the estimate through Edit if needed.
 3. **Preview questions:** Inspect representative PYQs to understand what the topic must enable you to do. This is a recommended study method, not an automatically enforced stage.
-4. **Start:** Click **Start** or **Start Learning**. The app allows at most three topics in Learning simultaneously. You do not have to fill all three slots.
+4. **Start:** Click **Start** or **Start Learning**. Actual manual starts enforce **one GS + one Optional topic in Learning**, not three topics or two from the same stream. An unfinished prerequisite still blocks a start. A suggested forecast does not start the topic for you.
 5. **Learn:** Study the bounded core material. Explain the mechanism, retrieve key relations, and practise the relevant diagram or map outside the app.
-6. **Log actual work:** Open Today's Plan, find the topic in **New Learning Block**, enter the learning hours actually spent, and click **Log**.
-7. **Continue honestly:** Do not repeatedly log the same session. These learning logs reduce estimated remaining learning; they are not a generic log for every later revision session.
-8. **Finish the first pass:** When the bounded learning work is complete, click **Done** in New Learning Block or **Mark as Completed** in topic details.
-9. **Follow revision dates:** Reopen the topic's Revision Timeline and complete the due activities. Mark each done only after performing it.
+6. **Log actual work:** Open Today's Plan, find the topic in **GS learning** (or **Optional learning** for an optional topic), enter the learning hours actually spent, and click **Log**.
+7. **Continue honestly:** Log each session once. Learning logs reduce remaining initial learning; use the separate stage-session control for later activities. Neither control is a way to pre-log future study.
+8. **Finish the first pass:** When the bounded learning work is complete, click **Learning Done** or **Mark as Completed** in topic details. This frees the lane for the next topic even while this topic's stages continue.
+9. **Follow revision sessions:** Reopen the topic's Revision Timeline or Today's Plan. Use **Session hours today** + **Log** for partial activity time. Mark an activity done only after **all** its work is finished, including sessions on other days; a small allocation today is not completion of the whole stage.
 10. **Record evidence:** Use Strategy & Evidence for timed questions, recall checks, subject-skill checks, or writing assessments. This is separate from the activity checkbox.
 11. **Repair errors:** Tag relevant errors and complete the correction/retest workflow.
 12. **Recheck later:** Use later recall, mixed tests, and cumulative revision rather than assuming the first successful session is permanent retention.
 
-When learning is completed, recorded learning hours can replace the original estimate and influence later duration scaling. Accurate logs therefore improve subsequent planning.
+When learning is completed, recorded **learning-only** hours can replace the original estimate and influence later duration scaling. Activity logs do not count toward that replacement. Accurate logs therefore improve subsequent planning.
 
 Undo an activity if marked accidentally. This reopens an incomplete pipeline where applicable; it does not erase independent assessment evidence or undo work already performed in historical batches.
 
@@ -352,24 +373,28 @@ Subject-cycle suggestions are planning aids, not verified evidence that the prev
 ## 13. Read The Timeline Correctly
 
 1. Open **Timeline**.
-2. Check the number of topics successfully forecast and the weekly study hours.
+2. Check forecast/unscheduled topic counts, weekly hours, and the **Provisional forecast** count of topics still using uncalibrated defaults.
 3. Review remaining learning and follow-up activity hours separately.
-4. Read the full **Pipeline Finish** date, including its year.
-5. Inspect subject dates, topic dates, and any grouped warnings.
+4. Compare **GS stream** and **Optional stream**: **First-pass coverage** is initial learning; **Full activity pipeline** includes the selected follow-ups. Read dates with their years.
+5. Inspect **Prelims-scoped activities / Mains-scoped activities**, planning deadlines, late/unscheduled topic lists, and each stream's review-pressure note.
 6. Return to the underlying scope, estimates, or hours if the plan does not fit your preparation window.
 
-The forecast uses current estimates, available hours, active activities, logged learning, existing reservations, and explicit prerequisites. It simulates new starts; **a forecasted start does not actually change a topic to Learning**.
+Today's Plan, Calendar, and Timeline use **one shared engine**: estimates, available hours, phase allocations, active stages, learning/stage logs, reservations, and prerequisites all affect the same plan. It simulates starts and split sessions; **a forecasted start does not actually change a topic to Learning**. An activity's forecast date is its final planned session, not necessarily its first session.
 
-Large courses are not cut off simply because they exceed 400 days. The learning horizon scales with workload up to a 3,650-day safety limit. Individual activity placement still has finite search limits and must fit the relevant daily capacity.
+**Prelims-scoped finish** counts GS topics other than Mains Only and omits MVA/MAINS; Optional and other excluded work **still consume the shared budget**. **Mains-scoped finish** excludes Prelims-only topics. Neither date measures performance or guarantees exam readiness.
+
+**Recall backlog guard:** in Settings, **Recall backlog guard (days; 0 disables)** defaults to **7**. When pending recall is later than this tolerance, the forecast pauses **new starts in that stream**, keeps its existing active learner, and redirects idle learning quota to follow-ups/backlog recovery. Review pressure shows the maximum projected recall delay and the number of forecast days with new learning deferred (`recallPressure` / `guardedLearningDays`). This is a **soft planning tolerance, not a guarantee of on-time recall**; it cannot create missing hours.
+
+The engine has a **3,650-day** safety horizon, not a 400-day course cutoff. Unscheduled work and late deadlines are genuine workload signals, not dates to hide or promises of eventual readiness.
 
 ### What Warnings Mean
 
 | Message Or Situation | Interpretation | Appropriate Response |
 | --- | --- | --- |
 | No study hours configured | There is no weekly learning capacity | Correct the available-hour settings |
-| An activity exceeds daily budget capacity | A required task or combined practice cluster is larger than a usable day | Review realistic durations, scope, or capacity |
-| No capacity within candidate days | The activity could not be placed within its finite search | Inspect reservations and restrictive activity rules |
-| Forecast exceeds planning horizon | The simulated course still cannot finish within the safety window | Recheck total workload, dependencies, and available hours |
+| Fixed reservations exceed daily budget capacity | Cumulative/subject-cycle demand exceeds capacity left after recorded time | Reschedule reservations or review sustainable hours; stage splitting does not remove this shortfall |
+| Unscheduled work | Missing dates, impossible dependencies, unusable task pools, or the finite horizon prevent a finish | Inspect prerequisites, phase shares, and workload rather than assuming zero days remaining |
+| Review pressure / new learning deferred | Recall is delayed and the guard is holding new forecast starts in that stream | Reduce backlog and recalibrate demand/capacity; the tolerance is not an on-time guarantee |
 | Not scheduled | A reliable date was not produced | Read the warning; do not interpret this as zero days remaining |
 | Unallocated work | Demand is not allocated in that displayed plan | Decide when to perform it; this does not promise automatic rollover tomorrow |
 | Finish date is after your target exam | The current plan does not fit that target | Calibrate actual learning needs and essential activities rather than editing numbers to hide the mismatch |
@@ -384,8 +409,8 @@ Changing activity scope changes the forecast, not the amount of learning you tru
 - [ ] Choose a realistic amount of work within today's available time.
 - [ ] Perform recall before rereading, where recall is the task.
 - [ ] Complete the chosen learning/practice sessions outside the tracker.
-- [ ] Log new-learning hours once, accurately.
-- [ ] Mark only activities actually performed.
+- [ ] Log learning and partial stage-session hours separately, once each, using actual time.
+- [ ] Mark whole activities done only after every session is finished.
 - [ ] Record meaningful assessment results and error categories.
 - [ ] Save useful current affairs links without letting collection replace study.
 
@@ -418,8 +443,10 @@ The optional GitHub sync is best effort. Local saves and independent exports rem
 
 | Question | Answer |
 | --- | --- |
-| Why is there no learning work on my first day? | All seeded topics begin Not Started. Start a topic explicitly. |
-| Why can I not start another topic? | Check the three-topic learning limit and unfinished explicit prerequisites. |
+| Is a suggested topic already started? | No. Seeded topics begin Not Started; click Start explicitly. A forecast is not a study record. |
+| Why can I not start another topic? | Only one actual learner is allowed per stream. Complete its initial learning and check unfinished prerequisites; a free Optional lane cannot hold a second GS learner. |
+| Why has the forecast stopped suggesting new learning? | Check that stream's recall backlog guard and review-pressure note. Existing active learning is preserved; delayed recall can defer new starts. |
+| Why does completion show Estimated time used? | The stage was done today without a same-day actual stage log. Its estimated remaining time reserves capacity; it is not measured study. Log the actual stage time to replace it. |
 | Why did Compact not change this topic? | A non-empty topic or subject stage override takes precedence. Review the resolved active stages. |
 | Why is writing still self-assessed? | You selected Self review. A checkbox or confidence rating is not external evaluation. |
 | Why is my MCQ evidence diagnostic-only? | The latest set is Diagnostic or Repeated. Use an honest Unseen/Mixed assessment for that training check. |

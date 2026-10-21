@@ -274,23 +274,23 @@ async function saveTopicEdit(subjId, topicId) {
 
 async function startLearning(subjId, topicId) {
   const result = await api(`/api/subjects/${subjId}/topics/${topicId}/start`, 'POST');
-  if (result.limitReached) {
-    showToast(`Slot full! Complete a current topic before starting a new one. (${result.currentlyLearning}/${result.maxParallel} active)`, 'warning');
-    return;
-  }
   if (result.error) {
     showToast(result.error, 'warning');
     return;
   }
+  if (result.limitReached) {
+    showToast('This learning stream is busy. Complete its current topic first.', 'warning');
+    return;
+  }
   showToast('Started learning!');
-  renderPage('subjects');
+  renderAll();
 }
 
 async function completeLearning(subjId, topicId) {
   const result = await api(`/api/subjects/${subjId}/topics/${topicId}/complete`, 'POST');
+  if (result.error) { showToast(result.error, 'warning'); return; }
   showToast(`✅ "${result.topic.name}" completed! Revision schedule created.`, 'success');
-  renderToday();
-  renderPage('subjects');
+  renderAll();
 }
 
 async function resetTopic(subjId, topicId) {
@@ -413,6 +413,7 @@ async function showTopicDetail(subjId, topicId, focusLinks = false) {
   html += `<div style="margin-bottom: 14px;">
     <span class="badge ${st.badge}">${st.text}</span>
     <span class="badge badge-${roiBadgeClass(topic.roi)}" style="margin-left: 6px;">${roiEmoji(topic.roi)} ${topic.roi.toUpperCase()} ROI</span>
+    ${plannerBadge(plannerSubject(subj))}
   </div>`;
 
   if (topic.notes) {
@@ -436,19 +437,19 @@ async function showTopicDetail(subjId, topicId, focusLinks = false) {
     html += `<div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-bottom:10px;">
       <div style="text-align:center; padding:8px; background:var(--bg); border-radius:6px;">
         <div style="font-size:10px; color:var(--text3); text-transform:uppercase; letter-spacing:0.5px;">Start</div>
-        <div style="font-size:13px; font-weight:600; color:var(--accent2); margin-top:2px;">${formatDateShort(estimate.startDate)}</div>
+        <div style="font-size:13px; font-weight:600; color:var(--accent2); margin-top:2px;">${plannerDate(estimate.startDate)}</div>
       </div>
       <div style="text-align:center; padding:8px; background:var(--bg); border-radius:6px;">
-        <div style="font-size:10px; color:var(--text3); text-transform:uppercase; letter-spacing:0.5px;">Completion</div>
-        <div style="font-size:13px; font-weight:600; color:var(--yellow); margin-top:2px;">${formatDateShort(estimate.completionDate)}</div>
+        <div style="font-size:10px; color:var(--text3); text-transform:uppercase; letter-spacing:0.5px;">First pass</div>
+        <div style="font-size:13px; font-weight:600; color:var(--yellow); margin-top:2px;">${plannerDate(estimate.completionDate)}</div>
       </div>
       <div style="text-align:center; padding:8px; background:var(--bg); border-radius:6px;">
         <div style="font-size:10px; color:var(--text3); text-transform:uppercase; letter-spacing:0.5px;">Pipeline finish</div>
-        <div style="font-size:13px; font-weight:600; color:var(--green); margin-top:2px;">${formatDateShort(estimate.masteryDate)}</div>
+        <div style="font-size:13px; font-weight:600; color:var(--green); margin-top:2px;">${plannerDate(estimate.masteryDate)}</div>
       </div>
     </div>`;
 
-    html += `<div style="font-size:11px; color:var(--text3);">~${daysToMastery} days to pipeline finish · ${detail.resolvedStages?.length || 0} planned activities</div>`;
+    html += `<div style="font-size:11px; color:var(--text3);">${estimate.masteryDate ? '~' + daysToMastery + ' days to pipeline finish' : 'Pipeline finish not scheduled'} · ${detail.resolvedStages?.length || 0} planned activities</div>`;
 
     // Show estimated revision stages
     if (estimate.revisionSchedule) {
@@ -457,7 +458,7 @@ async function showTopicDetail(subjId, topicId, focusLinks = false) {
       html += `<div style="margin-top:10px; display:flex; flex-wrap:wrap; gap:6px;">`;
       for (const [key, date] of Object.entries(estimate.revisionSchedule)) {
         html += `<span style="font-size:10px; padding:3px 8px; border-radius:4px; background:var(--bg); border-left:3px solid ${stageColors[key] || 'var(--text3)'};">
-          ${stageLabels[key] || key}: <strong>${formatDateShort(date)}</strong>
+          ${stageLabels[key] || key}: <strong>${plannerDate(date)}</strong>
         </span>`;
       }
       html += `</div>`;
@@ -685,10 +686,11 @@ function renderTimeBudgetActivities(activities) {
     else if (a.category === 'learning') label = '📖 ' + a.topicName;
     else if (a.category === 'cumulative_sectional') label = '🔄 Sectional R' + a.round;
     else if (a.category === 'subject_cycle') label = '📚 ' + (a.label || a.subjectName);
+    else if (a.category === 'reserve') label = a.label || a.subjectName || 'Reserved study time';
     else label = '🔄 ' + a.subjectName + ' R' + a.round;
     const color = colors[a.category] || 'var(--text3)';
     const warn = a.overdue ? ' ⚠️' : '';
-    return '<span style="font-size:10px; padding:2px 6px; border-radius:3px; background:var(--bg); border-left:3px solid ' + color + ';">' + label + ' <strong>' + a.hours + 'h</strong>' + warn + '</span>';
+    return '<span style="font-size:10px; padding:2px 6px; border-radius:3px; background:var(--bg); border-left:3px solid ' + color + ';">' + plannerEscape(label) + ' <strong>' + plannerEscape(a.hours) + 'h planned</strong>' + warn + '</span>';
   });
   return '<div style="margin-top:10px; display:flex; flex-wrap:wrap; gap:4px;">' + items.join('') + '</div>';
 }
@@ -696,10 +698,10 @@ function renderTimeBudgetActivities(activities) {
 function renderTaskItem(t) {
   const typeColors = { R1: 'red', PYQ: 'cyan', ERA: 'pink', R3: 'orange', MN: 'lime', CA: 'purple', MCQ: 'teal', MCQA: 'indigo', R7: 'yellow', MVA: 'emerald', R30: 'blue', MAINS: 'accent' };
   return `<div class="task-item ${t.overdue ? 'overdue' : ''}" style="cursor:pointer;" onclick="showTopicDetail('${t.subjectId}','${t.topicId}')">
-    <div class="task-check ${t.done ? 'done' : ''}" onclick="event.stopPropagation();toggleRevision('${t.topicId}','${t.type}')"></div>
+    ${plannerStageControl(t)}
     <div class="task-info">
-      <div class="task-name ${t.done ? 'done-text' : ''}">${t.topicName}</div>
-      <div class="task-meta">${t.subjectName} · ${t.label}${t.overdue ? ' · <span style="color:var(--red)">OVERDUE (' + formatDateShort(t.date) + ')</span>' : ''}</div>
+      <div class="task-name ${t.done ? 'done-text' : ''}">${plannerEscape(t.topicName)}</div>
+      <div class="task-meta">${plannerEscape(t.subjectName)} · ${plannerEscape(t.label)}${Number.isFinite(t.hours) ? ' · ' + plannerEscape(t.hours) + 'h planned session' : ''}${t.isProjected ? ' · Forecast only' : ''}${t.overdue ? ' · <span style="color:var(--red)">OVERDUE (' + formatDate(t.date) + ')</span>' : ''}</div>
     </div>
     <span class="badge badge-${typeColors[t.type] || 'accent'} task-badge">${t.type}</span>
   </div>`;
@@ -722,7 +724,7 @@ async function renderDashboard() {
 
   const s = data.stats;
   document.getElementById('dash-stats').innerHTML = `
-    <div class="stat-card blue"><div class="stat-label">Total Topics</div><div class="stat-value">${s.totalTopics}</div><div class="stat-sub">${data.learningTopics ? data.learningTopics.length : 0} subjects</div></div>
+    <div class="stat-card blue"><div class="stat-label">Total Topics</div><div class="stat-value">${s.totalTopics}</div><div class="stat-sub">${s.totalSubjects ?? 0} subjects</div></div>
     <div class="stat-card green"><div class="stat-label">Completed</div><div class="stat-value">${s.completed}</div><div class="stat-sub">learning: ${s.learning}</div></div>
     <div class="stat-card orange"><div class="stat-label">Due Today</div><div class="stat-value">${s.todayTasks}</div><div class="stat-sub">${s.todayDone} done</div></div>
     <div class="stat-card red"><div class="stat-label">Overdue</div><div class="stat-value">${s.overdue}</div><div class="stat-sub">catch up needed</div></div>
@@ -759,21 +761,19 @@ async function renderDashboard() {
       // Feasibility warnings
       const feas = ei.feasibility || {};
       if (feas.warnings && feas.warnings.length > 0) {
-        const statusColor = feas.status === 'behind' ? 'var(--red)' : 'var(--green)';
-        const statusLabel = feas.status === 'behind' ? 'BEHIND SCHEDULE' : 'ON TRACK';
+        const statusColor = feas.status === 'behind' ? 'var(--red)' : feas.status === 'unknown' ? 'var(--yellow)' : 'var(--green)';
+        const statusLabel = feas.status === 'behind' ? 'Activity scheduling warnings' : feas.status === 'unknown' ? 'Forecast incomplete' : 'Activity scheduling notes';
         html += `<div style="margin-top:12px; padding:10px 14px; background:${feas.status === 'behind' ? 'var(--red-bg, rgba(239,68,68,0.1))' : 'var(--green-bg, rgba(34,197,94,0.1))'}; border-left:3px solid ${statusColor}; border-radius:6px;">`;
         html += `<div style="font-weight:600; font-size:13px; color:${statusColor}; margin-bottom:6px;">${statusLabel}</div>`;
         feas.warnings.forEach(w => {
           html += `<div style="font-size:12px; color:var(--text2); margin-bottom:4px;">
-            <span style="color:var(--red); margin-right:4px;">!</span> ${w.message}
+            <span style="color:var(--red); margin-right:4px;">!</span> ${plannerEscape(w.message)}
           </div>`;
           if (w.topics && w.topics.length > 0) {
             html += `<div style="font-size:11px; color:var(--text3); margin-left:16px; margin-bottom:4px;">${w.topics.slice(0,5).join(', ')}${w.topics.length > 5 ? ` +${w.topics.length-5} more` : ''}</div>`;
           }
         });
         html += `</div>`;
-      } else if (dte.prelims !== undefined) {
-        html += `<div style="margin-top:12px; padding:8px 14px; background:var(--green-bg, rgba(34,197,94,0.1)); border-left:3px solid var(--green); border-radius:6px; font-size:12px; color:var(--green); font-weight:600;">ON TRACK</div>`;
       }
       examEl.innerHTML = html;
     } else {
@@ -799,7 +799,7 @@ async function renderDashboard() {
       : '';
 
     document.getElementById('dash-time-budget').innerHTML = `
-      <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:10px; margin-bottom:12px;">
+      <div class="planner-budget-grid">
         <div style="text-align:center; padding:8px; background:var(--bg); border-radius:6px;">
           <div style="font-size:10px; color:var(--text3); text-transform:uppercase;">Budget</div>
           <div style="font-size:18px; font-weight:700; color:var(--text1);">${tb.budget}h</div>
@@ -822,9 +822,10 @@ async function renderDashboard() {
         <div style="height:100%; width:${Math.min(100, pct)}%; background:${barColor}; border-radius:4px; transition:width 0.3s;"></div>
       </div>
       <div style="display:flex; justify-content:space-between; font-size:11px; color:var(--text3);">
-        <span>${tb.totalHours}h / ${tb.budget}h used (${pct}%)</span>
+        <span>${tb.totalHours}h / ${tb.budget}h planned (${pct}%)</span>
         ${statusText}
       </div>
+      ${plannerBudgetLabel(tb)}
       ${spilloverText}
       ${tb.activities && tb.activities.length > 0 ? renderTimeBudgetActivities(tb.activities) : ''}
     `;
@@ -903,6 +904,7 @@ async function renderDashboard() {
 
   // Timeline estimator summary on dashboard
   const tlSummary = timeline.summary || {};
+  updatePlannerTarget(tlSummary.plannerConfig || { attemptYear: tlSummary.attemptYear });
   const tlEstimates = timeline.estimates || {};
   const dashTlCard = document.getElementById('dash-timeline-card');
   if (tlSummary.inPipeline > 0) {
@@ -911,18 +913,18 @@ async function renderDashboard() {
       .sort((a, b) => (a.masteryDate || '').localeCompare(b.masteryDate || ''))
       .slice(0, 5);
 
-    let tlHtml = `<div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-bottom:12px;">
+    let tlHtml = plannerProvisionalWarning(tlSummary) + renderPlannerMilestones(tlSummary) + `<div class="planner-summary-grid">
       <div style="text-align:center; padding:8px; background:var(--bg); border-radius:6px;">
         <div style="font-size:10px; color:var(--text3);">IN PIPELINE</div>
         <div style="font-size:18px; font-weight:700; color:var(--accent2);">${tlSummary.inPipeline}</div>
       </div>
       <div style="text-align:center; padding:8px; background:var(--bg); border-radius:6px;">
-        <div style="font-size:10px; color:var(--text3);">PARALLEL SLOTS</div>
-        <div style="font-size:18px; font-weight:700; color:var(--text1);">${tlSummary.parallelSlots}</div>
+        <div style="font-size:10px; color:var(--text3);">LEARNING STREAMS</div>
+        <div style="font-size:13px; font-weight:700; color:var(--text1);">1 GS + 1 Optional</div>
       </div>
       <div style="text-align:center; padding:8px; background:var(--bg); border-radius:6px;">
         <div style="font-size:10px; color:var(--text3);">PIPELINE FINISH</div>
-        <div style="font-size:13px; font-weight:600; color:var(--green); margin-top:2px;">${tlSummary.overallFinishDate ? formatDateShort(tlSummary.overallFinishDate) : '—'}</div>
+        <div style="font-size:13px; font-weight:600; color:var(--green); margin-top:2px;">${plannerDate(tlSummary.overallFinishDate)}</div>
       </div>
     </div>`;
     nextTopics.forEach(t => {
@@ -931,10 +933,10 @@ async function renderDashboard() {
       tlHtml += `<div style="display:flex; align-items:center; gap:8px; padding:6px 0; border-bottom:1px solid var(--bg2);">
         <span>${statusIcon}</span>
         <div style="flex:1; min-width:0;">
-          <div style="font-size:12px; font-weight:500; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${t.topicName}</div>
-          <div style="font-size:10px; color:var(--text3);">${t.subjectName} · Pipeline finish ~${formatDateShort(t.masteryDate)}</div>
+          <div style="font-size:12px; font-weight:500; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${plannerEscape(t.topicName)}</div>
+          <div style="font-size:10px; color:var(--text3);">${plannerEscape(t.subjectName)} · Pipeline finish ${plannerDate(t.masteryDate)}</div>
         </div>
-        <span style="font-size:11px; color:var(--text3); white-space:nowrap;">${daysLeft}d</span>
+        <span style="font-size:11px; color:var(--text3); white-space:nowrap;">${t.masteryDate ? daysLeft + 'd' : 'Not scheduled'}</span>
       </div>`;
     });
     document.getElementById('dash-timeline-list').innerHTML = tlHtml;
@@ -946,7 +948,7 @@ async function renderDashboard() {
 
 // ===== RENDER: SUBJECTS =====
 async function renderSubjects() {
-  const [data, timeline] = await Promise.all([api('/api/data'), api('/api/timeline-estimate')]);
+  const [data, timeline] = await Promise.all([api('/api/data'), api('/api/timeline-estimate'), refreshPlannerTarget()]);
   const container = document.getElementById('subjects-list');
   const estimates = timeline.estimates || {};
 
@@ -958,11 +960,12 @@ async function renderSubjects() {
   const roiOrder = { 'very-high': 0, high: 1, medium: 2, low: 3 };
   const sorted = [...data.subjects].sort((a, b) => roiOrder[a.roi] - roiOrder[b.roi]);
 
-  // Count all currently-learning topics across all subjects
-  const learningCount = data.subjects.reduce((sum, s) => sum + s.topics.filter(t => t.status === 'learning').length, 0);
-  const slotsAvailable = learningCount < (timeline.summary?.parallelSlots || 2);
+  const streamSubjects = data.subjects.map(plannerSubject);
 
   container.innerHTML = sorted.map(subj => {
+    const classified = plannerSubject(subj);
+    const slotsAvailable = plannerCanStart(classified, streamSubjects);
+    const streamName = plannerStream(classified) === 'gs' ? 'GS' : 'Optional';
     const topicsSorted = [...subj.topics].sort((a, b) => roiOrder[a.roi] - roiOrder[b.roi]);
     const completed = subj.topics.filter(t => t.status === 'completed' || t.status === 'pipeline-complete').length;
     const mastered = subj.topics.filter(t => t.status === 'pipeline-complete').length;
@@ -977,7 +980,7 @@ async function renderSubjects() {
         <div style="display:flex; align-items:center; gap:12px;">
           <div style="width:4px; height:28px; border-radius:2px; background:${subj.color};"></div>
           <div>
-            <div class="subject-name">${subj.name}</div>
+            <div class="subject-name">${plannerEscape(subj.name)} ${plannerBadge(classified)}</div>
             <div style="font-size:11px; color:var(--text3);">${total} topics · ${completed} completed · ${mastered} pipeline-complete · <span class="badge badge-${roiBadgeClass(subj.roi)}" style="font-size:10px">${roiEmoji(subj.roi)} ${subj.roi.toUpperCase()} ROI</span>${subj.ntfyTopic ? ` · <span class="badge badge-cyan" style="font-size:10px">${subj.ntfyTopic}</span>` : ''}${hmTopics.length > 0 ? ` · <span style="font-size:10px;color:${hmMastered === hmTopics.length && hmTopics.length > 0 ? 'var(--green)' : 'var(--text3)'};">VH+H+M: ${hmMastered}/${hmTopics.length}</span>` : ''}</div>
             ${subj.notes ? `<div style="font-size:11px; color:var(--text2); margin-top:4px; max-width:420px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="${subj.notes.replace(/"/g, '&quot;')}">📝 ${subj.notes}</div>` : ''}
           </div>
@@ -1008,7 +1011,7 @@ async function renderSubjects() {
               let actions = `<button class="btn btn-sm" onclick="event.stopPropagation();editTopic('${subj.id}','${t.id}')" title="Edit topic">✏️</button> `;
               if (t.status === 'not-started') actions += slotsAvailable
                 ? `<button class="btn btn-sm btn-primary" onclick="event.stopPropagation();startLearning('${subj.id}','${t.id}');">Start</button>`
-                : `<button class="btn btn-sm" disabled title="Complete a learning topic first (${learningCount}/${timeline.summary?.parallelSlots || 2} slots used)" style="opacity:0.45;cursor:not-allowed;">🔒 Start</button>`;
+                : `<button class="btn btn-sm" disabled title="The ${streamName} stream is busy. Complete its current learning topic first." style="opacity:0.45;cursor:not-allowed;">Start</button>`;
               else if (t.status === 'learning') actions += `<button class="btn btn-sm btn-success" onclick="event.stopPropagation();completeLearning('${subj.id}','${t.id}');">Done</button>`;
               else actions += `<button class="btn btn-sm" onclick="event.stopPropagation();showTopicDetail('${subj.id}','${t.id}');">Plan</button>`;
               actions += ` <button class="btn btn-sm" onclick="event.stopPropagation();showTopicDetail('${subj.id}','${t.id}',true);" title="Manage current affairs links">CA Links (${(t.links || []).length})</button>`;
@@ -1024,24 +1027,24 @@ async function renderSubjects() {
                 } else if (t.status === 'completed') {
                   estHtml = `<div style="font-size:11px;line-height:1.5;">
                     <span style="color:var(--green);">Pipeline finish</span><br>
-                    <span style="color:var(--text2);font-weight:500;">${formatDateShort(est.masteryDate)}</span><br>
+                    <span style="color:var(--text2);font-weight:500;">${plannerDate(est.masteryDate)}</span><br>
                     <span style="color:var(--text3);">${est.doneRevisions} activities done</span>
                   </div>`;
                 } else if (t.status === 'learning') {
                   const daysToMastery = daysBetween(todayStr(), est.masteryDate);
                   estHtml = `<div style="font-size:11px;line-height:1.5;">
-                    <span style="color:var(--yellow);">Done ~${formatDateShort(est.completionDate)}</span><br>
-                    <span style="color:var(--text2);">Pipeline finish ${formatDateShort(est.masteryDate)}</span><br>
-                    <span style="color:var(--text3);">${daysToMastery}d left</span>
+                    <span style="color:var(--yellow);">First pass ${plannerDate(est.completionDate)}</span><br>
+                    <span style="color:var(--text2);">Pipeline finish ${plannerDate(est.masteryDate)}</span><br>
+                    <span style="color:var(--text3);">${est.masteryDate ? daysToMastery + 'd left' : 'Not scheduled'}</span>
                   </div>`;
                 } else {
                   // not-started
                   const qPos = est.queuePosition || '—';
                   const daysToMastery = daysBetween(todayStr(), est.masteryDate);
                   estHtml = `<div style="font-size:11px;line-height:1.5;">
-                    <span style="color:var(--accent2);">Start ~${formatDateShort(est.startDate)}</span><br>
-                    <span style="color:var(--text2);">Pipeline finish ~${formatDateShort(est.masteryDate)}</span><br>
-                    <span style="color:var(--text3);">Q#${qPos} · ${daysToMastery}d</span>
+                    <span style="color:var(--accent2);">Start ${plannerDate(est.startDate)}</span><br>
+                    <span style="color:var(--text2);">Pipeline finish ${plannerDate(est.masteryDate)}</span><br>
+                    <span style="color:var(--text3);">Q#${qPos} · ${est.masteryDate ? daysToMastery + 'd' : 'Not scheduled'}</span>
                   </div>`;
                 }
               }
@@ -1063,7 +1066,7 @@ async function renderSubjects() {
 
 // ===== RENDER: TODAY'S PLAN =====
 async function renderToday() {
-  const data = await api('/api/today');
+  const [data] = await Promise.all([api('/api/today'), refreshPlannerTarget()]);
   const today = data.today;
   const weekend = data.isWeekend;
   const dayNames = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
@@ -1083,7 +1086,7 @@ async function renderToday() {
     timeSummaryHtml = `
       <div style="background:var(--bg2); border-radius:8px; padding:12px; margin-bottom:16px; border-left:4px solid ${barColor};">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-          <span style="font-size:13px; font-weight:600;">Time Budget: ${tb.totalHours}h / ${tb.budget}h</span>
+          <span style="font-size:13px; font-weight:600;">Planned Time: ${tb.totalHours}h / ${tb.budget}h</span>
           <span style="font-size:11px; color:${tb.overloaded ? 'var(--red)' : 'var(--green)'}; font-weight:600;">
             ${tb.overloaded ? '⚠️ OVERLOADED by ' + tb.overloadHours + 'h' : '✓ ' + tb.remaining + 'h free'}
           </span>
@@ -1096,7 +1099,9 @@ async function renderToday() {
           <span>📖 Learning: ${tb.learningHours}h</span>
           <span>🔄 Cumulative: ${tb.cumulativeHours}h</span>
         </div>
-        ${tpSpillover > 0 ? `<div style="margin-top:8px; padding:6px 10px; background:rgba(255,165,0,0.1); border-left:3px solid orange; border-radius:4px; font-size:11px; color:var(--text2);">↪ Unallocated work: <strong>${tpSpillover}h</strong> · ${(tb.spilloverItems||[]).map(s => s.label + ' ' + s.hours + 'h').join(', ')}</div>` : ''}
+        ${plannerBudgetLabel(tb)}
+        ${tb.activities?.length ? renderTimeBudgetActivities(tb.activities) : ''}
+        ${tpSpillover > 0 ? `<div style="margin-top:8px; padding:6px 10px; background:rgba(255,165,0,0.1); border-left:3px solid orange; border-radius:4px; font-size:11px; color:var(--text2);">↪ Unallocated work: <strong>${tpSpillover}h</strong> · ${(tb.spilloverItems||[]).map(s => plannerEscape(s.label) + ' ' + plannerEscape(s.hours) + 'h').join(', ')}</div>` : ''}
       </div>`;
   }
 
@@ -1110,16 +1115,15 @@ async function renderToday() {
     <span style="margin-left: auto; font-size:12px; color:var(--text2);">Total: ${weekend ? settings.weekendHours : settings.weekdayHours}h available</span>
   `;
 
-  const todayTasks = data.todayTasks;
-  const overdueTasks = data.overdueTasks;
-  const learningTopics = data.learningTopics;
+  const todayTasks = data.todayTasks || [];
+  const overdueTasks = data.overdueTasks || [];
 
   let html = '';
 
   // === BLOCK 1: First Hour — Revision (R1, R3 + Overdue) ===
   const revisionTasks = [...overdueTasks, ...todayTasks.filter(t => ['R1', 'R3'].includes(t.type))];
   const revisionMins = weekend ? settings.weekendRevHrs * 60 : settings.revisionMins;
-  const revBlockHrs = revisionTasks.reduce((sum, t) => sum + (actHrs[t.type] || 1), 0);
+  const revBlockHrs = revisionTasks.reduce((sum, t) => sum + (t.hours ?? actHrs[t.type] ?? 1), 0);
   html += `<div class="time-block revision">
     <div class="time-block-header">
       <div class="time-block-title">Revision Block</div>
@@ -1132,56 +1136,36 @@ async function renderToday() {
     }
   </div>`;
 
-  // === BLOCK 2: Weekend R7 Consolidation (Only on Sundays) ===
-  if (jsDow === 0) {
+  // === BLOCK 2: R7 Consolidation ===
+  if (todayTasks.some(task => task.type === 'R7')) {
     const r7Tasks = todayTasks.filter(t => t.type === 'R7');
-    const r7Hrs = r7Tasks.length * (actHrs['R7'] || 1.5);
+    const r7Hrs = r7Tasks.reduce((sum, task) => sum + (task.hours ?? actHrs.R7 ?? 1.5), 0);
     html += `<div class="time-block" style="background: var(--yellow-bg); border-color: var(--yellow);">
       <div class="time-block-header">
-        <div class="time-block-title">Sunday Consolidation - 3rd Revision</div>
+        <div class="time-block-title">Consolidation - 3rd Revision</div>
         <div class="time-block-time">${r7Tasks.length} item(s) · ~${r7Hrs}h</div>
       </div>
-      <div style="font-size: 11px; color: var(--text2); margin-bottom: 10px;">All 3rd revisions are grouped to Sunday. Deeper review — re-read notes, test with PYQs.</div>
+      <div style="font-size: 11px; color: var(--text2); margin-bottom: 10px;">Planned recall sessions</div>
       ${r7Tasks.length > 0
         ? r7Tasks.map(t => renderTaskItem(t)).join('')
-        : '<div style="padding: 8px; font-size: 12px; color: var(--text3);">No 3rd revisions due this Sunday.</div>'
+        : '<div style="padding: 8px; font-size: 12px; color: var(--text3);">No consolidation sessions due.</div>'
       }
     </div>`;
   }
 
   // === BLOCK 3: New Learning ===
-  const totalLearnHrs = learningTopics.reduce((sum, t) => sum + (t.estimatedHours || 7.5), 0);
   html += `<div class="time-block learning">
     <div class="time-block-header">
       <div class="time-block-title">New Learning Block</div>
-      <div class="time-block-time">${learningTopics.length} topic(s) · ~${totalLearnHrs.toFixed(1)}h total est.</div>
+      <div class="time-block-time">One GS + one Optional learner</div>
     </div>
-    <div style="font-size: 11px; color: var(--text2); margin-bottom: 10px;">Focus on current topics. Hours are set per-topic. Very High & High ROI topics first.</div>
-    ${learningTopics.length > 0
-      ? learningTopics.map(t => {
-          const daysIn = daysBetween(t.startDate, today);
-          const linkCount = (t.links || []).length;
-          return `<div class="task-item" style="cursor:pointer;" onclick="showTopicDetail('${t.subjectId}','${t.id}')">
-            <div style="width: 4px; height: 32px; border-radius: 2px; background: ${t.subjectColor};"></div>
-            <div class="task-info">
-              <div class="task-name">${t.name}${linkCount > 0 ? ` <span class="badge badge-cyan" style="font-size:9px;">${linkCount} links</span>` : ''}</div>
-              <div class="task-meta">${t.subjectName} · Day ${daysIn + 1} · ${t.estimatedHours || '?'}h total · ${t.roi} ROI</div>
-            </div>
-            <div style="display:flex; gap:4px; align-items:center;" onclick="event.stopPropagation();">
-              <input type="number" id="log-hrs-${t.id}" value="2" min="0.5" max="12" step="0.5" class="form-input" style="width:55px; padding:4px 6px; font-size:11px; text-align:center;">
-              <button class="btn btn-sm" onclick="logStudyHours('${t.id}', document.getElementById('log-hrs-${t.id}').value)" title="Log study hours">Log</button>
-              <button class="btn btn-sm btn-success" onclick="completeLearning('${t.subjectId}','${t.id}');">Done</button>
-            </div>
-          </div>`;
-        }).join('')
-      : '<div style="padding: 8px; font-size: 12px; color: var(--text3);">No topics in progress. Go to Subjects and start a topic!</div>'
-    }
+    ${renderPlannerLearning(data)}
   </div>`;
 
   // === BLOCK 4: Practice (PYQs, MCQs, Current Affairs, Mains due today) ===
   const practiceTasks = todayTasks.filter(t => ['PYQ', 'ERA', 'MCQ', 'MCQA', 'MN', 'MVA', 'MAINS'].includes(t.type));
   if (practiceTasks.length > 0) {
-    const practiceHrs = practiceTasks.reduce((sum, t) => sum + (actHrs[t.type] || 1), 0);
+    const practiceHrs = practiceTasks.reduce((sum, t) => sum + (t.hours ?? actHrs[t.type] ?? 1), 0);
     html += `<div class="time-block practice">
       <div class="time-block-header">
         <div class="time-block-title">Practice Block</div>
@@ -1195,7 +1179,7 @@ async function renderToday() {
   // === BLOCK 5: R30 / Mock Test ===
   const r30Tasks = todayTasks.filter(t => t.type === 'R30');
   if (r30Tasks.length > 0) {
-    const r30Hrs = r30Tasks.length * (actHrs['R30'] || 1);
+    const r30Hrs = r30Tasks.reduce((sum, task) => sum + (task.hours ?? actHrs.R30 ?? 1), 0);
     html += `<div class="time-block mock">
       <div class="time-block-header">
         <div class="time-block-title">Final Revision</div>
@@ -1299,8 +1283,10 @@ async function renderCalendar() {
     const isTodays = ds === todayD;
     const isSelected = ds === calSelectedDate;
     const dayEvents = events[ds] || [];
-    const hasTasks = dayEvents.length > 0;
-    const allDone = hasTasks && dayEvents.every(e => e.done);
+    const dayLearning = data.learningByDate?.[ds] || [];
+    const dayReserves = data.reservesByDate?.[ds] || [];
+    const hasTasks = dayEvents.length + dayLearning.length + dayReserves.length > 0;
+    const allDone = dayEvents.length > 0 && dayLearning.length === 0 && dayReserves.length === 0 && dayEvents.every(e => e.done);
     const hasOverdue = dayEvents.some(e => e.overdue);
     const doneCount = dayEvents.filter(e => e.done).length;
 
@@ -1319,6 +1305,8 @@ async function renderCalendar() {
         return `<div class="cal-event ${cls} ${doneClass}" title="${e.topicName} · ${e.label}${e.done ? ' ✓' : ''}" onclick="event.stopPropagation();showTopicDetail('${e.subjectId}','${e.topicId}')">${e.done ? '✓ ' : ''}${e.type} ${e.topicName.slice(0, 10)}</div>`;
       }).join('')}
       ${dayEvents.length > 3 ? `<div style="font-size:9px;color:var(--text3);">+${dayEvents.length - 3} more</div>` : ''}
+      ${dayLearning.length ? `<div class="planner-cal-learning" title="${plannerEscape(dayLearning.map(item => `${item.stream === 'optional' ? 'Optional' : 'GS'}: ${item.topicName} (${item.hours}h planned)`).join('; '))}">${dayLearning.length} learning</div>` : ''}
+      ${dayReserves.length ? `<div class="planner-cal-reserve" title="${plannerEscape(dayReserves.map(item => `${item.label || item.subjectName || 'Reserve'} (${item.hours}h planned)`).join('; '))}">Reserved time</div>` : ''}
     </div>`;
   }
 
@@ -1347,7 +1335,7 @@ async function showCalDay(dateStr, skipHighlight = false) {
     }
   }
 
-  const data = await api(`/api/calendar/day/${dateStr}`);
+  const [data] = await Promise.all([api(`/api/calendar/day/${dateStr}`), refreshPlannerTarget()]);
 
   // Date header
   const dateLabel = `${data.dayName}, ${formatDate(dateStr)}`;
@@ -1406,7 +1394,8 @@ async function showCalDay(dateStr, skipHighlight = false) {
       + '<div style="background:var(--bg); border-radius:4px; height:6px; overflow:hidden; margin-bottom:6px;">'
       + '<div style="height:100%; width:' + Math.min(100, pct) + '%; background:' + barColor + '; border-radius:4px;"></div>'
       + '</div>'
-      + '<div style="font-size:10px; color:var(--text3); text-align:center;">' + tb.totalHours + 'h / ' + tb.budget + 'h used (' + pct + '%)</div>'
+      + '<div style="font-size:10px; color:var(--text3); text-align:center;">' + tb.totalHours + 'h / ' + tb.budget + 'h planned (' + pct + '%)</div>'
+      + plannerBudgetLabel(tb)
       + ((tb.spilloverHours || 0) > 0 ? '<div style="margin-top:6px; padding:5px 8px; background:rgba(255,165,0,0.1); border-left:3px solid orange; border-radius:4px; font-size:10px; color:var(--text2);">↪ Unallocated work: <strong>' + tb.spilloverHours + 'h</strong> · ' + (tb.spilloverItems||[]).map(function(s){return s.label+' '+s.hours+'h'}).join(', ') + '</div>' : '')
       + (tb.activities && tb.activities.length > 0 ? renderTimeBudgetActivities(tb.activities) : '')
       + '</div>';
@@ -1446,20 +1435,21 @@ async function showCalDay(dateStr, skipHighlight = false) {
         const doneClass = t.done ? 'task-done' : '';
         tasksHtml += `<div class="cal-task-item ${doneClass} ${overdueClass}">
           <div class="cal-task-top">
-            <div class="cal-task-check ${t.done ? 'checked' : ''}" onclick="calToggleRevision('${t.topicId}','${t.type}','${dateStr}')"></div>
-            <div class="cal-task-name ${t.done ? 'done-text' : ''}">${t.topicName}</div>
+            ${plannerStageControl(t, dateStr)}
+            <div class="cal-task-name ${t.done ? 'done-text' : ''}">${plannerEscape(t.topicName)}</div>
           </div>
           <div class="cal-task-meta">
             <span style="display:inline-flex; align-items:center; gap:4px;">
               <span style="width:6px; height:6px; border-radius:2px; background:${t.subjectColor}; display:inline-block;"></span>
-              ${t.subjectName}
+              ${plannerEscape(t.subjectName)}
             </span>
             ${t.overdue ? ' · <span style="color:var(--red)">OVERDUE</span>' : ''}
             ${t.done ? ' · <span style="color:var(--green)">Completed</span>' : ''}
+            ${Number.isFinite(t.hours) ? ' · ' + plannerEscape(t.hours) + 'h planned session' : ''}
+            ${t.isProjected ? ' · Forecast only' : ''}
           </div>
           <div class="cal-task-actions">
             <button class="btn btn-sm" onclick="showTopicDetail('${t.subjectId}','${t.topicId}')" style="font-size:10px;">Details</button>
-            ${!t.done ? `<button class="btn btn-sm btn-success" onclick="calToggleRevision('${t.topicId}','${t.type}','${dateStr}')" style="font-size:10px;">Mark Done</button>` : `<button class="btn btn-sm" onclick="calToggleRevision('${t.topicId}','${t.type}','${dateStr}')" style="font-size:10px;">Undo</button>`}
           </div>
         </div>`;
       });
@@ -1467,7 +1457,8 @@ async function showCalDay(dateStr, skipHighlight = false) {
     });
   }
 
-  document.getElementById('cal-detail-tasks').innerHTML = tasksHtml;
+  const learningHtml = `<h4 class="planner-meta">Planned learning</h4>${renderPlannerLearning(data, { allowStart: data.isToday === true, allowLog: false })}`;
+  document.getElementById('cal-detail-tasks').innerHTML = learningHtml + tasksHtml;
 }
 
 async function calToggleRevision(topicId, type, dateStr) {
@@ -2097,31 +2088,37 @@ async function renderTimeline() {
   const today = data.today;
   const estimates = data.estimates || {};
   const summary = data.summary || {};
+  const escape = value => String(value ?? '').replace(/[&<>"']/g, character => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[character]);
+  const badge = estimate => typeof plannerBadge === 'function' ? plannerBadge({ stream: estimate.stream, name: estimate.subjectName }) : '';
+  const date = value => typeof plannerDate === 'function' ? plannerDate(value) : formatDate(value);
+  if (typeof updatePlannerTarget === 'function') updatePlannerTarget(summary.plannerConfig || { attemptYear: summary.attemptYear });
+  const forecastDetails = (typeof plannerProvisionalWarning === 'function' ? plannerProvisionalWarning(summary) : '')
+    + (typeof renderPlannerMilestones === 'function' ? renderPlannerMilestones(summary) : '');
 
   // Stats
   document.getElementById('tl-stats').innerHTML = `
-    <div class="stat-card blue"><div class="stat-label">Total Topics</div><div class="stat-value">${summary.totalTopics || 0}</div><div class="stat-sub">${summary.parallelSlots || 2} parallel slots</div></div>
-    <div class="stat-card orange"><div class="stat-label">In Pipeline</div><div class="stat-value">${summary.inPipeline || 0}</div><div class="stat-sub">${summary.notStarted || 0} queued · ${summary.learning || 0} learning</div></div>
-    <div class="stat-card green"><div class="stat-label">Pipeline Finish</div><div class="stat-value" style="font-size:24px;">${summary.overallFinishDate ? formatDate(summary.overallFinishDate) : '—'}</div><div class="stat-sub">${summary.overallFinishDate ? daysBetween(today, summary.overallFinishDate) + ' days' : 'Not scheduled'}</div></div>
+    <div class="stat-card blue"><div class="stat-label">Total Topics</div><div class="stat-value">${escape(summary.totalTopics || 0)}</div><div class="stat-sub">One GS + one Optional learner</div></div>
+    <div class="stat-card orange"><div class="stat-label">In Pipeline</div><div class="stat-value">${escape(summary.inPipeline || 0)}</div><div class="stat-sub">${escape(summary.notStarted || 0)} queued · ${escape(summary.learning || 0)} learning</div></div>
+    <div class="stat-card green"><div class="stat-label">Full Pipeline Finish</div><div class="stat-value" style="font-size:24px;">${date(summary.overallFinishDate)}</div><div class="stat-sub">${escape(summary.phase || '')} ${summary.overallFinishDate ? daysBetween(today, summary.overallFinishDate) + ' days' : 'Not scheduled'}</div></div>
   `;
 
   // Overall timeline visualization
   const estArr = Object.values(estimates).sort((a, b) => (a.masteryDate || '').localeCompare(b.masteryDate || ''));
   if (estArr.length === 0) {
-    document.getElementById('tl-overall').innerHTML = '<div class="empty-state" style="padding:20px 0;"><div class="empty-state-text">Not scheduled</div></div>';
+    document.getElementById('tl-overall').innerHTML = forecastDetails + schedulingWarnings(summary.schedulingErrors) + '<div class="empty-state" style="padding:20px 0;"><div class="empty-state-text">Not scheduled</div></div>';
   } else {
     // Group by subject for a visual overview
-    const bySubject = {};
+    const bySubject = Object.create(null);
     estArr.forEach(e => {
       if (!bySubject[e.subjectName]) bySubject[e.subjectName] = { color: e.subjectColor, topics: [] };
       bySubject[e.subjectName].topics.push(e);
     });
 
     const forecastCount = summary.scheduledTopics ?? estArr.filter(topic => topic.masteryDate).length;
-    let overallHtml = `<div style="display:flex;flex-wrap:wrap;gap:12px;font-size:12px;color:var(--text2);margin-bottom:14px;">
+    let overallHtml = forecastDetails + `<div style="display:flex;flex-wrap:wrap;gap:12px;font-size:12px;color:var(--text2);margin-bottom:14px;">
       <span>${forecastCount}/${estArr.length} topics forecast</span>
-      ${summary.weeklyStudyHours !== undefined ? `<span>${summary.weeklyStudyHours}h/week</span>` : ''}
-      ${summary.remainingLearningHours !== undefined ? `<span>${summary.remainingLearningHours}h learning</span><span>${summary.remainingFollowUpHours}h follow-up activities</span>` : ''}
+      ${summary.weeklyStudyHours !== undefined ? `<span>${escape(summary.weeklyStudyHours)}h/week</span>` : ''}
+      ${summary.remainingLearningHours !== undefined ? `<span>${escape(summary.remainingLearningHours)}h learning</span><span>${escape(summary.remainingFollowUpHours)}h follow-up activities</span>` : ''}
     </div>` + schedulingWarnings(summary.schedulingErrors);
     for (const [subjName, info] of Object.entries(bySubject)) {
       const subjTopics = info.topics;
@@ -2135,15 +2132,15 @@ async function renderTimeline() {
         <div style="display:flex;flex-wrap:wrap;gap:6px;justify-content:space-between;align-items:center;margin-bottom:4px;">
           <span style="font-size:13px; font-weight:500; display:flex; align-items:center; gap:6px;">
             <span style="width:8px; height:8px; border-radius:2px; background:${info.color}; display:inline-block;"></span>
-            ${subjName}
+            ${escape(subjName)} ${badge(subjTopics[0])}
           </span>
-          <span style="font-size:11px; color:var(--text3);">${completed}/${total} pipeline-complete · Pipeline finish ${latestMastery ? '~' + formatDate(latestMastery) : 'Not scheduled'}</span>
+          <span style="font-size:11px; color:var(--text3);">${completed}/${total} pipeline-complete · Pipeline finish ${date(latestMastery)}</span>
         </div>
         <div class="progress-bar"><div class="progress-fill" style="width:${pct}%; background:${info.color};"></div></div>
         <div style="display:flex; flex-wrap:wrap; gap:4px; margin-top:6px;">
           ${subjTopics.map(t => {
             const statusColor = t.status === 'pipeline-complete' ? 'var(--green)' : t.status === 'completed' ? 'var(--cyan)' : t.status === 'learning' ? 'var(--yellow)' : 'var(--text3)';
-            return `<span style="font-size:10px; padding:2px 6px; border-radius:3px; background:var(--bg); border-left:3px solid ${statusColor};" title="${t.topicName}: Pipeline finish ~${t.masteryDate}">${t.topicName.slice(0, 15)}${t.topicName.length > 15 ? '…' : ''}</span>`;
+            return `<span style="font-size:10px; padding:2px 6px; border-radius:3px; background:var(--bg); border-left:3px solid ${statusColor};" title="${escape(t.topicName)}: First pass ${date(t.completionDate)}; Pipeline finish ${date(t.masteryDate)}">${escape(String(t.topicName || '').slice(0, 15))}${String(t.topicName || '').length > 15 ? '…' : ''}</span>`;
           }).join('')}
         </div>
       </div>`;
@@ -2159,8 +2156,8 @@ async function renderTimeline() {
     document.getElementById('tl-topic-list').innerHTML = `<div style="padding:20px; text-align:center; font-size:12px; color:var(--text3);">${estArr.length === 0 ? 'Not scheduled' : 'No topics matching this filter.'}</div>`;
   } else {
     let tableHtml = `<table><thead><tr>
-      <th>#</th><th>Topic</th><th>Subject</th><th>ROI</th><th>Status</th>
-      <th>Est. Start</th><th>Est. Complete</th><th>Pipeline Finish</th><th>Days Left</th>
+      <th>#</th><th>Topic</th><th>Subject / Stream</th><th>ROI</th><th>Status</th>
+      <th>Est. Start</th><th>First Pass</th><th>Prelims Activities</th><th>Mains Activities</th><th>Full Pipeline</th><th>Days Left</th>
     </tr></thead><tbody>`;
 
     filtered.forEach((e, idx) => {
@@ -2174,17 +2171,19 @@ async function renderTimeline() {
       const daysLeft = daysBetween(today, e.masteryDate);
       const isEstimate = e.isEstimate;
       const tilde = isEstimate ? '~' : '';
-      const qLabel = e.queuePosition ? `<span style="color:var(--text3);font-size:10px;"> Q#${e.queuePosition}</span>` : '';
+      const qLabel = e.queuePosition ? `<span style="color:var(--text3);font-size:10px;"> Q#${escape(e.queuePosition)}</span>` : '';
 
       tableHtml += `<tr>
         <td style="font-size:11px;color:var(--text3);">${idx + 1}${qLabel}</td>
-        <td style="font-weight:500;font-size:12px;">${e.topicName}${e.schedulingError ? schedulingWarnings([{ error: e.schedulingError }]) : ''}</td>
-        <td><span style="display:inline-flex;align-items:center;gap:4px;font-size:12px;"><span style="width:6px;height:6px;border-radius:2px;background:${e.subjectColor};display:inline-block;"></span>${e.subjectName}</span></td>
+        <td style="font-weight:500;font-size:12px;">${escape(e.topicName)}${e.schedulingError ? schedulingWarnings([{ error: e.schedulingError }]) : ''}</td>
+        <td><span style="display:inline-flex;align-items:center;gap:4px;font-size:12px;"><span style="width:6px;height:6px;border-radius:2px;background:${escape(e.subjectColor)};display:inline-block;"></span>${escape(e.subjectName)}</span> ${badge(e)}</td>
         <td>${roiBadge}</td>
         <td>${statusBadge}</td>
-        <td style="font-size:11px;color:var(--text2);">${tilde}${formatDateShort(e.startDate)}</td>
-        <td style="font-size:11px;color:var(--text2);">${tilde}${formatDateShort(e.completionDate)}</td>
-        <td style="font-size:11px;font-weight:600;color:${e.status === 'pipeline-complete' ? 'var(--green)' : 'var(--accent2)'};">${e.masteryDate ? tilde + formatDate(e.masteryDate) : 'Not scheduled'}</td>
+        <td style="font-size:11px;color:var(--text2);">${e.startDate ? tilde : ''}${date(e.startDate)}</td>
+        <td style="font-size:11px;color:var(--text2);">${e.completionDate ? tilde : ''}${date(e.completionDate)}</td>
+        <td style="font-size:11px;color:var(--text2);">${date(e.prelimsFinishDate)}</td>
+        <td style="font-size:11px;color:var(--text2);">${date(e.mainsFinishDate)}</td>
+        <td style="font-size:11px;font-weight:600;color:${e.status === 'pipeline-complete' ? 'var(--green)' : 'var(--accent2)'};">${e.masteryDate ? tilde : ''}${date(e.masteryDate)}</td>
         <td style="font-size:11px;color:${daysLeft <= 0 ? 'var(--green)' : daysLeft <= 7 ? 'var(--yellow)' : 'var(--text3)'};">${!e.masteryDate ? 'Not scheduled' : e.status === 'pipeline-complete' ? '✓' : daysLeft + 'd'}</td>
       </tr>`;
     });
@@ -2254,7 +2253,7 @@ function renderPage(page) {
     case 'analytics': renderAnalytics(); renderWeeklyReview(); break;
     case 'cumulative': renderCumulative(); renderSubjectCycles(); break;
     case 'timeline': renderTimeline(); break;
-    case 'settings': renderSettings(); renderThemePicker(); break;
+    case 'settings': renderSettings(); renderThemePicker(); renderPlannerSettings(); break;
     case 'htmlpages': renderHtmlPages(); break;
     case 'help': break;  // Static content, no render needed
   }
@@ -2280,6 +2279,8 @@ document.addEventListener('keydown', e => {
 });
 
 // ===== INITIAL RENDER =====
+installPlannerActions();
+refreshPlannerTarget();
 renderDashboard();
 
 // ===== HTML PAGES =====
