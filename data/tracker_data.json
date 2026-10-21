@@ -1185,7 +1185,8 @@
           }
         ],
         "syllabusVerified": false
-      }
+      },
+      "studyStream": "gs"
     },
     {
       "id": "environment",
@@ -1876,7 +1877,8 @@
           }
         ],
         "syllabusVerified": false
-      }
+      },
+      "studyStream": "gs"
     },
     {
       "id": "geography",
@@ -3001,7 +3003,8 @@
           }
         ],
         "syllabusVerified": false
-      }
+      },
+      "studyStream": "gs"
     },
     {
       "id": "modern-history",
@@ -3723,7 +3726,8 @@
           }
         ],
         "syllabusVerified": false
-      }
+      },
+      "studyStream": "gs"
     },
     {
       "id": "polity",
@@ -5530,7 +5534,8 @@
           }
         ],
         "syllabusVerified": false
-      }
+      },
+      "studyStream": "gs"
     },
     {
       "id": "sociology-1",
@@ -6128,7 +6133,8 @@
           }
         ],
         "syllabusVerified": false
-      }
+      },
+      "studyStream": "optional"
     },
     {
       "id": "sociology-2",
@@ -6819,7 +6825,8 @@
           }
         ],
         "syllabusVerified": false
-      }
+      },
+      "studyStream": "optional"
     }
   ],
   "settings": {
@@ -6866,6 +6873,48 @@
       "minRecallItems": 5,
       "delayedRecallDays": 7,
       "freshDays": 21
+    },
+    "planner": {
+      "mode": "two-stream",
+      "attemptYear": 2028,
+      "phase": "integrated",
+      "prelimsFocusDays": 100,
+      "recallGuardDays": 7,
+      "weekendConsolidation": false,
+      "gsSubjectOrder": [
+        "polity",
+        "economy",
+        "environment",
+        "geography",
+        "modern-history"
+      ],
+      "optionalSubjectOrder": [
+        "sociology-1",
+        "sociology-2"
+      ],
+      "allocations": {
+        "integrated": {
+          "gs": 40,
+          "optional": 26.67,
+          "recall": 15.56,
+          "practice": 11.11,
+          "currentAffairs": 6.66
+        },
+        "prelims": {
+          "gs": 35,
+          "optional": 5,
+          "recall": 25,
+          "practice": 30,
+          "currentAffairs": 5
+        },
+        "mains": {
+          "gs": 10,
+          "optional": 10,
+          "recall": 20,
+          "practice": 55,
+          "currentAffairs": 5
+        }
+      }
     }
   },
   "completedRevisions": {},
