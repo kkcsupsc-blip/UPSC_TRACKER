@@ -15,9 +15,9 @@
           "estimatedHours": 7.5,
           "roi": "medium",
           "examType": "both",
-          "status": "pipeline-complete",
-          "startDate": "2026-10-22",
-          "completionDate": "2026-10-22",
+          "status": "not-started",
+          "startDate": null,
+          "completionDate": null,
           "activeStages": null,
           "links": [],
           "relatedTopicIds": [],
@@ -34,7 +34,7 @@
           },
           "estimateSource": "initial-planning-default",
           "timerStartedAt": null,
-          "learningSeconds": 16065.975343
+          "learningSeconds": 0
         },
         {
           "id": "economy-1-2",
@@ -6921,63 +6921,7 @@
       }
     }
   },
-  "completedRevisions": {
-    "economy-1-1_R1": {
-      "completedAt": 1792684510004,
-      "confidence": 3,
-      "scheduledDate": "2026-10-23"
-    },
-    "economy-1-1_PYQ": {
-      "completedAt": 1792684548895,
-      "confidence": 2,
-      "scheduledDate": "2026-10-23"
-    },
-    "economy-1-1_R3": {
-      "completedAt": 1792684552896,
-      "confidence": 1,
-      "scheduledDate": "2026-10-28"
-    },
-    "economy-1-1_ERA": {
-      "completedAt": 1792684573467,
-      "confidence": 2,
-      "scheduledDate": "2026-10-23"
-    },
-    "economy-1-1_MN": {
-      "completedAt": 1792684579195,
-      "confidence": 2,
-      "scheduledDate": "2026-10-23"
-    },
-    "economy-1-1_MCQ": {
-      "completedAt": 1792684581100,
-      "confidence": 2,
-      "scheduledDate": "2026-10-23"
-    },
-    "economy-1-1_MVA": {
-      "completedAt": 1792684583029,
-      "confidence": 2,
-      "scheduledDate": "2026-10-23"
-    },
-    "economy-1-1_MCQA": {
-      "completedAt": 1792684585190,
-      "confidence": 2,
-      "scheduledDate": "2026-10-22"
-    },
-    "economy-1-1_R7": {
-      "completedAt": 1792684588687,
-      "confidence": 1,
-      "scheduledDate": "2026-11-01"
-    },
-    "economy-1-1_MAINS": {
-      "completedAt": 1792684595804,
-      "confidence": 2,
-      "scheduledDate": "2026-10-23"
-    },
-    "economy-1-1_R30": {
-      "completedAt": 1792684603185,
-      "confidence": 2,
-      "scheduledDate": "2026-11-17"
-    }
-  },
+  "completedRevisions": {},
   "completedPractice": {},
   "holidays": [],
   "cumulativeRevisions": {
@@ -6994,16 +6938,7 @@
       }
     ]
   },
-  "studyLogs": [
-    {
-      "id": "e48c2dad3436",
-      "topicId": "economy-1-1",
-      "date": "2026-10-22",
-      "hours": 4.46277093,
-      "stage": "learning",
-      "source": "timer"
-    }
-  ],
+  "studyLogs": [],
   "subjectCycles": [],
   "version": 3,
   "assessmentAttempts": [
