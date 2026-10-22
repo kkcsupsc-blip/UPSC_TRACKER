@@ -21,8 +21,7 @@
           "activeStages": null,
           "links": [],
           "relatedTopicIds": [
-            "economy-3-4",
-            "economy-1-5"
+            "economy-3-4"
           ],
           "prerequisiteIds": [],
           "createdAt": "2026-10-21",
@@ -125,9 +124,7 @@
           "completionDate": null,
           "activeStages": null,
           "links": [],
-          "relatedTopicIds": [
-            "economy-1-1"
-          ],
+          "relatedTopicIds": [],
           "prerequisiteIds": [],
           "createdAt": "2026-10-21",
           "notes": "Topic 1.5 | Layer 1: CONCEPTUAL FOUNDATION | PDF page 7",
