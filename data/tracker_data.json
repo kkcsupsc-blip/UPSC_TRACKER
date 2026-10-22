@@ -6947,6 +6947,29 @@
       "maxMarks": 10.0,
       "score": 6.0,
       "reviewer": "external"
+    },
+    {
+      "id": "fcea157e64b3416ca06bbbd7f66fc177",
+      "subjectId": "economy",
+      "topicId": "economy-1-1",
+      "date": "2026-10-22",
+      "kind": "mcq",
+      "minutes": 15.0,
+      "notes": "",
+      "setType": "unseen",
+      "skill": "",
+      "errors": [
+        "elimination"
+      ],
+      "correct": 10,
+      "wrong": 3,
+      "unattempted": 1,
+      "marksPerQuestion": 2.0,
+      "penaltyFraction": 0.3333333333333333,
+      "total": 14,
+      "accuracy": 76.9,
+      "retrievalPercent": 71.4,
+      "netMarks": 18.0
     }
   ],
   "repairItems": [
@@ -6974,6 +6997,15 @@
       "topicId": "economy-1-1",
       "attemptId": "4a953f956c5d425fbb65aae7c8797822",
       "category": "time",
+      "status": "open",
+      "dueDate": "2026-10-24"
+    },
+    {
+      "id": "aa758df7f2ff4fffa4972a6f6ab4eeda",
+      "subjectId": "economy",
+      "topicId": "economy-1-1",
+      "attemptId": "fcea157e64b3416ca06bbbd7f66fc177",
+      "category": "elimination",
       "status": "open",
       "dueDate": "2026-10-24"
     }
