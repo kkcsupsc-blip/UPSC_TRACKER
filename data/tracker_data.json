@@ -6905,8 +6905,8 @@
       ],
       "allocations": {
         "integrated": {
-          "gs": 35,
-          "optional": 38.4,
+          "gs": 40,
+          "optional": 33.4,
           "recall": 15.5,
           "practice": 11.1,
           "currentAffairs": 0
