@@ -20,7 +20,9 @@
           "completionDate": null,
           "activeStages": null,
           "links": [],
-          "relatedTopicIds": [],
+          "relatedTopicIds": [
+            "economy-3-4"
+          ],
           "prerequisiteIds": [],
           "createdAt": "2026-10-21",
           "notes": "Topic 1.1 | Layer 1: CONCEPTUAL FOUNDATION | PDF page 3",
@@ -370,7 +372,9 @@
           "completionDate": null,
           "activeStages": null,
           "links": [],
-          "relatedTopicIds": [],
+          "relatedTopicIds": [
+            "economy-1-1"
+          ],
           "prerequisiteIds": [],
           "createdAt": "2026-10-21",
           "notes": "Topic 3.4 | Layer 3: PUBLIC FINANCE & FISCAL POLICY | PDF page 23",
