@@ -6966,6 +6966,11 @@
       "completedAt": 1792684588687,
       "confidence": 1,
       "scheduledDate": "2026-11-01"
+    },
+    "economy-1-1_MAINS": {
+      "completedAt": 1792684595804,
+      "confidence": 2,
+      "scheduledDate": "2026-10-23"
     }
   },
   "completedPractice": {},
@@ -7143,6 +7148,14 @@
       "completedAt": 1792684588687,
       "confidence": 1,
       "scheduledDate": "2026-11-01"
+    },
+    {
+      "topicId": "economy-1-1",
+      "stage": "MAINS",
+      "action": "completed",
+      "completedAt": 1792684595804,
+      "confidence": 2,
+      "scheduledDate": "2026-10-23"
     }
   ],
   "seedMetadata": {
