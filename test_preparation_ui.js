@@ -48,6 +48,15 @@ function preparationHarness(data) {
 function runTests() {
   const { test } = require('node:test');
 
+  test('removes syllabus coverage editor while preserving assessments and resources', () => {
+    const source = readFileSync(join(__dirname, 'static/js/preparation.js'), 'utf8');
+    assert.ok(!source.includes('data-syllabus'));
+    assert.ok(!source.includes('Save strategy</button>'));
+    assert.match(source, /Assessment performance/);
+    assert.match(source, /Save resources &amp; settings/);
+    assert.match(source, /Attempt history/);
+  });
+
   test('escapes text and both attribute quote styles', () => {
     assert.equal(escape('<img title="x" onerror=\'bad\'>&'), '&lt;img title=&quot;x&quot; onerror=&#39;bad&#39;&gt;&amp;');
     assert.equal(escape(null), '');

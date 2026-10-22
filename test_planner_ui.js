@@ -58,13 +58,13 @@ test('time labels distinguish measured, estimated used, and remaining planned ho
   assert.match(markup, /Estimated time used: 2h/);
 });
 
-test('start availability is per stream, never a global three-topic cap', () => {
+test('started topics do not block switching learning sessions', () => {
   const gs = { id: 'gs', name: 'Polity', topics: [{ status: 'learning' }] };
   const optional = { id: 'optional', name: 'Sociology', topics: [] };
-  assert.equal(planner.plannerCanStart(gs, [gs, optional]), false);
+  assert.equal(planner.plannerCanStart(gs, [gs, optional]), true);
   assert.equal(planner.plannerCanStart(optional, [gs, optional]), true);
   optional.learningTopics = 1;
-  assert.equal(planner.plannerCanStart(optional, [gs, optional]), false);
+  assert.equal(planner.plannerCanStart(optional, [gs, optional]), true);
 });
 
 test('subject queues follow configured order within the assigned stream', () => {
@@ -94,21 +94,24 @@ test('provisional forecasts warn about default estimates without claiming readin
   assert.match(planner.plannerProvisionalWarning({ provisionalTopics: 211 }), /211 topic\(s\) use default estimates/);
 });
 
-test('planned learning has both streams, suggested starts and actual-only logging', () => {
-  const html = planner.renderPlannerLearning({ learningTopics: [{ id: 'gs', subjectName: 'Polity', stream: 'gs' }], learningPlan: [
-    { topicId: 'gs', topicName: 'Rights', subjectName: 'Polity', stream: 'gs', hours: 2, remaining: 5, isSuggested: false },
+test('learning lanes show started work, stopwatch actions and no speculative starts', () => {
+  const html = planner.renderPlannerLearning({ learningTopics: [{ id: 'gs', subjectName: 'Polity', stream: 'gs', timerStartedAt: '2026-10-21T00:00:00Z' }], learningPlan: [
+    { topicId: 'gs', topicName: 'Rights', subjectName: 'Polity', stream: 'gs', hours: 2, remaining: null, isSuggested: false },
     { topicId: 'opt', topicName: '<Sociology>', subjectName: 'Sociology', stream: 'optional', hours: 1.5, isSuggested: true },
   ] });
   assert.match(html, /GS planned learning/);
   assert.match(html, /Optional planned learning/);
   assert.match(html, /2h planned/);
   assert.equal((html.match(/data-planner-action="log"/g) || []).length, 1);
-  assert.equal((html.match(/data-planner-action="start"/g) || []).length, 1);
-  assert.match(html, /Suggested, not started/);
-  assert.ok(!html.includes('<Sociology>'));
-  const forecast = planner.renderPlannerLearning({ learningPlan: [{ topicId: 'future', stream: 'gs', hours: 1, isSuggested: true }] }, { allowStart: false, allowLog: false });
-  assert.match(forecast, /disabled/);
-  assert.ok(!forecast.includes('data-planner-action="log"'));
+  assert.match(html, /data-planner-action="pause"/);
+  assert.match(html, /Finish/);
+  assert.ok(!html.includes('Suggested'));
+  assert.ok(!html.includes('Sociology'));
+  const history = planner.renderPlannerLearning({ learningPlan: [{ topicId: 'done', stream: 'gs', hours: 1, actualHours: 1, plannedHours: 0, topicStatus: 'completed', isSuggested: false }] });
+  assert.match(history, /1h logged/);
+  assert.match(history, /Learning complete/);
+  assert.ok(!history.includes('data-planner-action="start"'));
+  assert.ok(!history.includes('data-planner-action="log"'));
   const calendar = planner.renderPlannerLearning({ learningPlan: [{ topicId: 'active', stream: 'gs', hours: 1, isSuggested: false }] }, { allowLog: false });
   assert.match(calendar, /In progress/);
   assert.ok(!calendar.includes('data-planner-action="start"'));
@@ -130,7 +133,7 @@ function appFunction(name, asynchronous = false) {
   return source.slice(start, source.indexOf('\n}\n', start) + 2);
 }
 
-test('Subjects uses canonical planner classifications and disables only the occupied lane', async () => {
+test('Subjects uses canonical classifications and permits explicit starts without estimates', async () => {
   const subjects = [{ id: 'gs', name: 'Polity', roi: 'high', topics: [{ id: 'active', name: 'Rights', roi: 'high', status: 'learning' }, { id: 'queued', name: 'Parliament', roi: 'high', status: 'not-started' }] },
     { id: 'opt', name: 'Renamed paper', roi: 'high', topics: [{ id: 'next', name: 'Thinkers', roi: 'high', status: 'not-started' }] }];
   const nodes = new Map();
@@ -139,12 +142,13 @@ test('Subjects uses canonical planner classifications and disables only the occu
     config: config(), subjects: [{ id: 'gs', stream: 'gs', learningTopics: 1 }, { id: 'opt', stream: 'optional', learningTopics: 0 }]
   } : { estimates: {}, summary: {} } });
   vm.runInContext(fs.readFileSync(path.join(__dirname, 'static/js/planner.js'), 'utf8'), context);
-  vm.runInContext(['roiBadgeClass', 'roiEmoji'].map(name => appFunction(name)).join('\n') + '\n' + appFunction('renderSubjects', true), context);
+  vm.runInContext(['roiBadgeClass', 'roiEmoji', 'topicRoiBadge', 'loggedLearningHours', 'learningElapsedSeconds', 'formatLearningTime', 'learningTimerMarkup', 'learningControlsMarkup'].map(name => appFunction(name)).join('\n') + '\n' + appFunction('renderSubjects', true), context);
   await context.renderSubjects();
   assert.match(element('subjects-list').innerHTML, /planner-stream-optional/);
   assert.match(element('subjects-list').innerHTML, /startLearning\('opt','next'\)/);
-  assert.match(element('subjects-list').innerHTML, /disabled title="The GS stream is busy/);
-  assert.ok(!element('subjects-list').innerHTML.includes("startLearning('gs','queued')"));
+  assert.match(element('subjects-list').innerHTML, /startLearning\('gs','queued'\)/);
+  assert.ok(!element('subjects-list').innerHTML.includes('stream is busy'));
+  assert.match(element('subjects-list').innerHTML, /Actual learning/);
   assert.equal(element('target-attempt').textContent, 'Target: UPSC 2028');
 });
 

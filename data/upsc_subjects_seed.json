@@ -12,8 +12,8 @@
         {
           "id": "economy-1-1",
           "name": "Basic Economic Concepts for UPSC",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -32,13 +32,16 @@
             "layerNumber": 1,
             "layerName": "CONCEPTUAL FOUNDATION"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "economy-1-2",
           "name": "National Income Accounting",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -57,13 +60,16 @@
             "layerNumber": 1,
             "layerName": "CONCEPTUAL FOUNDATION"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "economy-1-3",
           "name": "Economic Growth, Development & Planning",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -82,13 +88,16 @@
             "layerNumber": 1,
             "layerName": "CONCEPTUAL FOUNDATION"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "economy-1-4",
           "name": "Economic Reforms of 1991 (LPG) & Their Impact",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -107,13 +116,16 @@
             "layerNumber": 1,
             "layerName": "CONCEPTUAL FOUNDATION"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "economy-1-5",
           "name": "Indian Economy: Overview, Structure & Current Trajectory",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -132,13 +144,16 @@
             "layerNumber": 1,
             "layerName": "CONCEPTUAL FOUNDATION"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "economy-2-1",
           "name": "Money: Concepts, Supply & Inflation",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -157,13 +172,16 @@
             "layerNumber": 2,
             "layerName": "MONEY, BANKING & FINANCIAL SYSTEM"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "economy-2-2",
           "name": "Banking System: Structure, Reforms & NPA Resolution",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -182,13 +200,16 @@
             "layerNumber": 2,
             "layerName": "MONEY, BANKING & FINANCIAL SYSTEM"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "economy-2-3",
           "name": "Reserve Bank of India & Monetary Policy",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -207,13 +228,16 @@
             "layerNumber": 2,
             "layerName": "MONEY, BANKING & FINANCIAL SYSTEM"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "economy-2-4",
           "name": "Financial Markets, Institutions & Regulators",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -232,13 +256,16 @@
             "layerNumber": 2,
             "layerName": "MONEY, BANKING & FINANCIAL SYSTEM"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "economy-2-5",
           "name": "Financial Inclusion & Digital Finance",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -257,13 +284,16 @@
             "layerNumber": 2,
             "layerName": "MONEY, BANKING & FINANCIAL SYSTEM"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "economy-2-6",
           "name": "Digital Economy, Fintech & the Data Economy",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -282,13 +312,16 @@
             "layerNumber": 2,
             "layerName": "MONEY, BANKING & FINANCIAL SYSTEM"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "economy-3-1",
           "name": "Government Budget: Structure, Components & Deficits",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -307,13 +340,16 @@
             "layerNumber": 3,
             "layerName": "PUBLIC FINANCE & FISCAL POLICY"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "economy-3-2",
           "name": "Taxation: Direct Taxes",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -332,13 +368,16 @@
             "layerNumber": 3,
             "layerName": "PUBLIC FINANCE & FISCAL POLICY"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "economy-3-3",
           "name": "Taxation: Indirect Taxes & GST",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -357,13 +396,16 @@
             "layerNumber": 3,
             "layerName": "PUBLIC FINANCE & FISCAL POLICY"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "economy-3-4",
           "name": "Fiscal Policy, FRBM & Public Debt",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -382,13 +424,16 @@
             "layerNumber": 3,
             "layerName": "PUBLIC FINANCE & FISCAL POLICY"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "economy-4-1",
           "name": "Indian Agriculture: Structure, Holdings & Land Reforms",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -407,13 +452,16 @@
             "layerNumber": 4,
             "layerName": "AGRICULTURE & FOOD SECURITY"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "economy-4-2",
           "name": "Cropping Patterns, Major Crops & Irrigation",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -432,13 +480,16 @@
             "layerNumber": 4,
             "layerName": "AGRICULTURE & FOOD SECURITY"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "economy-4-3",
           "name": "Agricultural Credit, Insurance & Technology",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -457,13 +508,16 @@
             "layerNumber": 4,
             "layerName": "AGRICULTURE & FOOD SECURITY"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "economy-4-4",
           "name": "Agricultural Marketing, Supply Chain & e-Technology",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -482,13 +536,16 @@
             "layerNumber": 4,
             "layerName": "AGRICULTURE & FOOD SECURITY"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "economy-4-5",
           "name": "Farm Subsidies, MSP & Procurement Policy",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -507,13 +564,16 @@
             "layerNumber": 4,
             "layerName": "AGRICULTURE & FOOD SECURITY"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "economy-4-6",
           "name": "Food Security, Public Distribution System & Buffer Stocks",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -532,13 +592,16 @@
             "layerNumber": 4,
             "layerName": "AGRICULTURE & FOOD SECURITY"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "economy-4-7",
           "name": "Food Processing, Animal Husbandry, Dairy & Fisheries",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -557,13 +620,16 @@
             "layerNumber": 4,
             "layerName": "AGRICULTURE & FOOD SECURITY"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "economy-5-1",
           "name": "Industrial Policy Evolution & Liberalisation Impact",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -582,13 +648,16 @@
             "layerNumber": 5,
             "layerName": "INDUSTRY & MANUFACTURING"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "economy-5-2",
           "name": "MSME Sector, Labour Reforms & Industrial Growth",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -607,13 +676,16 @@
             "layerNumber": 5,
             "layerName": "INDUSTRY & MANUFACTURING"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "economy-5-3",
           "name": "Public Sector Enterprises & Disinvestment",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -632,13 +704,16 @@
             "layerNumber": 5,
             "layerName": "INDUSTRY & MANUFACTURING"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "economy-5-4",
           "name": "Make in India, PLI Schemes, SEZs & Industrial Promotion",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -657,13 +732,16 @@
             "layerNumber": 5,
             "layerName": "INDUSTRY & MANUFACTURING"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "economy-6-1",
           "name": "Energy: Conventional, Renewable & Energy Security",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -682,13 +760,16 @@
             "layerNumber": 6,
             "layerName": "INFRASTRUCTURE & INVESTMENT"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "economy-6-2",
           "name": "Transport Infrastructure: Roads, Railways, Ports, Airports & Waterways",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -707,13 +788,16 @@
             "layerNumber": 6,
             "layerName": "INFRASTRUCTURE & INVESTMENT"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "economy-6-3",
           "name": "Investment Models & PPP Framework",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -732,13 +816,16 @@
             "layerNumber": 6,
             "layerName": "INFRASTRUCTURE & INVESTMENT"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "economy-7-1",
           "name": "Foreign Trade: Policy, Composition & Trends",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -757,13 +844,16 @@
             "layerNumber": 7,
             "layerName": "EXTERNAL SECTOR"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "economy-7-2",
           "name": "Balance of Payments & Exchange Rate",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -782,13 +872,16 @@
             "layerNumber": 7,
             "layerName": "EXTERNAL SECTOR"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "economy-7-3",
           "name": "Foreign Investment: FDI, FPI & Capital Flows",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -807,13 +900,16 @@
             "layerNumber": 7,
             "layerName": "EXTERNAL SECTOR"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "economy-7-4",
           "name": "International Economic Organisations & Trade Agreements",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -832,13 +928,16 @@
             "layerNumber": 7,
             "layerName": "EXTERNAL SECTOR"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "economy-8-1",
           "name": "Poverty & Inequality: Measurement, Trends & Policies",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -857,13 +956,16 @@
             "layerNumber": 8,
             "layerName": "INCLUSIVE GROWTH, POVERTY & SUSTAINABILITY"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "economy-8-2",
           "name": "Unemployment: Types, Data & Employment Policy",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -882,13 +984,16 @@
             "layerNumber": 8,
             "layerName": "INCLUSIVE GROWTH, POVERTY & SUSTAINABILITY"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "economy-8-3",
           "name": "Human Development, Demographics & Social Indicators",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -907,13 +1012,16 @@
             "layerNumber": 8,
             "layerName": "INCLUSIVE GROWTH, POVERTY & SUSTAINABILITY"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "economy-8-4",
           "name": "Sustainable Development, Green Economy & Climate Finance",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -932,11 +1040,14 @@
             "layerNumber": 8,
             "layerName": "INCLUSIVE GROWTH, POVERTY & SUSTAINABILITY"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         }
       ],
       "sourceDocument": "ECONOMY/UPSC_Economy_Topic_Architecture_ENHANCED_V2.pdf",
-      "notes": "Main numbered topics only, in source-document order. Initial hours and ROI are editable planning defaults, not PDF measurements.",
+      "notes": "Main numbered topics only, in source-document order. Topic duration and priority remain blank until entered; start a topic to track actual learning.",
       "strategy": {
         "profile": "economy",
         "stagePreset": "standard",
@@ -1199,8 +1310,8 @@
         {
           "id": "environment-1-1",
           "name": "Ecosystems: Structure, Function & Services",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -1219,13 +1330,16 @@
             "layerNumber": 1,
             "layerName": "ECOLOGY FUNDAMENTALS"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "environment-1-2",
           "name": "Energy Flow, Food Web & Biogeochemical Cycles",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -1244,13 +1358,16 @@
             "layerNumber": 1,
             "layerName": "ECOLOGY FUNDAMENTALS"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "environment-1-3",
           "name": "Species Interactions, Succession & Biogeography Concepts",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -1269,13 +1386,16 @@
             "layerNumber": 1,
             "layerName": "ECOLOGY FUNDAMENTALS"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "environment-2-1",
           "name": "Biodiversity: Levels, Patterns, Measurement & Significance",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -1294,13 +1414,16 @@
             "layerNumber": 2,
             "layerName": "BIODIVERSITY"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "environment-2-2",
           "name": "Threats to Biodiversity & Invasive Species",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -1319,13 +1442,16 @@
             "layerNumber": 2,
             "layerName": "BIODIVERSITY"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "environment-2-3",
           "name": "Conservation Strategies: In-situ, Ex-situ & Access-Benefit Sharing",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -1344,13 +1470,16 @@
             "layerNumber": 2,
             "layerName": "BIODIVERSITY"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "environment-2-4",
           "name": "GM Crops, Biosafety & Biotechnology Regulation",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -1369,13 +1498,16 @@
             "layerNumber": 2,
             "layerName": "BIODIVERSITY"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "environment-3-1",
           "name": "Protected Area Network & Wildlife Legislation",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -1394,13 +1526,16 @@
             "layerNumber": 3,
             "layerName": "WILDLIFE & PROTECTED AREAS"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "environment-3-2",
           "name": "Flagship Species, Conservation Programmes & Red List",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -1419,13 +1554,16 @@
             "layerNumber": 3,
             "layerName": "WILDLIFE & PROTECTED AREAS"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "environment-3-3",
           "name": "Human-Wildlife Conflict & Community-Based Conservation",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -1444,13 +1582,16 @@
             "layerNumber": 3,
             "layerName": "WILDLIFE & PROTECTED AREAS"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "environment-4-1",
           "name": "Forest Ecosystems: Governance, Policy & Challenges",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -1469,13 +1610,16 @@
             "layerNumber": 4,
             "layerName": "FOREST, WETLAND & COASTAL ECOSYSTEMS"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "environment-4-2",
           "name": "Wetlands, Mangroves & Coastal Ecosystem Conservation",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -1494,13 +1638,16 @@
             "layerNumber": 4,
             "layerName": "FOREST, WETLAND & COASTAL ECOSYSTEMS"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "environment-4-3",
           "name": "Ecologically Sensitive Zones & the Western Ghats Question",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -1519,13 +1666,16 @@
             "layerNumber": 4,
             "layerName": "FOREST, WETLAND & COASTAL ECOSYSTEMS"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "environment-5-1",
           "name": "Air Pollution: Sources, Standards, Health & Control",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -1544,13 +1694,16 @@
             "layerNumber": 5,
             "layerName": "ENVIRONMENTAL POLLUTION"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "environment-5-2",
           "name": "Water Pollution, Solid Waste & Hazardous Waste Management",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -1569,13 +1722,16 @@
             "layerNumber": 5,
             "layerName": "ENVIRONMENTAL POLLUTION"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "environment-5-3",
           "name": "Noise, Land Degradation & Emerging Pollutants",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -1594,13 +1750,16 @@
             "layerNumber": 5,
             "layerName": "ENVIRONMENTAL POLLUTION"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "environment-6-1",
           "name": "Climate Change: Science, Impacts & India's Vulnerability",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -1619,13 +1778,16 @@
             "layerNumber": 6,
             "layerName": "CLIMATE CHANGE"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "environment-6-2",
           "name": "Climate Action: Mitigation, Adaptation & International Governance",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -1644,13 +1806,16 @@
             "layerNumber": 6,
             "layerName": "CLIMATE CHANGE"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "environment-7-1",
           "name": "Indian Environmental Legislation & Institutions",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -1669,13 +1834,16 @@
             "layerNumber": 7,
             "layerName": "ENVIRONMENTAL GOVERNANCE & LEGISLATION"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "environment-7-2",
           "name": "EIA, International Conventions & Environmental Diplomacy",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -1694,13 +1862,16 @@
             "layerNumber": 7,
             "layerName": "ENVIRONMENTAL GOVERNANCE & LEGISLATION"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "environment-8-1",
           "name": "Sustainable Development: Concepts, SDGs & Green Growth",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -1719,11 +1890,14 @@
             "layerNumber": 8,
             "layerName": "SUSTAINABLE DEVELOPMENT & EMERGING"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         }
       ],
       "sourceDocument": "ENVIRONMENT AND ECOLOGY/UPSC_Environment_Ecology_Topic_Architecture_ENHANCED.pdf",
-      "notes": "Main numbered topics only, in source-document order. Initial hours and ROI are editable planning defaults, not PDF measurements.",
+      "notes": "Main numbered topics only, in source-document order. Topic duration and priority remain blank until entered; start a topic to track actual learning.",
       "strategy": {
         "profile": "environment",
         "stagePreset": "standard",
@@ -1890,8 +2064,8 @@
         {
           "id": "geography-1-1",
           "name": "Origin of Earth, Interior Structure & Geological Time Scale",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -1910,13 +2084,16 @@
             "layerNumber": 1,
             "layerName": "GEOMORPHOLOGY"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "geography-1-2",
           "name": "Plate Tectonics, Volcanism & Earthquakes",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -1935,13 +2112,16 @@
             "layerNumber": 1,
             "layerName": "GEOMORPHOLOGY"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "geography-1-3",
           "name": "Rocks, Minerals & Rock Cycle",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -1960,13 +2140,16 @@
             "layerNumber": 1,
             "layerName": "GEOMORPHOLOGY"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "geography-1-4",
           "name": "Geomorphic Processes: Weathering, Mass Wasting & Erosion",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -1985,13 +2168,16 @@
             "layerNumber": 1,
             "layerName": "GEOMORPHOLOGY"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "geography-1-5",
           "name": "Landforms: Fluvial, Glacial, Aeolian, Karst & Coastal",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -2010,13 +2196,16 @@
             "layerNumber": 1,
             "layerName": "GEOMORPHOLOGY"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "geography-2-1",
           "name": "Atmosphere: Composition, Structure & Heating",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -2035,13 +2224,16 @@
             "layerNumber": 2,
             "layerName": "CLIMATOLOGY"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "geography-2-2",
           "name": "Atmospheric Pressure, Winds & Global Circulation",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -2060,13 +2252,16 @@
             "layerNumber": 2,
             "layerName": "CLIMATOLOGY"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "geography-2-3",
           "name": "Weather Phenomena: Moisture, Cyclones, Jet Streams & El Nino",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -2085,13 +2280,16 @@
             "layerNumber": 2,
             "layerName": "CLIMATOLOGY"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "geography-2-4",
           "name": "World Climatic Regions & Climate Change",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -2110,13 +2308,16 @@
             "layerNumber": 2,
             "layerName": "CLIMATOLOGY"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "geography-3-1",
           "name": "Ocean Floor, Temperature & Salinity",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -2135,13 +2336,16 @@
             "layerNumber": 3,
             "layerName": "OCEANOGRAPHY"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "geography-3-2",
           "name": "Ocean Currents, Tides & Waves",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -2160,13 +2364,16 @@
             "layerNumber": 3,
             "layerName": "OCEANOGRAPHY"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "geography-3-3",
           "name": "Marine Resources, Coral Reefs & Ocean Governance",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -2185,13 +2392,16 @@
             "layerNumber": 3,
             "layerName": "OCEANOGRAPHY"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "geography-4-1",
           "name": "World Biomes & Ecosystems",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -2210,13 +2420,16 @@
             "layerNumber": 4,
             "layerName": "BIOGEOGRAPHY, SOILS & ECOLOGY"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "geography-4-2",
           "name": "Soils: Formation, Classification & Global Distribution",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -2235,13 +2448,16 @@
             "layerNumber": 4,
             "layerName": "BIOGEOGRAPHY, SOILS & ECOLOGY"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "geography-4-3",
           "name": "Biodiversity, Conservation & Environmental Geography",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -2260,13 +2476,16 @@
             "layerNumber": 4,
             "layerName": "BIOGEOGRAPHY, SOILS & ECOLOGY"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "geography-5-1",
           "name": "The Himalayan & Trans-Himalayan System",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -2285,13 +2504,16 @@
             "layerNumber": 5,
             "layerName": "INDIA'S PHYSICAL FRAMEWORK"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "geography-5-2",
           "name": "The Northern Plains & Thar Desert",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -2310,13 +2532,16 @@
             "layerNumber": 5,
             "layerName": "INDIA'S PHYSICAL FRAMEWORK"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "geography-5-3",
           "name": "Peninsular Plateau, Central Highlands & Western/Eastern Ghats",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -2335,13 +2560,16 @@
             "layerNumber": 5,
             "layerName": "INDIA'S PHYSICAL FRAMEWORK"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "geography-5-4",
           "name": "Coastal Plains, Islands & India's Maritime Geography",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -2360,13 +2588,16 @@
             "layerNumber": 5,
             "layerName": "INDIA'S PHYSICAL FRAMEWORK"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "geography-6-1",
           "name": "Indian Monsoon Mechanism & Seasons of India",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -2385,13 +2616,16 @@
             "layerNumber": 6,
             "layerName": "INDIA'S CLIMATE & DRAINAGE"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "geography-6-2",
           "name": "Indian Drainage: Himalayan & Peninsular River Systems",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -2410,13 +2644,16 @@
             "layerNumber": 6,
             "layerName": "INDIA'S CLIMATE & DRAINAGE"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "geography-6-3",
           "name": "Water Resources: Groundwater, Lakes & Water Management",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -2435,13 +2672,16 @@
             "layerNumber": 6,
             "layerName": "INDIA'S CLIMATE & DRAINAGE"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "geography-7-1",
           "name": "Soils of India: Types, Distribution & Conservation",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -2460,13 +2700,16 @@
             "layerNumber": 7,
             "layerName": "INDIA'S SOILS, VEGETATION & BIODIVERSITY"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "geography-7-2",
           "name": "Natural Vegetation & Forest Types of India",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -2485,13 +2728,16 @@
             "layerNumber": 7,
             "layerName": "INDIA'S SOILS, VEGETATION & BIODIVERSITY"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "geography-7-3",
           "name": "Indian Biodiversity: Hotspots, Protected Areas & Conservation",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -2510,13 +2756,16 @@
             "layerNumber": 7,
             "layerName": "INDIA'S SOILS, VEGETATION & BIODIVERSITY"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "geography-8-1",
           "name": "Mineral Resources of India: Distribution & Conservation",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -2535,13 +2784,16 @@
             "layerNumber": 8,
             "layerName": "INDIA'S RESOURCES & ECONOMIC GEOGRAPHY"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "geography-8-2",
           "name": "Industrial Geography: Location Factors & Major Regions",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -2560,13 +2812,16 @@
             "layerNumber": 8,
             "layerName": "INDIA'S RESOURCES & ECONOMIC GEOGRAPHY"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "geography-8-3",
           "name": "Agriculture: Crops, Land Use & Regional Patterns",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -2585,13 +2840,16 @@
             "layerNumber": 8,
             "layerName": "INDIA'S RESOURCES & ECONOMIC GEOGRAPHY"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "geography-9-1",
           "name": "Population: Distribution, Growth, Migration & Demographic Indicators",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -2610,13 +2868,16 @@
             "layerNumber": 9,
             "layerName": "POPULATION, URBANISATION & REGIONAL"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "geography-9-2",
           "name": "Urbanisation: Trends, Challenges & Smart Cities",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -2635,13 +2896,16 @@
             "layerNumber": 9,
             "layerName": "POPULATION, URBANISATION & REGIONAL"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "geography-9-3",
           "name": "Regional Disparities, Development Models & Disaster Geography",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -2660,13 +2924,16 @@
             "layerNumber": 9,
             "layerName": "POPULATION, URBANISATION & REGIONAL"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "geography-9-4",
           "name": "Transport, Logistics & Infrastructure Geography of India",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -2685,13 +2952,16 @@
             "layerNumber": 9,
             "layerName": "POPULATION, URBANISATION & REGIONAL"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "geography-9-5",
           "name": "Climate Hazards, Disaster Vulnerability & Resilience (Deep-Dive)",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -2710,13 +2980,16 @@
             "layerNumber": 9,
             "layerName": "POPULATION, URBANISATION & REGIONAL"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "geography-10-1",
           "name": "World Distribution of Key Natural Resources",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -2735,13 +3008,16 @@
             "layerNumber": 10,
             "layerName": "WORLD GEOGRAPHY"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "geography-10-2",
           "name": "World Industrial Regions, Trade & Geopolitical Geography",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -2760,11 +3036,14 @@
             "layerNumber": 10,
             "layerName": "WORLD GEOGRAPHY"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         }
       ],
       "sourceDocument": "GEOGRAPHY/UPSC_Geography_Topic_Architecture_ENHANCED.pdf",
-      "notes": "Main numbered topics only, in source-document order. Initial hours and ROI are editable planning defaults, not PDF measurements.",
+      "notes": "Main numbered topics only, in source-document order. Topic duration and priority remain blank until entered; start a topic to track actual learning.",
       "strategy": {
         "profile": "geography",
         "stagePreset": "standard",
@@ -3015,8 +3294,8 @@
         {
           "id": "modern-history-1-1",
           "name": "Decline of the Mughal Empire & Rise of Regional States",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -3035,13 +3314,16 @@
             "layerNumber": 1,
             "layerName": "DECLINE OF MUGHALS & ADVENT OF EUROPEANS"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "modern-history-1-2",
           "name": "Advent of Europeans & Anglo-French Rivalry",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -3060,13 +3342,16 @@
             "layerNumber": 1,
             "layerName": "DECLINE OF MUGHALS & ADVENT OF EUROPEANS"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "modern-history-2-1",
           "name": "Conquest of Bengal: Plassey to Buxar",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -3085,13 +3370,16 @@
             "layerNumber": 2,
             "layerName": "BRITISH TERRITORIAL CONQUEST & EXPANSION"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "modern-history-2-2",
           "name": "Conquest of Mysore, Marathas & Punjab",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -3110,13 +3398,16 @@
             "layerNumber": 2,
             "layerName": "BRITISH TERRITORIAL CONQUEST & EXPANSION"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "modern-history-3-1",
           "name": "Company Rule: Regulation, Governors-General & Administration",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -3135,13 +3426,16 @@
             "layerNumber": 3,
             "layerName": "STRUCTURE OF THE BRITISH RAJ"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "modern-history-3-2",
           "name": "Post-1858 Crown Rule & Constitutional Development",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -3160,13 +3454,16 @@
             "layerNumber": 3,
             "layerName": "STRUCTURE OF THE BRITISH RAJ"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "modern-history-4-1",
           "name": "Land Revenue Systems & Commercialisation of Agriculture",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -3185,13 +3482,16 @@
             "layerNumber": 4,
             "layerName": "ECONOMIC IMPACT OF COLONIAL RULE"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "modern-history-4-2",
           "name": "Deindustrialisation, Drain of Wealth & Economic Critique",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -3210,13 +3510,16 @@
             "layerNumber": 4,
             "layerName": "ECONOMIC IMPACT OF COLONIAL RULE"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "modern-history-4-3",
           "name": "Famines, Poverty & Colonial Economic Policy",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -3235,13 +3538,16 @@
             "layerNumber": 4,
             "layerName": "ECONOMIC IMPACT OF COLONIAL RULE"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "modern-history-5-1",
           "name": "The Revolt of 1857",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -3260,13 +3566,16 @@
             "layerNumber": 5,
             "layerName": "1857 REVOLT, REFORM & POPULAR RESISTANCE"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "modern-history-5-2",
           "name": "Socio-Religious Reform Movements",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -3285,13 +3594,16 @@
             "layerNumber": 5,
             "layerName": "1857 REVOLT, REFORM & POPULAR RESISTANCE"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "modern-history-5-3",
           "name": "Popular & Subaltern Movements - Tribal, Peasant, Labour & Caste Resistance",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -3310,13 +3622,16 @@
             "layerNumber": 5,
             "layerName": "1857 REVOLT, REFORM & POPULAR RESISTANCE"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "modern-history-6-1",
           "name": "Factors in Rise of Nationalism & Foundation of Congress",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -3335,13 +3650,16 @@
             "layerNumber": 6,
             "layerName": "RISE OF NATIONALISM & THE MODERATE PHASE"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "modern-history-6-2",
           "name": "The Moderate Phase (1885-1905): Methods & Assessment",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -3360,13 +3678,16 @@
             "layerNumber": 6,
             "layerName": "RISE OF NATIONALISM & THE MODERATE PHASE"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "modern-history-7-1",
           "name": "Swadeshi Movement & The Extremist Phase (1905-1914)",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -3385,13 +3706,16 @@
             "layerNumber": 7,
             "layerName": "MASS NATIONALISM: EXTREMISTS TO GANDHIAN"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "modern-history-7-2",
           "name": "Gandhian Era I: Emergence, Non-Cooperation & Khilafat (1915-1922)",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -3410,13 +3734,16 @@
             "layerNumber": 7,
             "layerName": "MASS NATIONALISM: EXTREMISTS TO GANDHIAN"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "modern-history-7-3",
           "name": "Gandhian Era II: Swaraj, Civil Disobedience & Revolutionary Stream (1922- 1934)",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -3435,13 +3762,16 @@
             "layerNumber": 7,
             "layerName": "MASS NATIONALISM: EXTREMISTS TO GANDHIAN"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "modern-history-7-4",
           "name": "Gandhian Era III: Provincial Rule, WWII, Quit India & INA (1935-1945)",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -3460,13 +3790,16 @@
             "layerNumber": 7,
             "layerName": "MASS NATIONALISM: EXTREMISTS TO GANDHIAN"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "modern-history-8-1",
           "name": "Growth of Communalism & Muslim League",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -3485,13 +3818,16 @@
             "layerNumber": 8,
             "layerName": "COMMUNALISM & THE ROAD TO PARTITION"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "modern-history-8-2",
           "name": "Pakistan Demand to Partition (1940-1947)",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -3510,13 +3846,16 @@
             "layerNumber": 8,
             "layerName": "COMMUNALISM & THE ROAD TO PARTITION"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "modern-history-9-1",
           "name": "Integration of Princely States & Making of the Constitution",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -3535,13 +3874,16 @@
             "layerNumber": 9,
             "layerName": "INDEPENDENCE, INTEGRATION & CONSOLIDATION"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "modern-history-9-2",
           "name": "Post-Independence Consolidation (1947-1964 and beyond)",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -3560,11 +3902,14 @@
             "layerNumber": 9,
             "layerName": "INDEPENDENCE, INTEGRATION & CONSOLIDATION"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         }
       ],
       "sourceDocument": "MODERN_HISTORY/UPSC_Modern_History_Topic_Architecture_ENHANCED.pdf",
-      "notes": "Main numbered topics only, in source-document order. Initial hours and ROI are editable planning defaults, not PDF measurements.",
+      "notes": "Main numbered topics only, in source-document order. Topic duration and priority remain blank until entered; start a topic to track actual learning.",
       "strategy": {
         "profile": "history",
         "stagePreset": "standard",
@@ -3737,8 +4082,8 @@
         {
           "id": "polity-1-1",
           "name": "Historical Background of the Constitution",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -3757,13 +4102,16 @@
             "layerNumber": 1,
             "layerName": "FOUNDATION BLOCK"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "polity-1-2",
           "name": "Preamble of the Constitution",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -3782,13 +4130,16 @@
             "layerNumber": 1,
             "layerName": "FOUNDATION BLOCK"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "polity-1-3",
           "name": "Salient Features of the Constitution",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -3807,13 +4158,16 @@
             "layerNumber": 1,
             "layerName": "FOUNDATION BLOCK"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "polity-1-4",
           "name": "Union and its Territory",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -3832,13 +4186,16 @@
             "layerNumber": 1,
             "layerName": "FOUNDATION BLOCK"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "polity-1-5",
           "name": "Citizenship",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -3857,13 +4214,16 @@
             "layerNumber": 1,
             "layerName": "FOUNDATION BLOCK"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "polity-2-1",
           "name": "Fundamental Rights (Part III, Articles 12-35)",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -3882,13 +4242,16 @@
             "layerNumber": 2,
             "layerName": "RIGHTS, DUTIES & CONSTITUTIONAL PHILOSOPHY"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "polity-2-2",
           "name": "Directive Principles of State Policy (Part IV, Articles 36-51)",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -3907,13 +4270,16 @@
             "layerNumber": 2,
             "layerName": "RIGHTS, DUTIES & CONSTITUTIONAL PHILOSOPHY"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "polity-2-3",
           "name": "Fundamental Duties (Part IVA, Article 51A)",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -3932,13 +4298,16 @@
             "layerNumber": 2,
             "layerName": "RIGHTS, DUTIES & CONSTITUTIONAL PHILOSOPHY"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "polity-2-4",
           "name": "Constitutional Amendment Process & Basic Structure Doctrine",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -3957,13 +4326,16 @@
             "layerNumber": 2,
             "layerName": "RIGHTS, DUTIES & CONSTITUTIONAL PHILOSOPHY"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "polity-2-5",
           "name": "Digital Rights, Data Protection & Free Speech in the Digital Age",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -3982,13 +4354,16 @@
             "layerNumber": 2,
             "layerName": "RIGHTS, DUTIES & CONSTITUTIONAL PHILOSOPHY"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "polity-3-1",
           "name": "President of India",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -4007,13 +4382,16 @@
             "layerNumber": 3,
             "layerName": "UNION GOVERNMENT MACHINERY"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "polity-3-2",
           "name": "Vice-President of India",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -4032,13 +4410,16 @@
             "layerNumber": 3,
             "layerName": "UNION GOVERNMENT MACHINERY"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "polity-3-3",
           "name": "Prime Minister & Central Council of Ministers",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -4057,13 +4438,16 @@
             "layerNumber": 3,
             "layerName": "UNION GOVERNMENT MACHINERY"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "polity-3-4",
           "name": "Parliament - Structure, Composition & Officers",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -4082,13 +4466,16 @@
             "layerNumber": 3,
             "layerName": "UNION GOVERNMENT MACHINERY"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "polity-3-5",
           "name": "Parliament - Legislative Process & Financial Powers",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -4107,13 +4494,16 @@
             "layerNumber": 3,
             "layerName": "UNION GOVERNMENT MACHINERY"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "polity-3-6",
           "name": "Parliamentary Committees",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -4132,13 +4522,16 @@
             "layerNumber": 3,
             "layerName": "UNION GOVERNMENT MACHINERY"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "polity-3-7",
           "name": "Parliamentary Privileges & Devices for Executive Accountability",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -4157,13 +4550,16 @@
             "layerNumber": 3,
             "layerName": "UNION GOVERNMENT MACHINERY"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "polity-4-1",
           "name": "Governor",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -4182,13 +4578,16 @@
             "layerNumber": 4,
             "layerName": "STATE GOVERNMENT & UNION TERRITORIES"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "polity-4-2",
           "name": "Chief Minister & State Council of Ministers",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -4207,13 +4606,16 @@
             "layerNumber": 4,
             "layerName": "STATE GOVERNMENT & UNION TERRITORIES"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "polity-4-3",
           "name": "State Legislature",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -4232,13 +4634,16 @@
             "layerNumber": 4,
             "layerName": "STATE GOVERNMENT & UNION TERRITORIES"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "polity-4-4",
           "name": "Union Territories - Administration",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -4257,13 +4662,16 @@
             "layerNumber": 4,
             "layerName": "STATE GOVERNMENT & UNION TERRITORIES"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "polity-5-1",
           "name": "Supreme Court of India",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -4282,13 +4690,16 @@
             "layerNumber": 5,
             "layerName": "JUDICIARY"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "polity-5-2",
           "name": "High Courts",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -4307,13 +4718,16 @@
             "layerNumber": 5,
             "layerName": "JUDICIARY"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "polity-5-3",
           "name": "Subordinate Courts & Tribunals",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -4332,13 +4746,16 @@
             "layerNumber": 5,
             "layerName": "JUDICIARY"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "polity-5-4",
           "name": "Judicial Activism, PIL & Judicial Reforms",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -4357,13 +4774,16 @@
             "layerNumber": 5,
             "layerName": "JUDICIARY"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "polity-5-5",
           "name": "Criminal Justice Reform & the New Criminal Laws (BNS, BNSS, BSA)",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -4382,13 +4802,16 @@
             "layerNumber": 5,
             "layerName": "JUDICIARY"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "polity-6-1",
           "name": "Centre-State Relations - Legislative",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -4407,13 +4830,16 @@
             "layerNumber": 6,
             "layerName": "FEDERAL ARCHITECTURE, EMERGENCY & SPECIAL"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "polity-6-2",
           "name": "Centre-State Relations - Administrative",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -4432,13 +4858,16 @@
             "layerNumber": 6,
             "layerName": "FEDERAL ARCHITECTURE, EMERGENCY & SPECIAL"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "polity-6-3",
           "name": "Centre-State Relations - Financial",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -4457,13 +4886,16 @@
             "layerNumber": 6,
             "layerName": "FEDERAL ARCHITECTURE, EMERGENCY & SPECIAL"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "polity-6-4",
           "name": "Emergency Provisions",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -4482,13 +4914,16 @@
             "layerNumber": 6,
             "layerName": "FEDERAL ARCHITECTURE, EMERGENCY & SPECIAL"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "polity-6-5",
           "name": "Special Provisions for States & Tribal Areas",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -4507,13 +4942,16 @@
             "layerNumber": 6,
             "layerName": "FEDERAL ARCHITECTURE, EMERGENCY & SPECIAL"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "polity-7-1",
           "name": "Panchayati Raj (73rd Amendment, 1992)",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -4532,13 +4970,16 @@
             "layerNumber": 7,
             "layerName": "LOCAL SELF-GOVERNMENT"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "polity-7-2",
           "name": "Municipalities (74th Amendment, 1992)",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -4557,13 +4998,16 @@
             "layerNumber": 7,
             "layerName": "LOCAL SELF-GOVERNMENT"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "polity-7-3",
           "name": "Cooperative Societies (97th Amendment, 2011)",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -4582,13 +5026,16 @@
             "layerNumber": 7,
             "layerName": "LOCAL SELF-GOVERNMENT"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "polity-8-1",
           "name": "Election Commission of India",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -4607,13 +5054,16 @@
             "layerNumber": 8,
             "layerName": "CONSTITUTIONAL & STATUTORY BODIES"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "polity-8-2",
           "name": "Comptroller and Auditor General (CAG)",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -4632,13 +5082,16 @@
             "layerNumber": 8,
             "layerName": "CONSTITUTIONAL & STATUTORY BODIES"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "polity-8-3",
           "name": "Finance Commission",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -4657,13 +5110,16 @@
             "layerNumber": 8,
             "layerName": "CONSTITUTIONAL & STATUTORY BODIES"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "polity-8-4",
           "name": "UPSC, State PSCs & All India Services",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -4682,13 +5138,16 @@
             "layerNumber": 8,
             "layerName": "CONSTITUTIONAL & STATUTORY BODIES"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "polity-8-5",
           "name": "National Commissions & Special Officers",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -4707,13 +5166,16 @@
             "layerNumber": 8,
             "layerName": "CONSTITUTIONAL & STATUTORY BODIES"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "polity-8-6",
           "name": "Accountability & Integrity Institutions",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -4732,13 +5194,16 @@
             "layerNumber": 8,
             "layerName": "CONSTITUTIONAL & STATUTORY BODIES"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "polity-8-7",
           "name": "RTI, NHRC & Regulatory Bodies",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -4757,13 +5222,16 @@
             "layerNumber": 8,
             "layerName": "CONSTITUTIONAL & STATUTORY BODIES"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "polity-9-1",
           "name": "Electoral System & Process",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -4782,13 +5250,16 @@
             "layerNumber": 9,
             "layerName": "ELECTORAL SYSTEM & POLITICAL PROCESS"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "polity-9-2",
           "name": "Representation of the People Act 1950 & 1951",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -4807,13 +5278,16 @@
             "layerNumber": 9,
             "layerName": "ELECTORAL SYSTEM & POLITICAL PROCESS"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "polity-9-3",
           "name": "Anti-Defection Law (Tenth Schedule)",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -4832,13 +5306,16 @@
             "layerNumber": 9,
             "layerName": "ELECTORAL SYSTEM & POLITICAL PROCESS"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "polity-9-4",
           "name": "Political Parties & Funding",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -4857,13 +5334,16 @@
             "layerNumber": 9,
             "layerName": "ELECTORAL SYSTEM & POLITICAL PROCESS"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "polity-9-5",
           "name": "Electoral Reforms",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -4882,13 +5362,16 @@
             "layerNumber": 9,
             "layerName": "ELECTORAL SYSTEM & POLITICAL PROCESS"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "polity-10-1",
           "name": "Good Governance, Transparency & Accountability",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -4907,13 +5390,16 @@
             "layerNumber": 10,
             "layerName": "GOVERNANCE, PUBLIC POLICY & DEVELOPMENT"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "polity-10-2",
           "name": "E-Governance",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -4932,13 +5418,16 @@
             "layerNumber": 10,
             "layerName": "GOVERNANCE, PUBLIC POLICY & DEVELOPMENT"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "polity-10-3",
           "name": "Citizens' Charter & Service Delivery",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -4957,13 +5446,16 @@
             "layerNumber": 10,
             "layerName": "GOVERNANCE, PUBLIC POLICY & DEVELOPMENT"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "polity-10-4",
           "name": "Role of Civil Services in Democracy",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -4982,13 +5474,16 @@
             "layerNumber": 10,
             "layerName": "GOVERNANCE, PUBLIC POLICY & DEVELOPMENT"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "polity-10-5",
           "name": "Government Policies & Interventions",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -5007,13 +5502,16 @@
             "layerNumber": 10,
             "layerName": "GOVERNANCE, PUBLIC POLICY & DEVELOPMENT"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "polity-10-6",
           "name": "Welfare Schemes for Vulnerable Sections",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -5032,13 +5530,16 @@
             "layerNumber": 10,
             "layerName": "GOVERNANCE, PUBLIC POLICY & DEVELOPMENT"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "polity-10-7",
           "name": "Civil Society, NGOs, SHGs & Pressure Groups",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -5057,13 +5558,16 @@
             "layerNumber": 10,
             "layerName": "GOVERNANCE, PUBLIC POLICY & DEVELOPMENT"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "polity-10-8",
           "name": "Social Sector Issues - Health, Education, Poverty, Hunger",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -5082,13 +5586,16 @@
             "layerNumber": 10,
             "layerName": "GOVERNANCE, PUBLIC POLICY & DEVELOPMENT"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "polity-11-1",
           "name": "Comparison with Other Constitutions",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -5107,13 +5614,16 @@
             "layerNumber": 11,
             "layerName": "COMPARATIVE CONSTITUTION & CONSOLIDATION"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "polity-11-2",
           "name": "Key Constitutional Amendments & Landmark Judgments",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -5132,13 +5642,16 @@
             "layerNumber": 11,
             "layerName": "COMPARATIVE CONSTITUTION & CONSOLIDATION"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "polity-11-3",
           "name": "Schedules & Important Articles - Quick Reference",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "both",
           "status": "not-started",
           "startDate": null,
@@ -5157,11 +5670,14 @@
             "layerNumber": 11,
             "layerName": "COMPARATIVE CONSTITUTION & CONSOLIDATION"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         }
       ],
       "sourceDocument": "POLITY/UPSC_Polity_Governance_Topic_Architecture_ENHANCED_v2.pdf",
-      "notes": "Main numbered topics only, in source-document order. Initial hours and ROI are editable planning defaults, not PDF measurements.",
+      "notes": "Main numbered topics only, in source-document order. Topic duration and priority remain blank until entered; start a topic to track actual learning.",
       "strategy": {
         "profile": "polity",
         "stagePreset": "standard",
@@ -5544,8 +6060,8 @@
         {
           "id": "sociology-1-1-1",
           "name": "Modernity & the Emergence of Sociology",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "mains",
           "status": "not-started",
           "startDate": null,
@@ -5564,13 +6080,16 @@
             "layerNumber": 1,
             "layerName": "SOCIOLOGY - THE DISCIPLINE"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "sociology-1-1-2",
           "name": "Nature, Scope & Sociology as a Science",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "mains",
           "status": "not-started",
           "startDate": null,
@@ -5589,13 +6108,16 @@
             "layerNumber": 1,
             "layerName": "SOCIOLOGY - THE DISCIPLINE"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "sociology-1-1-3",
           "name": "Sociology & Other Social Sciences",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "mains",
           "status": "not-started",
           "startDate": null,
@@ -5614,13 +6136,16 @@
             "layerNumber": 1,
             "layerName": "SOCIOLOGY - THE DISCIPLINE"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "sociology-1-2-1",
           "name": "Karl Marx - Historical Materialism, Class & Alienation",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "mains",
           "status": "not-started",
           "startDate": null,
@@ -5639,13 +6164,16 @@
             "layerNumber": 2,
             "layerName": "SOCIOLOGICAL THINKERS"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "sociology-1-2-2",
           "name": "Emile Durkheim - Social Fact, Division of Labour, Suicide & Religion",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "mains",
           "status": "not-started",
           "startDate": null,
@@ -5664,13 +6192,16 @@
             "layerNumber": 2,
             "layerName": "SOCIOLOGICAL THINKERS"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "sociology-1-2-3",
           "name": "Max Weber - Social Action, Ideal Types, Authority, Bureaucracy & Religion",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "mains",
           "status": "not-started",
           "startDate": null,
@@ -5689,13 +6220,16 @@
             "layerNumber": 2,
             "layerName": "SOCIOLOGICAL THINKERS"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "sociology-1-2-4",
           "name": "Talcott Parsons, Robert Merton & the Structural-Functional Tradition",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "mains",
           "status": "not-started",
           "startDate": null,
@@ -5714,13 +6248,16 @@
             "layerNumber": 2,
             "layerName": "SOCIOLOGICAL THINKERS"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "sociology-1-2-5",
           "name": "G.H. Mead, Symbolic Interactionism & Interpretive Traditions",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "mains",
           "status": "not-started",
           "startDate": null,
@@ -5739,13 +6276,16 @@
             "layerNumber": 2,
             "layerName": "SOCIOLOGICAL THINKERS"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "sociology-1-3-1",
           "name": "Positivism, Its Critique & the Logic of Enquiry",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "mains",
           "status": "not-started",
           "startDate": null,
@@ -5764,13 +6304,16 @@
             "layerNumber": 3,
             "layerName": "RESEARCH METHODS & METHODOLOGY"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "sociology-1-3-2",
           "name": "Techniques of Data Collection & Sampling",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "mains",
           "status": "not-started",
           "startDate": null,
@@ -5789,13 +6332,16 @@
             "layerNumber": 3,
             "layerName": "RESEARCH METHODS & METHODOLOGY"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "sociology-1-3-3",
           "name": "Reliability, Validity & the Craft of Research",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "mains",
           "status": "not-started",
           "startDate": null,
@@ -5814,13 +6360,16 @@
             "layerNumber": 3,
             "layerName": "RESEARCH METHODS & METHODOLOGY"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "sociology-1-4-1",
           "name": "Core Sociological Concepts",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "mains",
           "status": "not-started",
           "startDate": null,
@@ -5839,13 +6388,16 @@
             "layerNumber": 4,
             "layerName": "BASIC CONCEPTS & SOCIAL INSTITUTIONS"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "sociology-1-4-2",
           "name": "Social Stratification & Mobility",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "mains",
           "status": "not-started",
           "startDate": null,
@@ -5864,13 +6416,16 @@
             "layerNumber": 4,
             "layerName": "BASIC CONCEPTS & SOCIAL INSTITUTIONS"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "sociology-1-4-3",
           "name": "Works & Economic Life; Politics & Society",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "mains",
           "status": "not-started",
           "startDate": null,
@@ -5889,13 +6444,16 @@
             "layerNumber": 4,
             "layerName": "BASIC CONCEPTS & SOCIAL INSTITUTIONS"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "sociology-1-4-4",
           "name": "Religion, Family, Kinship, Marriage & Education as Institutions",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "mains",
           "status": "not-started",
           "startDate": null,
@@ -5914,13 +6472,16 @@
             "layerNumber": 4,
             "layerName": "BASIC CONCEPTS & SOCIAL INSTITUTIONS"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "sociology-1-5-1",
           "name": "Theories & Processes of Social Change",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "mains",
           "status": "not-started",
           "startDate": null,
@@ -5939,13 +6500,16 @@
             "layerNumber": 5,
             "layerName": "SOCIAL CHANGE & CONTEMPORARY DIRECTIONS"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "sociology-1-5-2",
           "name": "Modernisation, Development & Their Critiques",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "mains",
           "status": "not-started",
           "startDate": null,
@@ -5964,13 +6528,16 @@
             "layerNumber": 5,
             "layerName": "SOCIAL CHANGE & CONTEMPORARY DIRECTIONS"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "sociology-1-5-3",
           "name": "Social Movements & Collective Action",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "mains",
           "status": "not-started",
           "startDate": null,
@@ -5989,11 +6556,14 @@
             "layerNumber": 5,
             "layerName": "SOCIAL CHANGE & CONTEMPORARY DIRECTIONS"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         }
       ],
       "sourceDocument": "SOCIOLOGY/PAPER 1/UPSC_Sociology_Paper1_Topic_Architecture.pdf",
-      "notes": "Main numbered topics only, in source-document order. Initial hours and ROI are editable planning defaults, not PDF measurements.",
+      "notes": "Main numbered topics only, in source-document order. Topic duration and priority remain blank until entered; start a topic to track actual learning.",
       "strategy": {
         "profile": "sociology1",
         "stagePreset": "standard",
@@ -6142,8 +6712,8 @@
         {
           "id": "sociology-2-1-1",
           "name": "Indological, Structural-Functional & Marxist Perspectives",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "mains",
           "status": "not-started",
           "startDate": null,
@@ -6162,13 +6732,16 @@
             "layerNumber": 1,
             "layerName": "INTRODUCING INDIAN SOCIETY - PERSPECTIVES"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "sociology-2-1-2",
           "name": "Impact of Colonial Rule on Indian Society",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "mains",
           "status": "not-started",
           "startDate": null,
@@ -6187,13 +6760,16 @@
             "layerNumber": 1,
             "layerName": "INTRODUCING INDIAN SOCIETY - PERSPECTIVES"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "sociology-2-2-1",
           "name": "Demographic Structure & Population Dynamics",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "mains",
           "status": "not-started",
           "startDate": null,
@@ -6212,13 +6788,16 @@
             "layerNumber": 2,
             "layerName": "SOCIAL STRUCTURE - THE DEMOGRAPHIC &"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "sociology-2-2-2",
           "name": "Unity & Diversity; Rural-Urban Linkages",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "mains",
           "status": "not-started",
           "startDate": null,
@@ -6237,13 +6816,16 @@
             "layerNumber": 2,
             "layerName": "SOCIAL STRUCTURE - THE DEMOGRAPHIC &"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "sociology-2-3-1",
           "name": "Caste - Theories, Features & the Varna-Jati Distinction",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "mains",
           "status": "not-started",
           "startDate": null,
@@ -6262,13 +6844,16 @@
             "layerNumber": 3,
             "layerName": "CASTE SYSTEM"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "sociology-2-3-2",
           "name": "Caste Change - Sanskritisation, Dominant Caste & Caste in Modern India",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "mains",
           "status": "not-started",
           "startDate": null,
@@ -6287,13 +6872,16 @@
             "layerNumber": 3,
             "layerName": "CASTE SYSTEM"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "sociology-2-4-1",
           "name": "Village Studies & the Idea of the Indian Village",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "mains",
           "status": "not-started",
           "startDate": null,
@@ -6312,13 +6900,16 @@
             "layerNumber": 4,
             "layerName": "VILLAGE, AGRARIAN & RURAL SOCIAL STRUCTURE"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "sociology-2-4-2",
           "name": "Agrarian Social Structure - Land Reforms, Green Revolution & Agrarian Relations",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "mains",
           "status": "not-started",
           "startDate": null,
@@ -6337,13 +6928,16 @@
             "layerNumber": 4,
             "layerName": "VILLAGE, AGRARIAN & RURAL SOCIAL STRUCTURE"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "sociology-2-5-1",
           "name": "Family, Household & Kinship - Structure, Regional Patterns & Change",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "mains",
           "status": "not-started",
           "startDate": null,
@@ -6362,13 +6956,16 @@
             "layerNumber": 5,
             "layerName": "FAMILY, KINSHIP & MARRIAGE IN INDIA"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "sociology-2-6-1",
           "name": "Tribal Communities - Definition, Debates & Contemporary Issues",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "mains",
           "status": "not-started",
           "startDate": null,
@@ -6387,13 +6984,16 @@
             "layerNumber": 6,
             "layerName": "TRIBAL SOCIETY & RELIGION IN INDIA"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "sociology-2-6-2",
           "name": "Religion & Society - Pluralism, Minorities & Secularisation in India",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "mains",
           "status": "not-started",
           "startDate": null,
@@ -6412,13 +7012,16 @@
             "layerNumber": 6,
             "layerName": "TRIBAL SOCIETY & RELIGION IN INDIA"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "sociology-2-7-1",
           "name": "Processes of Change - Modernisation, Westernisation & Development Visions",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "mains",
           "status": "not-started",
           "startDate": null,
@@ -6437,13 +7040,16 @@
             "layerNumber": 7,
             "layerName": "SOCIAL CHANGE & DEVELOPMENT IN INDIA"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "sociology-2-7-2",
           "name": "Globalisation, Development & Their Social Costs",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "mains",
           "status": "not-started",
           "startDate": null,
@@ -6462,13 +7068,16 @@
             "layerNumber": 7,
             "layerName": "SOCIAL CHANGE & DEVELOPMENT IN INDIA"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "sociology-2-8-1",
           "name": "Systems of Stratification & Social Mobility in India",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "mains",
           "status": "not-started",
           "startDate": null,
@@ -6487,13 +7096,16 @@
             "layerNumber": 8,
             "layerName": "GENDER, STRATIFICATION & SOCIAL MOBILITY"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "sociology-2-8-2",
           "name": "Gender, Patriarchy & the Women's Question in India",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "mains",
           "status": "not-started",
           "startDate": null,
@@ -6512,13 +7124,16 @@
             "layerNumber": 8,
             "layerName": "GENDER, STRATIFICATION & SOCIAL MOBILITY"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "sociology-2-9-1",
           "name": "Politics, Caste in Politics & Democratic Participation",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "mains",
           "status": "not-started",
           "startDate": null,
@@ -6537,13 +7152,16 @@
             "layerNumber": 9,
             "layerName": "POLITICS, POWER & THE FAULT-LINES"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "sociology-2-9-2",
           "name": "Communalism, Regionalism, Secularism & National Integration",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "mains",
           "status": "not-started",
           "startDate": null,
@@ -6562,13 +7180,16 @@
             "layerNumber": 9,
             "layerName": "POLITICS, POWER & THE FAULT-LINES"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "sociology-2-10-1",
           "name": "Protective Discrimination, Reservation & Social Justice",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "mains",
           "status": "not-started",
           "startDate": null,
@@ -6587,13 +7208,16 @@
             "layerNumber": 10,
             "layerName": "SOCIAL JUSTICE, WELFARE & GOVERNANCE OF"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "sociology-2-10-2",
           "name": "Panchayati Raj, Welfare & the Governance of Development",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "mains",
           "status": "not-started",
           "startDate": null,
@@ -6612,13 +7236,16 @@
             "layerNumber": 10,
             "layerName": "SOCIAL JUSTICE, WELFARE & GOVERNANCE OF"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "sociology-2-11-1",
           "name": "Social Movements in India - Peasant, Tribal, Dalit, Backward-Class, Women's & Environmental",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "mains",
           "status": "not-started",
           "startDate": null,
@@ -6637,13 +7264,16 @@
             "layerNumber": 11,
             "layerName": "SOCIAL MOVEMENTS & CONTEMPORARY"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         },
         {
           "id": "sociology-2-11-2",
           "name": "Contemporary Social Challenges & Emerging Issues",
-          "estimatedHours": 7.5,
-          "roi": "medium",
+          "estimatedHours": null,
+          "roi": null,
           "examType": "mains",
           "status": "not-started",
           "startDate": null,
@@ -6662,11 +7292,14 @@
             "layerNumber": 11,
             "layerName": "SOCIAL MOVEMENTS & CONTEMPORARY"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": null,
+          "roiSource": null,
+          "learningSeconds": 0,
+          "timerStartedAt": null
         }
       ],
       "sourceDocument": "SOCIOLOGY/PAPER 2/UPSC_Sociology_Paper2_Topic_Architecture.pdf",
-      "notes": "Main numbered topics only, in source-document order. Initial hours and ROI are editable planning defaults, not PDF measurements.",
+      "notes": "Main numbered topics only, in source-document order. Topic duration and priority remain blank until entered; start a topic to track actual learning.",
       "strategy": {
         "profile": "sociology2",
         "stagePreset": "standard",
@@ -6887,8 +7520,8 @@
     "subjectCount": 7,
     "topicCount": 211,
     "createdAt": "2026-10-21",
-    "estimatedHoursDefault": 7.5,
-    "priorityBasis": "Neutral ROI preserves source-document topic order until priorities are calibrated",
+    "estimatedHoursDefault": null,
+    "priorityBasis": "Topic priorities are unset until entered by the user",
     "syllabusBasis": "PDF topic architecture; not independently verified against the official syllabus",
     "documents": [
       {
@@ -6927,5 +7560,6 @@
         "sha256": "6d7fd110e9aeaccbd506fd5e805861ad244d6d89298a3d671824ac24d3d8ed1a"
       }
     ]
-  }
+  },
+  "progressTrackingVersion": 1
 }

@@ -46,12 +46,13 @@ class PlannerApiTests(unittest.TestCase):
         self.assertEqual(self.client.put("/api/planner", json={"config": config}).status_code, 400)
         self.assertFalse(self.saved)
 
-    def test_stream_reassignment_cannot_create_two_active_learners(self):
+    def test_stream_reassignment_preserves_multiple_started_learners(self):
         for subject in self.data["subjects"]:
             subject["topics"][0]["status"] = "learning"
         response = self.client.put("/api/planner", json={"config": DEFAULT_PLANNER, "subjectStreams": {"economy": "optional"}})
-        self.assertEqual(response.status_code, 409)
-        self.assertFalse(self.saved)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(sum(topic["status"] == "learning" for subject in self.saved[0]["subjects"]
+                             for topic in subject["topics"]), 2)
 
     def test_invalid_structure_returns_validation_error(self):
         self.assertEqual(self.client.put("/api/planner", json=[]).status_code, 400)
@@ -77,14 +78,15 @@ class PlannerApplicationTests(unittest.TestCase):
         return {"id": topic_id, "name": topic_id, "status": "not-started", "estimatedHours": hours,
                 "roi": "medium", "examType": exam_type, "activeStages": ["R1"], "completionDate": None}
 
-    def test_start_allows_optional_alongside_gs_but_not_second_gs(self):
+    def test_start_switches_stopwatch_without_forcing_previous_learning_complete(self):
         self.data["subjects"][0]["topics"][0].update(status="learning", startDate="2026-10-21")
         with self.app.test_request_context(method="POST", json={}):
             response = self.backend["api_start_topic"]("opt", "optional")
-            blocked, status = self.backend["api_start_topic"]("gs", "gs-second")
+            second = self.backend["api_start_topic"]("gs", "gs-second")
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(status, 409)
-        self.assertTrue(blocked.get_json()["streamBusy"])
+        self.assertEqual(second.status_code, 200)
+        self.assertIsNone(self.data["subjects"][1]["topics"][0]["timerStartedAt"])
+        self.assertEqual(self.data["subjects"][1]["topics"][0]["status"], "learning")
 
     def test_prelims_warning_excludes_late_optional_pipeline(self):
         with self.app.test_request_context():
@@ -94,6 +96,8 @@ class PlannerApplicationTests(unittest.TestCase):
         self.assertEqual(response["stats"]["totalSubjects"], 2)
 
     def test_daily_and_calendar_learning_are_identical(self):
+        for subject in self.data["subjects"]:
+            subject["topics"][0].update(status="learning", startDate="2026-10-21")
         with self.app.test_request_context():
             today = self.backend["api_today"]().get_json()
             calendar = self.backend["api_calendar_day"]("2026-10-21").get_json()
@@ -102,6 +106,7 @@ class PlannerApplicationTests(unittest.TestCase):
 
     def test_unknown_schedule_never_reports_on_track(self):
         self.data["settings"].update(weekdayHours=0, weekendHours=0)
+        self.data["subjects"][0]["topics"][0].update(status="completed", completionDate="2026-10-20")
         with self.app.test_request_context():
             response = self.backend["api_dashboard"]().get_json()
         self.assertEqual(response["examInfo"]["feasibility"]["status"], "unknown")

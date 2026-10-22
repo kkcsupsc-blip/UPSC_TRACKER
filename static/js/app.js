@@ -7,7 +7,130 @@ async function api(url, method = 'GET', body = null) {
   const opts = { method, headers: { 'Content-Type': 'application/json' } };
   if (body) opts.body = JSON.stringify(body);
   const res = await fetch(url, opts);
-  return res.json();
+  let result;
+  try { result = await res.json(); } catch (_) {
+    return { error: `Request failed (${res.status}). Refresh your session and retry.` };
+  }
+  if (!res.ok && !result?.error) return { error: `Request failed (${res.status}).` };
+  return result;
+}
+
+async function checkedApi(url, method = 'GET', body = null) {
+  const result = await api(url, method, body);
+  if (result?.error) throw new Error(result.error);
+  return result;
+}
+
+function optionalTopicValues(hours, roi) {
+  const estimatedHours = String(hours ?? '').trim() === '' ? null : Number(hours);
+  if (estimatedHours !== null && (!Number.isFinite(estimatedHours) || estimatedHours <= 0 || estimatedHours > 100)) {
+    throw new Error('Enter learning hours between 0 and 100, or leave blank.');
+  }
+  return { estimatedHours, roi: roi || null };
+}
+
+function topicRoiBadge(roi) {
+  return roi ? `<span class="badge badge-${roiBadgeClass(roi)}">${roiEmoji(roi)} ${plannerEscape(roi)} ROI</span>` : '<span class="planner-meta">Not set</span>';
+}
+
+function learningElapsedSeconds(topic, now = Date.now()) {
+  const accumulated = Math.max(0, Number(topic.learningSeconds) || 0);
+  const started = Date.parse(topic.timerStartedAt);
+  return accumulated + (Number.isFinite(started) ? Math.max(0, (now - started) / 1000) : 0);
+}
+
+function formatLearningTime(seconds) {
+  const total = Math.max(0, Math.floor(seconds));
+  return `${String(Math.floor(total / 3600)).padStart(2, '0')}:${String(Math.floor(total / 60) % 60).padStart(2, '0')}:${String(total % 60).padStart(2, '0')}`;
+}
+
+function learningTimerMarkup(topic) {
+  return `<span class="learning-stopwatch" data-learning-timer data-learning-seconds="${Math.max(0, Number(topic.learningSeconds) || 0)}" data-timer-started-at="${plannerEscape(topic.timerStartedAt || '')}">Stopwatch ${formatLearningTime(learningElapsedSeconds(topic))}</span>`;
+}
+
+function updateLearningTimers() {
+  document.querySelectorAll('[data-learning-timer]').forEach(element => {
+    element.textContent = `Stopwatch ${formatLearningTime(learningElapsedSeconds(element.dataset))}`;
+  });
+}
+
+function loggedLearningHours(topic, logs = []) {
+  if (Number.isFinite(topic.actualHours)) return topic.actualHours;
+  return logs.filter(log => log.topicId === (topic.id || topic.topicId) && (!log.stage || log.stage === 'learning'))
+    .reduce((total, log) => total + (Number(log.hours) || 0), 0);
+}
+
+function learningControlsMarkup(subjId, topic, canStart = true) {
+  const action = (handler, label, disabled = false, title = '') => `<button class="btn btn-sm" onclick="event.stopPropagation();${handler}('${subjId}','${topic.id}');"${disabled ? ' disabled' : ''}${title ? ` title="${title}"` : ''}>${label}</button>`;
+  if (topic.status === 'not-started') return action('startLearning', 'Start', false, 'Start this topic; any other running stopwatch will pause');
+  if (topic.status !== 'learning') return '';
+  return (topic.timerStartedAt ? action('pauseLearning', 'Pause') : action('startLearning', 'Resume')) + action('completeLearning', 'Finish');
+}
+
+const learningActions = new Set();
+let activeTopicDetail = null;
+let topicDetailRequest = 0;
+let relatedSearchState = null;
+
+function captureTopicDetail(subjId, topicId) {
+  if (activeTopicDetail?.subjectId !== subjId || activeTopicDetail?.topicId !== topicId) return null;
+  const host = document.getElementById('detail-content');
+  return {
+    scroll: host.parentElement?.scrollTop || 0,
+    openDetails: Array.from(host.querySelectorAll('details'), element => element.open),
+    inputs: Array.from(host.querySelectorAll('input, textarea'), element => ({ id: element.id, value: element.value, checked: element.checked })),
+    query: relatedSearchState?.query || '', selectedId: relatedSearchState?.selectedId || null,
+    selectedTab: host.querySelector('[role="tab"][aria-selected="true"]')?.id
+  };
+}
+
+function restoreTopicDetail(previous) {
+  if (!previous) return;
+  const host = document.getElementById('detail-content');
+  host.querySelectorAll('details').forEach((element, index) => { element.open = previous.openDetails[index] || false; });
+  previous.inputs.forEach(saved => {
+    const element = saved.id && document.getElementById(saved.id);
+    if (element && element.type !== 'checkbox') element.value = saved.value;
+  });
+  if (previous.selectedTab) document.getElementById(previous.selectedTab)?.click();
+  if (host.parentElement) host.parentElement.scrollTop = previous.scroll;
+}
+
+function relatedMatches(candidates, query) {
+  const terms = query.trim().toLocaleLowerCase().split(/\s+/).filter(Boolean);
+  return candidates.filter(item => terms.every(term => `${item.name} ${item.subjectName}`.toLocaleLowerCase().includes(term)));
+}
+
+function updateRelatedSearch(topicId, query) {
+  if (relatedSearchState?.topicId !== topicId) return;
+  const state = relatedSearchState;
+  if (state.query !== query) state.selectedId = null;
+  state.query = query;
+  const matches = relatedMatches(state.candidates, query);
+  const results = document.getElementById(`related-results-${topicId}`);
+  results.innerHTML = matches.slice(0, 30).map(item => `<button type="button" class="btn btn-sm related-result" onclick="selectRelatedTopic('${topicId}',${state.candidates.indexOf(item)})" aria-pressed="${item.id === state.selectedId}">${plannerEscape(item.name)} <span class="planner-meta">${plannerEscape(item.subjectName)}</span></button>`).join('') || '<div class="planner-meta">No matching topics available.</div>';
+  if (matches.length > 30) results.innerHTML += `<div class="planner-meta">${matches.length} matches. Refine your search to see more.</div>`;
+  const selected = state.candidates.find(item => item.id === state.selectedId);
+  if (!selected) state.selectedId = null;
+  document.getElementById(`related-selected-${topicId}`).textContent = selected ? `Selected: ${selected.name} (${selected.subjectName})` : 'Select a result, then link it.';
+  document.getElementById(`related-link-${topicId}`).disabled = !selected;
+  document.getElementById(`related-search-${topicId}`).value = query;
+}
+
+function selectRelatedTopic(topicId, index) {
+  if (relatedSearchState?.topicId !== topicId) return;
+  const candidate = relatedSearchState.candidates[index];
+  if (!candidate) return;
+  relatedSearchState.selectedId = candidate.id;
+  updateRelatedSearch(topicId, relatedSearchState.query);
+}
+
+function relatedMessage(topicId, message, failed = false) {
+  const element = document.getElementById(`related-feedback-${topicId}`);
+  if (!element || activeTopicDetail?.topicId !== topicId) return;
+  element.textContent = message;
+  element.setAttribute('role', failed ? 'alert' : 'status');
+  element.style.color = failed ? 'var(--red)' : 'var(--green)';
 }
 
 // ===== UTILITY FUNCTIONS =====
@@ -138,24 +261,9 @@ async function openAddTopic(subjId) {
   document.getElementById('topic-subj-id').value = subjId;
   document.getElementById('topic-name').value = '';
   document.getElementById('topic-notes').value = '';
-  // Smart default: average actual hours of completed topics in this subject
-  try {
-    const data = await api('/api/data');
-    const subj = (data.subjects || []).find(s => s.id === subjId);
-    if (subj) {
-      const completed = subj.topics.filter(t => (t.status === 'completed' || t.status === 'pipeline-complete') && t.estimatedHours > 0);
-      if (completed.length > 0) {
-        const avg = completed.reduce((sum, t) => sum + t.estimatedHours, 0) / completed.length;
-        document.getElementById('topic-days').value = Math.round(avg * 2) / 2; // round to 0.5
-      } else {
-        document.getElementById('topic-days').value = '3';
-      }
-    } else {
-      document.getElementById('topic-days').value = '3';
-    }
-  } catch(e) {
-    document.getElementById('topic-days').value = '3';
-  }
+  document.getElementById('topic-days').value = '';
+  document.getElementById('topic-roi').value = '';
+  document.getElementById('topic-exam-type').value = 'both';
   openModal('add-topic');
 }
 
@@ -163,16 +271,17 @@ async function addTopic() {
   const subjId = document.getElementById('topic-subj-id').value;
   const name = document.getElementById('topic-name').value.trim();
   if (!name) { showToast('Enter a topic name', 'warning'); return; }
-  await api(`/api/subjects/${subjId}/topics`, 'POST', {
-    name,
-    estimatedHours: parseFloat(document.getElementById('topic-days').value) || 7.5,
-    roi: document.getElementById('topic-roi').value,
-    examType: document.getElementById('topic-exam-type').value,
-    notes: document.getElementById('topic-notes').value.trim(),
-  });
-  closeModal('add-topic');
-  showToast(`Topic "${name}" added!`);
-  renderPage('subjects');
+  try {
+    await checkedApi(`/api/subjects/${subjId}/topics`, 'POST', {
+      name,
+      ...optionalTopicValues(document.getElementById('topic-days').value, document.getElementById('topic-roi').value),
+      examType: document.getElementById('topic-exam-type').value,
+      notes: document.getElementById('topic-notes').value.trim(),
+    });
+    closeModal('add-topic');
+    showToast(`Topic "${name}" added!`);
+    renderPage('subjects');
+  } catch (error) { showToast(error.message, 'warning'); }
 }
 
 async function deleteTopic(subjId, topicId) {
@@ -190,8 +299,8 @@ async function editTopic(subjId, topicId) {
   const topic = detail.topic;
   const subj = detail.subject;
   const currentName = topic.name;
-  const currentHours = topic.estimatedHours || 7.5;
-  const currentRoi = topic.roi || 'medium';
+  const currentHours = topic.estimatedHours ?? '';
+  const currentRoi = topic.roi || '';
   const currentExamType = topic.examType || 'both';
 
   const statusMap = {
@@ -202,8 +311,8 @@ async function editTopic(subjId, topicId) {
   };
   const st = statusMap[topic.status] || statusMap['not-started'];
 
-  const roiOptions = ['very-high', 'high', 'medium', 'low'];
-  const roiLabels = { 'very-high': 'Very High ROI', 'high': 'High ROI', 'medium': 'Medium ROI', 'low': 'Low ROI' };
+  const roiOptions = ['', 'very-high', 'high', 'medium', 'low'];
+  const roiLabels = { '': 'Not set (optional)', 'very-high': 'Very High ROI', 'high': 'High ROI', 'medium': 'Medium ROI', 'low': 'Low ROI' };
   const optionsHtml = roiOptions.map(r =>
     `<option value="${r}" ${r === currentRoi ? 'selected' : ''}>${roiLabels[r]}</option>`
   ).join('');
@@ -221,7 +330,7 @@ async function editTopic(subjId, topicId) {
   // Status info bar
   html += `<div style="margin-bottom: 14px;">
     <span class="badge ${st.badge}">${st.text}</span>
-    <span class="badge badge-${roiBadgeClass(topic.roi)}" style="margin-left: 6px;">${roiEmoji(topic.roi)} ${topic.roi.toUpperCase()} ROI</span>
+    ${topicRoiBadge(topic.roi)}
   </div>`;
 
   // Edit form
@@ -234,8 +343,8 @@ async function editTopic(subjId, topicId) {
       </div>
       <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:12px;">
         <div class="form-group" style="margin-bottom:0;">
-          <label class="form-label">Est. Hours</label>
-          <input type="number" class="form-input" id="edit-topic-days" value="${currentHours}" min="0.5" max="100" step="0.5">
+          <label class="form-label">Learning hours (optional)</label>
+          <input type="number" class="form-input" id="edit-topic-days" value="${currentHours}" min="0.01" max="100" step="0.01" placeholder="Not set">
         </div>
         <div class="form-group" style="margin-bottom:0;">
           <label class="form-label">ROI Priority</label>
@@ -262,42 +371,59 @@ async function editTopic(subjId, topicId) {
 
 async function saveTopicEdit(subjId, topicId) {
   const name = document.getElementById('edit-topic-name').value.trim();
-  const hours = parseFloat(document.getElementById('edit-topic-days').value) || 7.5;
+  const hours = document.getElementById('edit-topic-days').value;
   const roi = document.getElementById('edit-topic-roi').value;
   const examType = document.getElementById('edit-topic-exam-type').value;
   if (!name) { showToast('Name cannot be empty', 'warning'); return; }
-  await api(`/api/subjects/${subjId}/topics/${topicId}`, 'PUT', { name, estimatedHours: hours, roi, examType });
-  showToast('Topic updated!');
-  showTopicDetail(subjId, topicId);
-  renderPage('subjects');
+  try {
+    await checkedApi(`/api/subjects/${subjId}/topics/${topicId}`, 'PUT', { name, ...optionalTopicValues(hours, roi), examType });
+    showToast('Topic updated!');
+    showTopicDetail(subjId, topicId);
+    renderPage('subjects');
+  } catch (error) { showToast(error.message, 'warning'); }
+}
+
+async function learningAction(subjId, topicId, action) {
+  const key = `${subjId}:${topicId}`;
+  if (learningActions.has(key)) return;
+  learningActions.add(key);
+  try {
+    const result = await checkedApi(`/api/subjects/${subjId}/topics/${topicId}/${action}`, 'POST');
+    if (result.limitReached) throw new Error('This learning stream is busy. Finish its current topic first.');
+    showToast(action === 'pause' ? 'Learning paused and elapsed time saved.' : action === 'complete' ? 'Learning finished. Revision activities are now earned.' : 'Learning timer started.');
+    renderAll();
+    const modal = document.getElementById('modal-topic-detail');
+    if (activeTopicDetail?.subjectId === subjId && activeTopicDetail?.topicId === topicId && modal?.classList.contains('show')) {
+      await showTopicDetail(subjId, topicId);
+    }
+    return result;
+  } catch (error) {
+    showToast(error.message || 'Learning action failed. Please retry.', 'warning');
+  } finally {
+    learningActions.delete(key);
+  }
 }
 
 async function startLearning(subjId, topicId) {
-  const result = await api(`/api/subjects/${subjId}/topics/${topicId}/start`, 'POST');
-  if (result.error) {
-    showToast(result.error, 'warning');
-    return;
-  }
-  if (result.limitReached) {
-    showToast('This learning stream is busy. Complete its current topic first.', 'warning');
-    return;
-  }
-  showToast('Started learning!');
-  renderAll();
+  return learningAction(subjId, topicId, 'start');
+}
+
+async function pauseLearning(subjId, topicId) {
+  return learningAction(subjId, topicId, 'pause');
 }
 
 async function completeLearning(subjId, topicId) {
-  const result = await api(`/api/subjects/${subjId}/topics/${topicId}/complete`, 'POST');
-  if (result.error) { showToast(result.error, 'warning'); return; }
-  showToast(`✅ "${result.topic.name}" completed! Revision schedule created.`, 'success');
-  renderAll();
+  return learningAction(subjId, topicId, 'complete');
 }
 
 async function resetTopic(subjId, topicId) {
   if (!confirm('Reset this topic? All revision progress will be lost.')) return;
-  await api(`/api/subjects/${subjId}/topics/${topicId}/reset`, 'POST');
-  showToast('Topic reset', 'info');
-  renderPage('subjects');
+  try {
+    await checkedApi(`/api/subjects/${subjId}/topics/${topicId}/reset`, 'POST');
+    showToast('Topic reset', 'info');
+    renderAll();
+    if (activeTopicDetail?.topicId === topicId) await showTopicDetail(subjId, topicId);
+  } catch (error) { showToast(error.message, 'warning'); }
 }
 
 // ===== CONFIDENCE PICKER =====
@@ -391,8 +517,15 @@ async function markRevisionDone(topicId, type) {
 
 // ===== SHOW TOPIC DETAIL / TIMELINE =====
 async function showTopicDetail(subjId, topicId, focusLinks = false) {
-  const detail = await api(`/api/subjects/${subjId}/topics/${topicId}/detail`);
-  if (detail.error) return;
+  const requestId = ++topicDetailRequest;
+  const [detail, allData] = await Promise.all([
+    api(`/api/subjects/${subjId}/topics/${topicId}/detail`), api('/api/data')
+  ]);
+  if (requestId !== topicDetailRequest) return;
+  if (detail.error || allData.error) { showToast(detail.error || allData.error, 'warning'); return; }
+  const previous = captureTopicDetail(subjId, topicId);
+  activeTopicDetail = { subjectId: subjId, topicId };
+
 
   const topic = detail.topic;
   const subj = detail.subject;
@@ -412,7 +545,7 @@ async function showTopicDetail(subjId, topicId, focusLinks = false) {
   const st = statusMap[topic.status];
   html += `<div style="margin-bottom: 14px;">
     <span class="badge ${st.badge}">${st.text}</span>
-    <span class="badge badge-${roiBadgeClass(topic.roi)}" style="margin-left: 6px;">${roiEmoji(topic.roi)} ${topic.roi.toUpperCase()} ROI</span>
+    ${topicRoiBadge(topic.roi)}
     ${plannerBadge(plannerSubject(subj))}
   </div>`;
 
@@ -423,61 +556,13 @@ async function showTopicDetail(subjId, topicId, focusLinks = false) {
   if (topic.startDate) html += `<div style="font-size:12px; color:var(--text2); margin-bottom:4px;">Started: ${formatDate(topic.startDate)}</div>`;
   if (topic.completionDate) html += `<div style="font-size:12px; color:var(--text2); margin-bottom:14px;">Completed: ${formatDate(topic.completionDate)}</div>`;
 
-  // Estimated timeline (for not-started and learning topics)
-  const estimate = detail.estimate;
-  if (estimate?.schedulingError) html += schedulingWarnings([{ error: estimate.schedulingError }]);
-  if (estimate && estimate.isEstimate && !estimate.schedulingError) {
-    html += `<div style="background: rgba(99,102,241,0.08); border: 1px solid rgba(99,102,241,0.15); border-radius: 8px; padding: 14px; margin-bottom: 16px;">`;
-    html += `<div style="font-weight:600; font-size:13px; color:var(--accent2); margin-bottom:10px;">📊 Progressive Time Estimate</div>`;
-    if (estimate.queuePosition) {
-      html += `<div style="font-size:12px; color:var(--text2); margin-bottom:6px;">Queue Position: <strong>#${estimate.queuePosition}</strong></div>`;
-    }
-    const daysToMastery = daysBetween(todayStr(), estimate.masteryDate);
-
-    html += `<div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-bottom:10px;">
-      <div style="text-align:center; padding:8px; background:var(--bg); border-radius:6px;">
-        <div style="font-size:10px; color:var(--text3); text-transform:uppercase; letter-spacing:0.5px;">Start</div>
-        <div style="font-size:13px; font-weight:600; color:var(--accent2); margin-top:2px;">${plannerDate(estimate.startDate)}</div>
-      </div>
-      <div style="text-align:center; padding:8px; background:var(--bg); border-radius:6px;">
-        <div style="font-size:10px; color:var(--text3); text-transform:uppercase; letter-spacing:0.5px;">First pass</div>
-        <div style="font-size:13px; font-weight:600; color:var(--yellow); margin-top:2px;">${plannerDate(estimate.completionDate)}</div>
-      </div>
-      <div style="text-align:center; padding:8px; background:var(--bg); border-radius:6px;">
-        <div style="font-size:10px; color:var(--text3); text-transform:uppercase; letter-spacing:0.5px;">Pipeline finish</div>
-        <div style="font-size:13px; font-weight:600; color:var(--green); margin-top:2px;">${plannerDate(estimate.masteryDate)}</div>
-      </div>
-    </div>`;
-
-    html += `<div style="font-size:11px; color:var(--text3);">${estimate.masteryDate ? '~' + daysToMastery + ' days to pipeline finish' : 'Pipeline finish not scheduled'} · ${detail.resolvedStages?.length || 0} planned activities</div>`;
-
-    // Show estimated revision stages
-    if (estimate.revisionSchedule) {
-      const stageLabels = {r1: 'R1 · 1st Revision', pyq: 'PYQ · Practice', era: 'ERA · Error Analysis', r3: 'R3 · 2nd Revision', mn: 'MN · Micro Notes', mcq: 'MCQ · Practice', mcqa: 'MCQA · MCQ Analysis', r7: 'R7 · 3rd Revision', mva: 'MVA · Value Addition', mains: 'MAINS · Writing', r30: 'R30 · Final'};
-      const stageColors = {r1: 'var(--red)', pyq: 'var(--cyan)', era: 'var(--pink)', r3: 'var(--orange)', mn: 'var(--lime)', ca: 'var(--purple)', mcq: 'var(--teal)', mcqa: 'var(--indigo)', r7: 'var(--yellow)', mva: 'var(--emerald)', mains: 'var(--accent)', r30: 'var(--blue)'};
-      html += `<div style="margin-top:10px; display:flex; flex-wrap:wrap; gap:6px;">`;
-      for (const [key, date] of Object.entries(estimate.revisionSchedule)) {
-        html += `<span style="font-size:10px; padding:3px 8px; border-radius:4px; background:var(--bg); border-left:3px solid ${stageColors[key] || 'var(--text3)'};">
-          ${stageLabels[key] || key}: <strong>${plannerDate(date)}</strong>
-        </span>`;
-      }
-      html += `</div>`;
-    }
-
-    html += `</div>`;
-  }
-
-  // Study Progress (for learning topics)
-  if (topic.status === 'learning') {
-    const logged = detail.loggedHours || 0;
-    const remaining = detail.remainingHours || topic.estimatedHours;
-    const pct = topic.estimatedHours > 0 ? Math.min(100, Math.round(logged / topic.estimatedHours * 100)) : 0;
-    html += `<div style="background:var(--bg); border-radius:8px; padding:12px; margin-bottom:14px;">
-      <div style="font-weight:600; font-size:13px; margin-bottom:8px;">Study Progress</div>
-      <div class="progress-bar" style="height:8px; margin-bottom:6px;"><div class="progress-fill" style="width:${pct}%; background:var(--accent2);"></div></div>
-      <div style="font-size:11px; color:var(--text2);">${logged}h logged / ${topic.estimatedHours}h estimated (${pct}%) — ${remaining}h remaining</div>
-    </div>`;
-  }
+  const actualHours = Number(detail.actualHours ?? detail.loggedHours) || 0;
+  html += `<div class="learning-progress">
+    <div style="font-weight:600;margin-bottom:8px;">Actual learning</div>
+    ${learningTimerMarkup(topic)}
+    <div class="planner-meta">${actualHours.toFixed(2)}h logged${Number.isFinite(topic.estimatedHours) && topic.estimatedHours > 0 ? ` · ${Math.max(0, topic.estimatedHours - actualHours).toFixed(2)}h remaining of your ${topic.estimatedHours}h estimate` : ''}</div>
+    <div class="planner-meta">Stopwatch time is included in logged time when paused or finished; do not log the same session twice.</div>
+  </div>`;
 
   // Timeline — only show active stages
   if (schedule) {
@@ -503,6 +588,7 @@ async function showTopicDetail(subjId, topicId, focusLinks = false) {
           <div>
             ${step.done
               ? '<span class="badge badge-green">Done</span>'
+              : step.canMark === false ? '<span class="planner-stage-note">Waiting for prerequisite work</span>'
               : `<button class="btn btn-sm btn-success" onclick="markRevisionDone('${topic.id}','${step.type}');setTimeout(()=>showTopicDetail('${subjId}','${topicId}'),300);">Mark Done</button>`
             }
           </div>
@@ -574,30 +660,21 @@ async function showTopicDetail(subjId, topicId, focusLinks = false) {
       </div>`;
     });
   }
-  html += `<div style="display:flex; gap:6px; margin-top:8px;">
-    <select id="related-select-${topicId}" class="form-select" style="flex:1; font-size:11px;">
-      <option value="">Select a topic...</option>
-    </select>
-    <button class="btn btn-sm btn-primary" onclick="addRelated('${subjId}','${topicId}')">Link</button>
+  html += `<div class="related-search">
+    <label class="form-label" for="related-search-${topicId}">Search topics across all subjects</label>
+    <input type="search" id="related-search-${topicId}" class="form-input" placeholder="Topic or subject name" autocomplete="off" oninput="updateRelatedSearch('${topicId}',this.value)" aria-controls="related-results-${topicId}">
+    <div id="related-results-${topicId}" class="related-results" aria-label="Matching topics"></div>
+    <p id="related-selected-${topicId}" class="planner-meta" role="status"></p>
+    <button class="btn btn-sm btn-primary" id="related-link-${topicId}" disabled onclick="addRelated('${subjId}','${topicId}')">Link selected topic</button>
+    <p id="related-feedback-${topicId}" role="status" aria-live="polite"></p>
   </div></div>`;
 
   // Actions
   html += `<div style="margin-top:16px; display:flex; gap:8px; flex-wrap:wrap;">`;
-  if (topic.status === 'not-started') {
-    const preData = await api('/api/data');
-    const currentLearning = preData.subjects.reduce((sum, s) => sum + s.topics.filter(t => t.status === 'learning').length, 0);
-    const maxSlots = 3;
-    if (currentLearning < maxSlots) {
-      html += `<button class="btn btn-primary btn-sm" onclick="startLearning('${subjId}','${topicId}');setTimeout(()=>showTopicDetail('${subjId}','${topicId}'),300);">Start Learning</button>`;
-    } else {
-      html += `<button class="btn btn-sm" disabled style="opacity:0.45;cursor:not-allowed;" title="Complete a learning topic first (${currentLearning}/${maxSlots} slots used)">🔒 Start Learning (${currentLearning}/${maxSlots} slots full)</button>`;
-    }
-  }
-  if (topic.status === 'learning') {
-    html += `<button class="btn btn-success btn-sm" onclick="completeLearning('${subjId}','${topicId}');">Mark as Completed</button>`;
-  }
+  const canStart = plannerCanStart(plannerSubject(subj), (allData.subjects || []).map(plannerSubject));
+  html += learningControlsMarkup(subjId, topic, canStart);
   html += `<button class="btn btn-sm" onclick="editTopic('${subjId}','${topicId}')" style="margin-right:auto;">✏️ Edit</button>`;
-  html += `<button class="btn btn-danger btn-sm" onclick="resetTopic('${subjId}','${topicId}');closeModal('topic-detail');">Reset</button>`;
+  html += `<button class="btn btn-danger btn-sm" onclick="resetTopic('${subjId}','${topicId}');">Reset</button>`;
   html += `<button class="btn btn-danger btn-sm" onclick="deleteTopic('${subjId}','${topicId}');closeModal('topic-detail');">Delete</button>`;
   html += `</div>`;
 
@@ -609,22 +686,13 @@ async function showTopicDetail(subjId, topicId, focusLinks = false) {
     urlInput.focus({ preventScroll: true });
   }
 
-  // Populate related topic dropdown (async after render)
-  const allData = await api('/api/data');
-  const sel = document.getElementById(`related-select-${topicId}`);
-  if (sel) {
-    const existingIds = new Set((topic.relatedTopicIds || []).concat([topicId]));
-    allData.subjects.forEach(s => {
-      s.topics.forEach(t => {
-        if (!existingIds.has(t.id)) {
-          const opt = document.createElement('option');
-          opt.value = t.id;
-          opt.textContent = `${t.name} (${s.name})`;
-          sel.appendChild(opt);
-        }
-      });
-    });
-  }
+  const excluded = new Set([topicId, ...(topic.relatedTopicIds || []), ...related.map(item => item.topicId)]);
+  relatedSearchState = {
+    subjectId: subjId, topicId, query: previous?.query || '', selectedId: previous?.selectedId || null,
+    candidates: (allData.subjects || []).flatMap(subject => (subject.topics || []).filter(candidate => !excluded.has(candidate.id)).map(candidate => ({ id: candidate.id, name: candidate.name, subjectName: subject.name })))
+  };
+  restoreTopicDetail(previous);
+  updateRelatedSearch(topicId, relatedSearchState.query);
 }
 
 async function saveTopicStages(subjId, topicId) {
@@ -654,16 +722,36 @@ async function deleteLink(subjId, topicId, linkId) {
 }
 
 async function addRelated(subjId, topicId) {
-  const sel = document.getElementById(`related-select-${topicId}`);
-  const relatedId = sel.value;
-  if (!relatedId) { showToast('Select a topic', 'warning'); return; }
-  await api(`/api/subjects/${subjId}/topics/${topicId}/related`, 'POST', { relatedTopicId: relatedId });
-  showTopicDetail(subjId, topicId);
+  if (relatedSearchState?.topicId !== topicId || relatedSearchState?.subjectId !== subjId) return;
+  const candidate = relatedSearchState.candidates.find(item => item.id === relatedSearchState.selectedId);
+  if (!candidate) { relatedMessage(topicId, 'Select a search result before linking.', true); return; }
+  const button = document.getElementById(`related-link-${topicId}`);
+  if (button.disabled) return;
+  button.disabled = true;
+  try {
+    await checkedApi(`/api/subjects/${subjId}/topics/${topicId}/related`, 'POST', { relatedTopicId: candidate.id });
+    relatedSearchState.selectedId = null;
+    await showTopicDetail(subjId, topicId);
+    relatedMessage(topicId, `Linked “${candidate.name}”.`);
+    showToast('Related topic linked.');
+  } catch (error) {
+    relatedMessage(topicId, error.message || 'Link failed. Please retry.', true);
+    showToast(error.message || 'Link failed.', 'warning');
+  } finally {
+    if (relatedSearchState?.topicId === topicId) button.disabled = !relatedSearchState.selectedId;
+  }
 }
 
 async function removeRelated(subjId, topicId, relatedId) {
-  await api(`/api/subjects/${subjId}/topics/${topicId}/related/${relatedId}`, 'DELETE');
-  showTopicDetail(subjId, topicId);
+  try {
+    await checkedApi(`/api/subjects/${subjId}/topics/${topicId}/related/${relatedId}`, 'DELETE');
+    await showTopicDetail(subjId, topicId);
+    relatedMessage(topicId, 'Related topic unlinked.');
+    showToast('Related topic unlinked.');
+  } catch (error) {
+    relatedMessage(topicId, error.message || 'Unlink failed. Please retry.', true);
+    showToast(error.message || 'Unlink failed.', 'warning');
+  }
 }
 
 async function logStudyHours(topicId, hours) {
@@ -690,7 +778,7 @@ function renderTimeBudgetActivities(activities) {
     else label = '🔄 ' + a.subjectName + ' R' + a.round;
     const color = colors[a.category] || 'var(--text3)';
     const warn = a.overdue ? ' ⚠️' : '';
-    return '<span style="font-size:10px; padding:2px 6px; border-radius:3px; background:var(--bg); border-left:3px solid ' + color + ';">' + plannerEscape(label) + ' <strong>' + plannerEscape(a.hours) + 'h planned</strong>' + warn + '</span>';
+    return '<span style="font-size:10px; padding:2px 6px; border-radius:3px; background:var(--bg); border-left:3px solid ' + color + ';">' + plannerEscape(label) + ' <strong>' + plannerEscape(a.hours) + 'h ' + (a.isActual ? 'logged' : 'planned') + '</strong>' + warn + '</span>';
   });
   return '<div style="margin-top:10px; display:flex; flex-wrap:wrap; gap:4px;">' + items.join('') + '</div>';
 }
@@ -709,7 +797,7 @@ function renderTaskItem(t) {
 
 // ===== RENDER: DASHBOARD =====
 async function renderDashboard() {
-  const [data, timeline] = await Promise.all([api('/api/dashboard'), api('/api/timeline-estimate')]);
+  const [data] = await Promise.all([api('/api/dashboard'), refreshPlannerTarget()]);
   const today = data.today;
   const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
   const dow = parseDate(today).getDay();
@@ -845,14 +933,14 @@ async function renderDashboard() {
     document.getElementById('dash-learning-list').innerHTML = '<div class="empty-state"><div class="empty-state-text">No topics in progress.<br>Go to Subjects to start learning!</div></div>';
   } else {
     document.getElementById('dash-learning-list').innerHTML = learningTopics.map(t => {
-      const daysIn = daysBetween(t.startDate, today);
+      const logged = loggedLearningHours(t, data.studyLogs || []);
       return `<div class="task-item" style="cursor:pointer;" onclick="showTopicDetail('${t.subjectId}','${t.id}')">
         <div style="width: 4px; height: 32px; border-radius: 2px; background: ${t.subjectColor};"></div>
         <div class="task-info">
           <div class="task-name">${t.name}</div>
-          <div class="task-meta">${t.subjectName} · ${t.estimatedHours || '?'}h est. · ${t.roi} ROI</div>
+          <div class="task-meta">${t.subjectName} · ${logged.toFixed(2)}h logged ${learningTimerMarkup(t)}</div>
         </div>
-        <button class="btn btn-sm btn-success" onclick="event.stopPropagation();completeLearning('${t.subjectId}','${t.id}');">Done</button>
+        <div onclick="event.stopPropagation();">${learningControlsMarkup(t.subjectId, t)}</div>
       </div>`;
     }).join('');
   }
@@ -902,55 +990,12 @@ async function renderDashboard() {
     document.getElementById('dash-cumulative-card').style.display = 'none';
   }
 
-  // Timeline estimator summary on dashboard
-  const tlSummary = timeline.summary || {};
-  updatePlannerTarget(tlSummary.plannerConfig || { attemptYear: tlSummary.attemptYear });
-  const tlEstimates = timeline.estimates || {};
-  const dashTlCard = document.getElementById('dash-timeline-card');
-  if (tlSummary.inPipeline > 0) {
-    const nextTopics = Object.values(tlEstimates)
-      .filter(e => e.status === 'not-started' || e.status === 'learning')
-      .sort((a, b) => (a.masteryDate || '').localeCompare(b.masteryDate || ''))
-      .slice(0, 5);
-
-    let tlHtml = plannerProvisionalWarning(tlSummary) + renderPlannerMilestones(tlSummary) + `<div class="planner-summary-grid">
-      <div style="text-align:center; padding:8px; background:var(--bg); border-radius:6px;">
-        <div style="font-size:10px; color:var(--text3);">IN PIPELINE</div>
-        <div style="font-size:18px; font-weight:700; color:var(--accent2);">${tlSummary.inPipeline}</div>
-      </div>
-      <div style="text-align:center; padding:8px; background:var(--bg); border-radius:6px;">
-        <div style="font-size:10px; color:var(--text3);">LEARNING STREAMS</div>
-        <div style="font-size:13px; font-weight:700; color:var(--text1);">1 GS + 1 Optional</div>
-      </div>
-      <div style="text-align:center; padding:8px; background:var(--bg); border-radius:6px;">
-        <div style="font-size:10px; color:var(--text3);">PIPELINE FINISH</div>
-        <div style="font-size:13px; font-weight:600; color:var(--green); margin-top:2px;">${plannerDate(tlSummary.overallFinishDate)}</div>
-      </div>
-    </div>`;
-    nextTopics.forEach(t => {
-      const statusIcon = t.status === 'learning' ? '📖' : '⏳';
-      const daysLeft = daysBetween(today, t.masteryDate);
-      tlHtml += `<div style="display:flex; align-items:center; gap:8px; padding:6px 0; border-bottom:1px solid var(--bg2);">
-        <span>${statusIcon}</span>
-        <div style="flex:1; min-width:0;">
-          <div style="font-size:12px; font-weight:500; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${plannerEscape(t.topicName)}</div>
-          <div style="font-size:10px; color:var(--text3);">${plannerEscape(t.subjectName)} · Pipeline finish ${plannerDate(t.masteryDate)}</div>
-        </div>
-        <span style="font-size:11px; color:var(--text3); white-space:nowrap;">${t.masteryDate ? daysLeft + 'd' : 'Not scheduled'}</span>
-      </div>`;
-    });
-    document.getElementById('dash-timeline-list').innerHTML = tlHtml;
-    dashTlCard.style.display = 'block';
-  } else {
-    dashTlCard.style.display = 'none';
-  }
 }
 
 // ===== RENDER: SUBJECTS =====
 async function renderSubjects() {
-  const [data, timeline] = await Promise.all([api('/api/data'), api('/api/timeline-estimate'), refreshPlannerTarget()]);
+  const [data] = await Promise.all([api('/api/data'), refreshPlannerTarget()]);
   const container = document.getElementById('subjects-list');
-  const estimates = timeline.estimates || {};
 
   if (!data.subjects || data.subjects.length === 0) {
     container.innerHTML = '<div class="empty-state"><div class="empty-state-text">No subjects added yet.<br>Click "Add Subject" to get started.</div></div>';
@@ -958,7 +1003,7 @@ async function renderSubjects() {
   }
 
   const roiOrder = { 'very-high': 0, high: 1, medium: 2, low: 3 };
-  const sorted = [...data.subjects].sort((a, b) => roiOrder[a.roi] - roiOrder[b.roi]);
+  const sorted = [...data.subjects].sort((a, b) => (roiOrder[a.roi] ?? 4) - (roiOrder[b.roi] ?? 4));
 
   const streamSubjects = data.subjects.map(plannerSubject);
 
@@ -966,7 +1011,7 @@ async function renderSubjects() {
     const classified = plannerSubject(subj);
     const slotsAvailable = plannerCanStart(classified, streamSubjects);
     const streamName = plannerStream(classified) === 'gs' ? 'GS' : 'Optional';
-    const topicsSorted = [...subj.topics].sort((a, b) => roiOrder[a.roi] - roiOrder[b.roi]);
+    const topicsSorted = [...subj.topics].sort((a, b) => (roiOrder[a.roi] ?? 4) - (roiOrder[b.roi] ?? 4));
     const completed = subj.topics.filter(t => t.status === 'completed' || t.status === 'pipeline-complete').length;
     const mastered = subj.topics.filter(t => t.status === 'pipeline-complete').length;
     const total = subj.topics.length;
@@ -981,7 +1026,7 @@ async function renderSubjects() {
           <div style="width:4px; height:28px; border-radius:2px; background:${subj.color};"></div>
           <div>
             <div class="subject-name">${plannerEscape(subj.name)} ${plannerBadge(classified)}</div>
-            <div style="font-size:11px; color:var(--text3);">${total} topics · ${completed} completed · ${mastered} pipeline-complete · <span class="badge badge-${roiBadgeClass(subj.roi)}" style="font-size:10px">${roiEmoji(subj.roi)} ${subj.roi.toUpperCase()} ROI</span>${subj.ntfyTopic ? ` · <span class="badge badge-cyan" style="font-size:10px">${subj.ntfyTopic}</span>` : ''}${hmTopics.length > 0 ? ` · <span style="font-size:10px;color:${hmMastered === hmTopics.length && hmTopics.length > 0 ? 'var(--green)' : 'var(--text3)'};">VH+H+M: ${hmMastered}/${hmTopics.length}</span>` : ''}</div>
+            <div style="font-size:11px; color:var(--text3);">${total} topics · ${completed} completed · ${mastered} pipeline-complete · ${topicRoiBadge(subj.roi)}${subj.ntfyTopic ? ` · <span class="badge badge-cyan" style="font-size:10px">${subj.ntfyTopic}</span>` : ''}${hmTopics.length > 0 ? ` · <span style="font-size:10px;color:${hmMastered === hmTopics.length && hmTopics.length > 0 ? 'var(--green)' : 'var(--text3)'};">VH+H+M: ${hmMastered}/${hmTopics.length}</span>` : ''}</div>
             ${subj.notes ? `<div style="font-size:11px; color:var(--text2); margin-top:4px; max-width:420px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="${subj.notes.replace(/"/g, '&quot;')}">📝 ${subj.notes}</div>` : ''}
           </div>
         </div>
@@ -999,7 +1044,7 @@ async function renderSubjects() {
       <div class="subject-body">
         ${topicsSorted.length === 0
           ? '<div style="padding:12px 0; font-size:12px; color:var(--text3); text-align:center;">No topics yet. Click "+ Topic" to add micro-topics.</div>'
-          : `<table><thead><tr><th>Topic</th><th>ROI</th><th>Status</th><th>Est. Timeline</th><th>Actions</th></tr></thead><tbody>
+          : `<table><thead><tr><th>Topic</th><th>ROI</th><th>Status</th><th>Actual learning</th><th>Actions</th></tr></thead><tbody>
             ${topicsSorted.map(t => {
               const statusBadge = {
                 'not-started': '<span class="badge badge-accent">Not Started</span>',
@@ -1007,53 +1052,18 @@ async function renderSubjects() {
                 'completed': '<span class="badge badge-green">Revising</span>',
                 'pipeline-complete': '<span class="badge badge-cyan">Pipeline Complete</span>'
               }[t.status];
-              const roiBadge = `<span class="badge badge-${roiBadgeClass(t.roi)}">${roiEmoji(t.roi)} ${t.roi}</span>`;
+              const roiBadge = topicRoiBadge(t.roi);
               let actions = `<button class="btn btn-sm" onclick="event.stopPropagation();editTopic('${subj.id}','${t.id}')" title="Edit topic">✏️</button> `;
-              if (t.status === 'not-started') actions += slotsAvailable
-                ? `<button class="btn btn-sm btn-primary" onclick="event.stopPropagation();startLearning('${subj.id}','${t.id}');">Start</button>`
-                : `<button class="btn btn-sm" disabled title="The ${streamName} stream is busy. Complete its current learning topic first." style="opacity:0.45;cursor:not-allowed;">Start</button>`;
-              else if (t.status === 'learning') actions += `<button class="btn btn-sm btn-success" onclick="event.stopPropagation();completeLearning('${subj.id}','${t.id}');">Done</button>`;
-              else actions += `<button class="btn btn-sm" onclick="event.stopPropagation();showTopicDetail('${subj.id}','${t.id}');">Plan</button>`;
+              actions += learningControlsMarkup(subj.id, t, slotsAvailable);
               actions += ` <button class="btn btn-sm" onclick="event.stopPropagation();showTopicDetail('${subj.id}','${t.id}',true);" title="Manage current affairs links">CA Links (${(t.links || []).length})</button>`;
 
-              // Timeline estimate column
-              const est = estimates[t.id];
-              let estHtml = `<span style="color:var(--text3);">${t.estimatedHours || '?'}h</span>`;
-              if (est?.schedulingError) {
-                estHtml = schedulingWarnings([{ error: est.schedulingError }]);
-              } else if (est) {
-                if (t.status === 'pipeline-complete') {
-                  estHtml = '<span style="color:var(--green);font-weight:600;">✓ Pipeline Complete</span>';
-                } else if (t.status === 'completed') {
-                  estHtml = `<div style="font-size:11px;line-height:1.5;">
-                    <span style="color:var(--green);">Pipeline finish</span><br>
-                    <span style="color:var(--text2);font-weight:500;">${plannerDate(est.masteryDate)}</span><br>
-                    <span style="color:var(--text3);">${est.doneRevisions} activities done</span>
-                  </div>`;
-                } else if (t.status === 'learning') {
-                  const daysToMastery = daysBetween(todayStr(), est.masteryDate);
-                  estHtml = `<div style="font-size:11px;line-height:1.5;">
-                    <span style="color:var(--yellow);">First pass ${plannerDate(est.completionDate)}</span><br>
-                    <span style="color:var(--text2);">Pipeline finish ${plannerDate(est.masteryDate)}</span><br>
-                    <span style="color:var(--text3);">${est.masteryDate ? daysToMastery + 'd left' : 'Not scheduled'}</span>
-                  </div>`;
-                } else {
-                  // not-started
-                  const qPos = est.queuePosition || '—';
-                  const daysToMastery = daysBetween(todayStr(), est.masteryDate);
-                  estHtml = `<div style="font-size:11px;line-height:1.5;">
-                    <span style="color:var(--accent2);">Start ${plannerDate(est.startDate)}</span><br>
-                    <span style="color:var(--text2);">Pipeline finish ${plannerDate(est.masteryDate)}</span><br>
-                    <span style="color:var(--text3);">Q#${qPos} · ${est.masteryDate ? daysToMastery + 'd' : 'Not scheduled'}</span>
-                  </div>`;
-                }
-              }
+              const actualHtml = `<div>${loggedLearningHours(t, data.studyLogs || []).toFixed(2)}h logged</div>${learningTimerMarkup(t)}`;
 
               return `<tr style="cursor:pointer;" onclick="showTopicDetail('${subj.id}','${t.id}')">
                 <td><div style="font-weight:500;">${t.name}</div>${t.notes ? '<div style="font-size:11px;color:var(--text3);margin-top:2px;">' + t.notes.slice(0, 60) + '</div>' : ''}</td>
                 <td>${roiBadge}</td>
                 <td>${statusBadge}</td>
-                <td>${estHtml}</td>
+                <td>${actualHtml}</td>
                 <td onclick="event.stopPropagation();">${actions}</td>
               </tr>`;
             }).join('')}
@@ -1305,7 +1315,7 @@ async function renderCalendar() {
         return `<div class="cal-event ${cls} ${doneClass}" title="${e.topicName} · ${e.label}${e.done ? ' ✓' : ''}" onclick="event.stopPropagation();showTopicDetail('${e.subjectId}','${e.topicId}')">${e.done ? '✓ ' : ''}${e.type} ${e.topicName.slice(0, 10)}</div>`;
       }).join('')}
       ${dayEvents.length > 3 ? `<div style="font-size:9px;color:var(--text3);">+${dayEvents.length - 3} more</div>` : ''}
-      ${dayLearning.length ? `<div class="planner-cal-learning" title="${plannerEscape(dayLearning.map(item => `${item.stream === 'optional' ? 'Optional' : 'GS'}: ${item.topicName} (${item.hours}h planned)`).join('; '))}">${dayLearning.length} learning</div>` : ''}
+      ${dayLearning.length ? `<div class="planner-cal-learning" title="${plannerEscape(dayLearning.map(item => `${item.stream === 'optional' ? 'Optional' : 'GS'}: ${item.topicName} (${item.hours}h ${item.isActual ? 'logged' : 'planned'})`).join('; '))}">${dayLearning.length} learning</div>` : ''}
       ${dayReserves.length ? `<div class="planner-cal-reserve" title="${plannerEscape(dayReserves.map(item => `${item.label || item.subjectName || 'Reserve'} (${item.hours}h planned)`).join('; '))}">Reserved time</div>` : ''}
     </div>`;
   }
@@ -1784,7 +1794,7 @@ async function renderCumulative() {
     document.getElementById('cum-pending-list').innerHTML = '<div style="font-size: 12px; color: var(--text3); text-align: center; padding: 16px;">No pipeline-complete topics waiting. Complete all revision stages for a topic to add it here.</div>';
   } else {
     document.getElementById('cum-pending-list').innerHTML = data.pendingTopics.map(t => {
-      const roiBadge = `<span class="badge badge-${roiBadgeClass(t.roi)}" style="font-size:10px">${roiEmoji(t.roi)} ${t.roi.toUpperCase()}</span>`;
+      const roiBadge = `<span class="badge badge-${roiBadgeClass(t.roi)}" style="font-size:10px">${roiEmoji(t.roi)} ${(t.roi || 'Not set').toUpperCase()}</span>`;
       return `<div class="task-item" style="cursor:pointer;" onclick="this.querySelector('input').click()">
         <input type="checkbox" class="batch-select-cb" value="${t.topicId}" style="margin-right:8px; cursor:pointer;" onclick="event.stopPropagation(); updateBatchSelection();">
         <div class="task-info">
@@ -2082,117 +2092,6 @@ async function renderWeeklyReview(dateStr) {
   container.innerHTML = html;
 }
 
-// ===== RENDER: TIMELINE ESTIMATOR =====
-async function renderTimeline() {
-  const data = await api('/api/timeline-estimate');
-  const today = data.today;
-  const estimates = data.estimates || {};
-  const summary = data.summary || {};
-  const escape = value => String(value ?? '').replace(/[&<>"']/g, character => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[character]);
-  const badge = estimate => typeof plannerBadge === 'function' ? plannerBadge({ stream: estimate.stream, name: estimate.subjectName }) : '';
-  const date = value => typeof plannerDate === 'function' ? plannerDate(value) : formatDate(value);
-  if (typeof updatePlannerTarget === 'function') updatePlannerTarget(summary.plannerConfig || { attemptYear: summary.attemptYear });
-  const forecastDetails = (typeof plannerProvisionalWarning === 'function' ? plannerProvisionalWarning(summary) : '')
-    + (typeof renderPlannerMilestones === 'function' ? renderPlannerMilestones(summary) : '');
-
-  // Stats
-  document.getElementById('tl-stats').innerHTML = `
-    <div class="stat-card blue"><div class="stat-label">Total Topics</div><div class="stat-value">${escape(summary.totalTopics || 0)}</div><div class="stat-sub">One GS + one Optional learner</div></div>
-    <div class="stat-card orange"><div class="stat-label">In Pipeline</div><div class="stat-value">${escape(summary.inPipeline || 0)}</div><div class="stat-sub">${escape(summary.notStarted || 0)} queued · ${escape(summary.learning || 0)} learning</div></div>
-    <div class="stat-card green"><div class="stat-label">Full Pipeline Finish</div><div class="stat-value" style="font-size:24px;">${date(summary.overallFinishDate)}</div><div class="stat-sub">${escape(summary.phase || '')} ${summary.overallFinishDate ? daysBetween(today, summary.overallFinishDate) + ' days' : 'Not scheduled'}</div></div>
-  `;
-
-  // Overall timeline visualization
-  const estArr = Object.values(estimates).sort((a, b) => (a.masteryDate || '').localeCompare(b.masteryDate || ''));
-  if (estArr.length === 0) {
-    document.getElementById('tl-overall').innerHTML = forecastDetails + schedulingWarnings(summary.schedulingErrors) + '<div class="empty-state" style="padding:20px 0;"><div class="empty-state-text">Not scheduled</div></div>';
-  } else {
-    // Group by subject for a visual overview
-    const bySubject = Object.create(null);
-    estArr.forEach(e => {
-      if (!bySubject[e.subjectName]) bySubject[e.subjectName] = { color: e.subjectColor, topics: [] };
-      bySubject[e.subjectName].topics.push(e);
-    });
-
-    const forecastCount = summary.scheduledTopics ?? estArr.filter(topic => topic.masteryDate).length;
-    let overallHtml = forecastDetails + `<div style="display:flex;flex-wrap:wrap;gap:12px;font-size:12px;color:var(--text2);margin-bottom:14px;">
-      <span>${forecastCount}/${estArr.length} topics forecast</span>
-      ${summary.weeklyStudyHours !== undefined ? `<span>${escape(summary.weeklyStudyHours)}h/week</span>` : ''}
-      ${summary.remainingLearningHours !== undefined ? `<span>${escape(summary.remainingLearningHours)}h learning</span><span>${escape(summary.remainingFollowUpHours)}h follow-up activities</span>` : ''}
-    </div>` + schedulingWarnings(summary.schedulingErrors);
-    for (const [subjName, info] of Object.entries(bySubject)) {
-      const subjTopics = info.topics;
-      const latestMastery = subjTopics.every(topic => topic.masteryDate)
-        ? subjTopics.reduce((max, topic) => topic.masteryDate > max ? topic.masteryDate : max, '') : null;
-      const completed = subjTopics.filter(t => t.status === 'pipeline-complete').length;
-      const total = subjTopics.length;
-      const pct = total > 0 ? Math.round(completed / total * 100) : 0;
-
-      overallHtml += `<div style="margin-bottom:14px;">
-        <div style="display:flex;flex-wrap:wrap;gap:6px;justify-content:space-between;align-items:center;margin-bottom:4px;">
-          <span style="font-size:13px; font-weight:500; display:flex; align-items:center; gap:6px;">
-            <span style="width:8px; height:8px; border-radius:2px; background:${info.color}; display:inline-block;"></span>
-            ${escape(subjName)} ${badge(subjTopics[0])}
-          </span>
-          <span style="font-size:11px; color:var(--text3);">${completed}/${total} pipeline-complete · Pipeline finish ${date(latestMastery)}</span>
-        </div>
-        <div class="progress-bar"><div class="progress-fill" style="width:${pct}%; background:${info.color};"></div></div>
-        <div style="display:flex; flex-wrap:wrap; gap:4px; margin-top:6px;">
-          ${subjTopics.map(t => {
-            const statusColor = t.status === 'pipeline-complete' ? 'var(--green)' : t.status === 'completed' ? 'var(--cyan)' : t.status === 'learning' ? 'var(--yellow)' : 'var(--text3)';
-            return `<span style="font-size:10px; padding:2px 6px; border-radius:3px; background:var(--bg); border-left:3px solid ${statusColor};" title="${escape(t.topicName)}: First pass ${date(t.completionDate)}; Pipeline finish ${date(t.masteryDate)}">${escape(String(t.topicName || '').slice(0, 15))}${String(t.topicName || '').length > 15 ? '…' : ''}</span>`;
-          }).join('')}
-        </div>
-      </div>`;
-    }
-    document.getElementById('tl-overall').innerHTML = overallHtml;
-  }
-
-  // Full topic table (filtered)
-  const filter = document.getElementById('tl-filter-status')?.value || 'all';
-  const filtered = estArr.filter(e => filter === 'all' || e.status === filter);
-
-  if (filtered.length === 0) {
-    document.getElementById('tl-topic-list').innerHTML = `<div style="padding:20px; text-align:center; font-size:12px; color:var(--text3);">${estArr.length === 0 ? 'Not scheduled' : 'No topics matching this filter.'}</div>`;
-  } else {
-    let tableHtml = `<table><thead><tr>
-      <th>#</th><th>Topic</th><th>Subject / Stream</th><th>ROI</th><th>Status</th>
-      <th>Est. Start</th><th>First Pass</th><th>Prelims Activities</th><th>Mains Activities</th><th>Full Pipeline</th><th>Days Left</th>
-    </tr></thead><tbody>`;
-
-    filtered.forEach((e, idx) => {
-      const roiBadge = `<span class="badge badge-${roiBadgeClass(e.roi)}" style="font-size:10px">${roiEmoji(e.roi)}</span>`;
-      const statusBadge = {
-        'not-started': '<span class="badge badge-accent" style="font-size:10px">Queued</span>',
-        'learning': '<span class="badge badge-yellow" style="font-size:10px">Learning</span>',
-        'completed': '<span class="badge badge-green" style="font-size:10px">Revising</span>',
-        'pipeline-complete': '<span class="badge badge-cyan" style="font-size:10px">Pipeline Complete</span>',
-      }[e.status] || '';
-      const daysLeft = daysBetween(today, e.masteryDate);
-      const isEstimate = e.isEstimate;
-      const tilde = isEstimate ? '~' : '';
-      const qLabel = e.queuePosition ? `<span style="color:var(--text3);font-size:10px;"> Q#${escape(e.queuePosition)}</span>` : '';
-
-      tableHtml += `<tr>
-        <td style="font-size:11px;color:var(--text3);">${idx + 1}${qLabel}</td>
-        <td style="font-weight:500;font-size:12px;">${escape(e.topicName)}${e.schedulingError ? schedulingWarnings([{ error: e.schedulingError }]) : ''}</td>
-        <td><span style="display:inline-flex;align-items:center;gap:4px;font-size:12px;"><span style="width:6px;height:6px;border-radius:2px;background:${escape(e.subjectColor)};display:inline-block;"></span>${escape(e.subjectName)}</span> ${badge(e)}</td>
-        <td>${roiBadge}</td>
-        <td>${statusBadge}</td>
-        <td style="font-size:11px;color:var(--text2);">${e.startDate ? tilde : ''}${date(e.startDate)}</td>
-        <td style="font-size:11px;color:var(--text2);">${e.completionDate ? tilde : ''}${date(e.completionDate)}</td>
-        <td style="font-size:11px;color:var(--text2);">${date(e.prelimsFinishDate)}</td>
-        <td style="font-size:11px;color:var(--text2);">${date(e.mainsFinishDate)}</td>
-        <td style="font-size:11px;font-weight:600;color:${e.status === 'pipeline-complete' ? 'var(--green)' : 'var(--accent2)'};">${e.masteryDate ? tilde : ''}${date(e.masteryDate)}</td>
-        <td style="font-size:11px;color:${daysLeft <= 0 ? 'var(--green)' : daysLeft <= 7 ? 'var(--yellow)' : 'var(--text3)'};">${!e.masteryDate ? 'Not scheduled' : e.status === 'pipeline-complete' ? '✓' : daysLeft + 'd'}</td>
-      </tr>`;
-    });
-
-    tableHtml += '</tbody></table>';
-    document.getElementById('tl-topic-list').innerHTML = tableHtml;
-  }
-}
-
 // ===== THEME SYSTEM =====
 const APP_THEMES = [
   { id: 'black-gold', name: 'Black & Gold', desc: 'Elegant dark with gold accents', colors: ['#0a0a0a','#111111','#d4af37','#f2d272'] },
@@ -2252,7 +2151,6 @@ function renderPage(page) {
     case 'calendar': renderCalendar(); break;
     case 'analytics': renderAnalytics(); renderWeeklyReview(); break;
     case 'cumulative': renderCumulative(); renderSubjectCycles(); break;
-    case 'timeline': renderTimeline(); break;
     case 'settings': renderSettings(); renderThemePicker(); renderPlannerSettings(); break;
     case 'htmlpages': renderHtmlPages(); break;
     case 'help': break;  // Static content, no render needed
@@ -2267,7 +2165,7 @@ function renderAll() {
 // ===== KEYBOARD SHORTCUTS =====
 document.addEventListener('keydown', e => {
   if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') return;
-  const shortcuts = { '1': 'dashboard', '2': 'subjects', '3': 'today', '4': 'calendar', '5': 'analytics', '6': 'cumulative', '7': 'timeline', '8': 'settings', '9': 'htmlpages', '0': 'help' };
+  const shortcuts = { '1': 'dashboard', '2': 'subjects', '3': 'today', '4': 'calendar', '5': 'analytics', '6': 'cumulative', '8': 'settings', '9': 'htmlpages', '0': 'help' };
   if (shortcuts[e.key]) {
     document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -2280,6 +2178,7 @@ document.addEventListener('keydown', e => {
 
 // ===== INITIAL RENDER =====
 installPlannerActions();
+setInterval(updateLearningTimers, 1000);
 refreshPlannerTarget();
 renderDashboard();
 

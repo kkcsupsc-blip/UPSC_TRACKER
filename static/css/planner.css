@@ -60,6 +60,14 @@
 .planner-milestones details { font-size: 12px; margin-top: 10px; overflow-wrap: anywhere; }
 .planner-milestones ul { padding-left: 18px; }
 .planner-stage-note { color: var(--text2); font-size: 11px; overflow-wrap: anywhere; }
+.learning-stopwatch { display: inline-block; font-variant-numeric: tabular-nums; color: var(--accent2); font-size: 12px; }
+.learning-progress { padding: 12px; margin-block: 12px; border: 1px solid var(--bg4); border-radius: 8px; }
+.related-results { display: grid; gap: 6px; max-height: 230px; overflow-y: auto; margin-top: 8px; }
+.related-result { display: flex; flex-wrap: wrap; text-align: left; justify-content: space-between; white-space: normal; gap: 8px; }
+.related-result .planner-meta { padding: 0; }
+.related-result[aria-pressed="true"] { border-color: var(--accent2); background: var(--bg3); }
+.related-search [role="status"], .related-search [role="alert"] { min-height: 18px; font-size: 12px; }
+.related-search :focus-visible { outline: 2px solid var(--accent2); outline-offset: 2px; }
 .planner-cal-learning, .planner-cal-reserve { font-size: 10px; color: var(--accent2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .planner-cal-reserve { color: var(--text2); }
 .planner-stage-check { flex: 0 0 26px; width: 26px; height: 26px; border: 1px solid var(--bg4); border-radius: 4px; background: var(--bg); color: var(--green); cursor: pointer; }

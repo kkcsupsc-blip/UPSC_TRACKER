@@ -83,20 +83,10 @@
     </fieldset>`;
   }
 
-  function syllabusMarkup(subject, item = {}) {
-    return `<fieldset class="prep-syllabus prep-row" data-syllabus>
-      <legend>Syllabus entry</legend>
-      ${inputField('Syllabus entry', 'syllabusTitle', item.title || '', 'required maxlength="500"')}
-      <label class="prep-field">Linked topics<select name="syllabusTopics" multiple size="4" aria-label="Linked topics">${subject.topics.map(topic => option(topic.id, topic.name, (item.topicIds || []).includes(topic.id))).join('')}</select></label>
-      ${iconButton('Remove syllabus entry', 'data-remove-syllabus')}
-    </fieldset>`;
-  }
-
   function strategyMarkup(subject) {
     const strategy = subject.strategy || {};
-    const coverage = subject.coverage || {};
     return `<form id="prep-strategy" class="prep-section">
-      <div class="prep-section-heading"><h3>Subject strategy</h3><span class="prep-muted">Syllabus: ${escape(coverage.covered ?? 0)} / ${escape(coverage.total ?? 0)} covered | ${coverage.verified ? 'Verified' : 'Not verified'}</span></div>
+      <div class="prep-section-heading"><h3>Subject resources &amp; settings</h3></div>
       <div class="prep-grid prep-grid-two">
         ${selectField('Profile', 'profile', Object.entries(state.data.profiles).map(([key, profile]) => [key, profile.name]), strategy.profile || 'general')}
         ${selectField('Activity pipeline', 'stagePreset', [['standard', 'Standard activities'], ['compact', 'Compact activities']], strategy.stagePreset || 'standard')}
@@ -104,22 +94,16 @@
       <div class="prep-output" id="prep-outputs">${outputMarkup(strategy.profile || 'general')}</div>
       <div class="prep-section-heading"><h4>Resources</h4><button type="button" class="btn btn-sm" data-add-resource>+ Resource</button></div>
       <div id="prep-resources">${(strategy.resources || []).map(resourceMarkup).join('')}</div>
-      <div class="prep-section-heading"><h4>Syllabus coverage</h4><button type="button" class="btn btn-sm" data-add-syllabus>+ Entry</button></div>
-      <div id="prep-syllabus">${(strategy.syllabus || []).map(item => syllabusMarkup(subject, item)).join('')}</div>
-      <label class="prep-check"><input type="checkbox" name="syllabusVerified"${strategy.syllabusVerified ? ' checked' : ''}> Syllabus verified against official syllabus</label>
-      ${feedback()}<div class="prep-actions"><button type="submit" class="btn btn-primary">Save strategy</button></div>
+      ${feedback()}<div class="prep-actions"><button type="submit" class="btn btn-primary">Save resources &amp; settings</button></div>
     </form>`;
   }
 
   function bindStrategy(subject) {
     const form = root.document.getElementById('prep-strategy');
     const resources = form.querySelector('#prep-resources');
-    const syllabus = form.querySelector('#prep-syllabus');
     const resourceAdd = form.querySelector('[data-add-resource]');
-    const syllabusAdd = form.querySelector('[data-add-syllabus]');
     const updateLimits = () => {
       resourceAdd.disabled = resources.children.length >= 20;
-      syllabusAdd.disabled = syllabus.children.length >= 200;
     };
     resourceAdd.addEventListener('click', () => {
       if (resources.children.length >= 20) return;
@@ -127,14 +111,8 @@
       updateLimits();
       resources.lastElementChild.querySelector('[name="resourceTitle"]').focus();
     });
-    syllabusAdd.addEventListener('click', () => {
-      if (syllabus.children.length >= 200) return;
-      syllabus.insertAdjacentHTML('beforeend', syllabusMarkup(subject));
-      updateLimits();
-      syllabus.lastElementChild.querySelector('input').focus();
-    });
     form.addEventListener('click', event => {
-      const remove = event.target.closest('[data-remove-resource], [data-remove-syllabus]');
+      const remove = event.target.closest('[data-remove-resource]');
       if (!remove) return;
       remove.closest('fieldset').remove();
       updateLimits();
@@ -150,19 +128,16 @@
       url: `${subjectUrl(subject)}/strategy`,
       body: {
         profile: valueOf(form, 'profile'), stagePreset: valueOf(form, 'stagePreset'),
+        syllabus: subject.strategy?.syllabus || [],
+        syllabusVerified: subject.strategy?.syllabusVerified === true,
         resources: Array.from(resources.children, row => ({
           tier: row.querySelector('[name="resourceTier"]').value,
           title: row.querySelector('[name="resourceTitle"]').value.trim(),
           scope: row.querySelector('[name="resourceScope"]').value.trim(),
           reason: row.querySelector('[name="resourceReason"]').value.trim()
-        })),
-        syllabus: Array.from(syllabus.children, row => ({
-          title: row.querySelector('[name="syllabusTitle"]').value.trim(),
-          topicIds: selectedValues(row.querySelector('select'))
-        })),
-        syllabusVerified: form.elements.namedItem('syllabusVerified').checked
+        }))
       }
-    }), 'Subject strategy saved.');
+    }), 'Resources and settings saved.');
   }
 
   const statusLabels = {

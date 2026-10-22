@@ -251,18 +251,21 @@ def _finish_day(load):
     for stream, lane in load["streams"].items():
         entries = [item for item in activities if item["category"] == "learning" and item["stream"] == stream]
         if entries:
-            last = entries[-1]
-            lane.update({key: last[key] for key in ("topicId", "topicName", "subjectId", "subjectName", "remaining", "isSuggested")})
+            representative = next((item for item in entries if not item.get("isActual")), entries[-1])
+            lane.update({key: representative[key] for key in ("topicId", "topicName", "subjectId", "subjectName", "remaining", "isSuggested")})
             lane["hours"] = round(sum(item["hours"] for item in entries), 6)
     return load
 
 
 def build_plan(data, today, stage_hours_callback, topic_stages_callback, confidence_callback=None):
-    """Build a pure, finite plan shared by daily views and forecasts.
+    """Reserve capacity for started learning and actually earned revision stages.
 
     Callbacks accept (data, topic), (data, topic_id), and optionally
     (data, topic_id, previous_recall_stage), respectively. Stage hours are a map.
     Learning logs have no stage; partial stage logs use stage/type/revType.
+    Learning reservations cover a rolling 31-day window and never change progress.
+    Earned revisions and manual work may extend beyond that window, up to 3650 days.
+    Only recorded completions release dependencies or contribute finish dates.
     """
     settings = data.get("settings", {})
     config = planner_settings(settings)
@@ -280,15 +283,22 @@ def build_plan(data, today, stage_hours_callback, topic_stages_callback, confide
             learned = topic.get("status") in ("completed", "pipeline-complete")
             learning_logs = logs.get((topic_id, "learning"), [])
             logged = sum(hours for _, hours in learning_logs)
-            remaining = 0 if learned else max(0, _hours(topic.get("estimatedHours", 7.5)) - logged)
+            start = _date(topic.get("startDate")) if topic.get("status") == "learning" else None
+            actual_starts = [day for day, hours in learning_logs if hours > EPSILON]
+            start = min([start, *actual_starts]) if start and actual_starts else start or min(actual_starts, default=None)
+            started = not learned and bool(start)
+            estimate = _hours(topic.get("estimatedHours")) or None
+            remaining = 0 if learned else max(0, estimate - logged) if estimate else None
             requested = list(dict.fromkeys(topic_stages_callback(data, topic_id)))
-            active = [stage for stage in STAGES if stage in requested] + [stage for stage in requested if stage not in STAGES]
-            durations = stage_hours_callback(data, topic)
+            active = [stage for stage in STAGES if stage in requested]
+            durations = stage_hours_callback(data, topic) if learned or started else {}
             node = {
                 "topic": topic, "subject": subject, "stream": subject_stream(subject),
                 "remaining": remaining, "initialRemaining": remaining, "learned": learned,
+                "started": started, "active": learned or started,
                 "learningDate": _date(topic.get("completionDate")) if learned else None,
-                "startDate": topic.get("startDate") if topic.get("status") != "not-started" else None,
+                "startDate": start or (_date(topic.get("startDate")) if learned else None),
+                "priority": {"very-high": 4, "high": 3, "medium": 2, "low": 1}.get(topic.get("roi"), 2),
                 "stages": {}, "order": len(nodes),
             }
             for stage in active:
@@ -307,21 +317,16 @@ def build_plan(data, today, stage_hours_callback, topic_stages_callback, confide
                 node["stages"][stage] = {
                     "date": actual_date, "type": stage, "label": LABELS.get(stage, stage),
                     "sessions": [], "remaining": 0 if done else max(0, _hours(durations.get(stage, 1)) - spent),
-                    "done": done, "originalDate": _date(stored), "dueDate": None,
-                    "isProjected": not learned, "canMark": learned, "hours": _hours(durations.get(stage, 1)),
+                    "done": done, "originalDate": None, "storedDate": _date(stored), "dueDate": None,
+                    "isProjected": False, "canMark": done, "hours": _hours(durations.get(stage, 1)),
                     "remainingHours": 0 if done else max(0, _hours(durations.get(stage, 1)) - spent),
                 }
             nodes.append(node)
             by_id[topic_id] = node
-    for stream in STREAMS:
-        active = [node for node in nodes if node["stream"] == stream and node["topic"].get("status") == "learning"]
-        if len(active) > 1:
-            warnings.append({"stream": stream, "topicIds": [node["topic"]["id"] for node in active],
-                             "warning": "Multiple active topics in one stream; advancing one at a time without resetting progress"})
     fixed = _fixed_activities(data)
     latest_fixed = max([today, *[day for day in fixed if day >= today]])
+    learning_window_end = _add(today, 30) if any(node["started"] for node in nodes) else today
     days = {}
-    lanes = {stream: None for stream in STREAMS}
     paused_streams = {}
     weekly_hours = _hours(settings.get("weekdayHours", 6)) * 5 + _hours(settings.get("weekendHours", 12)) * 2
 
@@ -330,16 +335,9 @@ def build_plan(data, today, stage_hours_callback, topic_stages_callback, confide
                    and by_id[dependency]["learningDate"] <= day
                    for dependency in node["topic"].get("prerequisiteIds", []))
 
-    def learner(stream, day):
-        current = lanes[stream]
-        if current and not current["learningDate"]:
-            return current
-        candidates = [node for node in nodes if node["stream"] == stream and not node["learningDate"]
-                      and not node["learned"] and (not node["startDate"] or node["startDate"] <= day)
-                      and (stream not in paused_streams or node["startDate"] or node["topic"].get("status") == "learning")
-                      and prerequisites_ready(node, day)]
-        return min(candidates, key=lambda node: (node["topic"].get("status") != "learning",
-                                                 node["startDate"] or today, node["order"]), default=None)
+    def learners(stream, day):
+        return [node for node in nodes if node["stream"] == stream and node["started"]
+                and node["startDate"] <= day and prerequisites_ready(node, day)]
 
     def earliest(node, stage):
         anchor = node["learningDate"]
@@ -360,10 +358,10 @@ def build_plan(data, today, stage_hours_callback, topic_stages_callback, confide
         for dependency in dependencies:
             if dependency not in selected:
                 continue
-            value = selected[dependency]["date"]
-            if not value:
+            predecessor = selected[dependency]
+            if not predecessor["done"] or not predecessor["date"]:
                 return None
-            dates.append(value)
+            dates.append(predecessor["date"])
         previous = {"R3": "R1", "R7": "R3", "R30": "R7"}.get(stage)
         multiplier = _hours(confidence_callback(data, node["topic"]["id"], previous)) if confidence_callback and previous else 1
         offset = max(0, round(_hours(intervals.get(stage.lower(), 0)) * multiplier)) if stage in RECALL else 0
@@ -381,19 +379,46 @@ def build_plan(data, today, stage_hours_callback, topic_stages_callback, confide
                 "subjectColor": subject.get("color", ""), "stream": node["stream"],
                 "hours": round(hours, 6), "done": False, **extra}
 
-    def learning_session(node, day, hours, load, actual=False):
-        if not actual:
-            node["remaining"] = max(0, node["remaining"] - hours)
-            lanes[node["stream"]] = node
-            if not node["startDate"]:
-                node["startDate"] = day
-            if node["remaining"] <= EPSILON:
-                node["learningDate"] = day
+    def learning_session(node, hours, load, actual=False):
         load["activities"].append(activity(
-            node, hours, "learning", remaining=round(node["remaining"], 6),
-            isSuggested=node["topic"].get("status") != "learning" and not node["learned"],
-            isActual=actual, isProjected=not actual,
+            node, hours, "learning",
+            remaining=round(node["remaining"], 6) if node["remaining"] is not None else None,
+            isSuggested=False, isActual=actual, isProjected=not actual,
         ))
+
+    def place_learning(day, load, quotas):
+        if day > learning_window_end:
+            return
+        for stream in STREAMS:
+            candidates = learners(stream, day)
+            if not candidates:
+                continue
+            other = "optional" if stream == "gs" else "gs"
+            sources = [stream] + ([other] if not learners(other, day) else [])
+            available = sum(quotas[source] for source in sources)
+            needs = {node["topic"]["id"]: node["remaining"] or available for node in candidates}
+            assigned = {topic_id: 0.0 for topic_id in needs}
+            pending = list(candidates)
+            while pending and available > EPSILON:
+                total_priority = sum(node["priority"] for node in pending)
+                spent = 0.0
+                for node in pending:
+                    topic_id = node["topic"]["id"]
+                    hours = min(available * node["priority"] / total_priority, needs[topic_id] - assigned[topic_id])
+                    assigned[topic_id] += hours
+                    spent += hours
+                available -= spent
+                pending = [node for node in pending if needs[node["topic"]["id"]] - assigned[node["topic"]["id"]] > EPSILON]
+            for node in sorted(candidates, key=lambda item: (-item["priority"], item["order"])):
+                hours = assigned[node["topic"]["id"]]
+                if hours <= EPSILON:
+                    continue
+                outstanding = hours
+                for source in sources:
+                    consumed = min(quotas[source], outstanding)
+                    quotas[source] -= consumed
+                    outstanding -= consumed
+                learning_session(node, hours, load)
 
     def place_stages(day, load, quotas, borrow=False):
         def ready(pool, stream):
@@ -407,16 +432,14 @@ def build_plan(data, today, stage_hours_callback, topic_stages_callback, confide
                     due = earliest(node, stage)
                     if not due:
                         continue
-                    step["dueDate"] = due
-                    step["originalDate"] = step["originalDate"] or due
                     if due > day or (stage == "R7" and config["weekendConsolidation"]
                                      and date.fromisoformat(day).weekday() < 5):
                         continue
-                    candidates.append((step["originalDate"], due, node["order"], STAGES.index(stage), node, stage, step))
+                    candidates.append((step["originalDate"], -node["priority"], node["order"], STAGES.index(stage), node, stage, step))
             return sorted(candidates, key=lambda candidate: candidate[:4])
 
         for pool in ("recall", "practice"):
-            sources = [pool] + ([stream for stream in STREAMS if learner(stream, day) is None] if borrow else [])
+            sources = [pool] + ([stream for stream in STREAMS if not learners(stream, day)] if borrow else [])
             needs = {stream: sum(candidate[-1]["remaining"] for candidate in ready(pool, stream)) for stream in STREAMS}
             shares = learning_split(sum(quotas[source] for source in sources), needs, config["allocations"][load["phase"]])
             for stream in STREAMS:
@@ -428,6 +451,11 @@ def build_plan(data, today, stage_hours_callback, topic_stages_callback, confide
                     _, _, _, _, node, stage, step = candidates[0]
                     if step["remaining"] <= EPSILON:
                         step["date"] = day
+                        load["activities"].append(activity(
+                            node, 0, "revision", revType=stage, type=stage, label=step["label"],
+                            displayOnly=True, isProjected=False, canMark=True,
+                            originalDate=step["originalDate"], overdue=step["originalDate"] < today,
+                        ))
                         continue
                     spend = min(step["remaining"], allowance)
                     if spend <= EPSILON:
@@ -442,13 +470,20 @@ def build_plan(data, today, stage_hours_callback, topic_stages_callback, confide
                     step["sessions"].append({"date": day, "hours": round(spend, 6)})
                     load["activities"].append(activity(
                         node, spend, "revision", revType=stage, type=stage,
-                        label=step["label"] if node["learned"] and day <= today else f"Estimated {step['label']}",
-                        isProjected=not node["learned"] or day > today, canMark=node["learned"],
+                        label=step["label"], isProjected=False, canMark=step["canMark"],
                         originalDate=step["originalDate"], overdue=node["learned"] and step["originalDate"] < today,
                         stageRemaining=round(step["remaining"], 6),
                     ))
                     if step["remaining"] <= EPSILON:
                         step["date"] = day
+
+    for node in nodes:
+        for stage, step in node["stages"].items():
+            due = earliest(node, stage)
+            if not step["done"] and due:
+                step["dueDate"] = due
+                step["originalDate"] = step["storedDate"] or due
+                step["canMark"] = True
 
     for offset in range(3650):
         day = _add(today, offset)
@@ -471,28 +506,22 @@ def build_plan(data, today, stage_hours_callback, topic_stages_callback, confide
         for node in nodes:
             for log_day, hours in logs.get((node["topic"]["id"], "learning"), []):
                 if log_day == day:
-                    learning_session(node, day, hours, load, actual=True)
+                    learning_session(node, hours, load, actual=True)
                     actual_by_pool[node["stream"]] = actual_by_pool.get(node["stream"], 0) + hours
-            for stage, step in node["stages"].items():
+            for stage in STAGES:
+                step = node["stages"].get(stage)
                 for log_day, hours in logs.get((node["topic"]["id"], stage), []):
                     if log_day == day:
                         pool = "recall" if stage in RECALL else "practice"
                         actual_by_pool[pool] = actual_by_pool.get(pool, 0) + hours
                         load["activities"].append(activity(node, hours, "revision", revType=stage,
-                                                           type=stage, label=step["label"], isActual=True,
-                                                           isProjected=False, canMark=node["learned"]))
-                if step["done"] and step["date"] == day:
-                    stage_logs = logs.get((node["topic"]["id"], stage), [])
-                    estimated_spent = 0 if day != today or any(log_day == day for log_day, _ in stage_logs) else max(
-                        0, step["hours"] - sum(hours for log_day, hours in stage_logs if log_day < day))
-                    if estimated_spent > EPSILON:
-                        pool = "recall" if stage in RECALL else "practice"
-                        actual_by_pool[pool] = actual_by_pool.get(pool, 0) + estimated_spent
+                                                           type=stage, label=LABELS[stage], isActual=True,
+                                                           isProjected=False, canMark=bool(step and step["canMark"])))
+                if step and step["done"] and step["date"] == day:
                     load["activities"].append(activity(
-                        node, estimated_spent, "revision", revType=stage, type=stage,
-                        label=step["label"] + (" (estimated time used)" if estimated_spent else ""),
-                        done=True, displayOnly=estimated_spent <= EPSILON, isActual=False,
-                        isEstimatedActual=estimated_spent > EPSILON, isProjected=False, canMark=node["learned"],
+                        node, 0, "revision", revType=stage, type=stage, label=step["label"],
+                        done=True, displayOnly=True, isActual=False,
+                        isProjected=False, canMark=step["canMark"],
                     ))
         actual_hours = sum(actual_by_pool.values())
         available_fixed = max(0, load["budget"] - actual_hours)
@@ -508,62 +537,36 @@ def build_plan(data, today, stage_hours_callback, topic_stages_callback, confide
         fixed_hours = sum(item["hours"] for item in load["activities"] if item["category"] in ("subject_cycle", "cumulative_sectional"))
         quotas = daily_quotas(load["budget"], config["allocations"][load["phase"]], fixed_hours, actual_by_pool)
         place_stages(day, load, quotas)
-        for stream in STREAMS:
-            while True:
-                node = learner(stream, day)
-                if node is None:
-                    break
-                if node["remaining"] <= EPSILON:
-                    node["learningDate"] = day
-                    node["startDate"] = node["startDate"] or day
-                    continue
-                spend = min(node["remaining"], quotas[stream])
-                if spend <= EPSILON:
-                    break
-                quotas[stream] -= spend
-                learning_session(node, day, spend, load)
-        for stream in STREAMS:
-            other = "optional" if stream == "gs" else "gs"
-            while other not in paused_streams and learner(other, day) is None and quotas[other] > EPSILON:
-                node = learner(stream, day)
-                if node is None:
-                    break
-                spend = min(node["remaining"], quotas[other])
-                quotas[other] -= spend
-                learning_session(node, day, spend, load)
+        place_learning(day, load, quotas)
         place_stages(day, load, quotas, borrow=True)
-        unfinished = any(not node["learningDate"] or any(not step["date"] for step in node["stages"].values()) for node in nodes)
-        if unfinished or any(not item.get("displayOnly") for item in load["activities"]):
-            for pool, label in (("recall", "Retrieval practice"), ("practice", "Practice and answer writing"),
-                                ("currentAffairs", "Current affairs")):
-                if quotas[pool] > EPSILON:
-                    load["activities"].append({"category": "reserve", "pool": pool, "subjectName": label,
-                                               "label": label, "hours": round(quotas[pool], 6), "done": False})
-            for stream in paused_streams:
-                if quotas[stream] > EPSILON:
-                    load["activities"].append({"category": "reserve", "pool": "recall", "stream": stream,
-                                               "subjectName": "Recall backlog recovery", "label": "Recall backlog recovery",
-                                               "hours": round(quotas[stream], 6), "done": False})
+        unfinished = any(step["dueDate"] and not step["done"] and not step["date"]
+                         for node in nodes for step in node["stages"].values())
         days[day] = _finish_day(load)
-        if (not unfinished and day >= latest_fixed) or weekly_hours == 0:
+        if (not unfinished and day >= max(latest_fixed, learning_window_end)) or weekly_hours == 0:
             break
 
     estimates, schedules = {}, {}
     for node in nodes:
         topic, subject = node["topic"], node["subject"]
         schedule = node["stages"]
-        for stage, step in schedule.items():
-            if not step["originalDate"]:
-                step["originalDate"] = earliest(node, stage)
+        for step in schedule.values():
+            if step["done"]:
+                step["originalDate"] = step["storedDate"]
+            step.pop("storedDate")
             step.pop("remaining")
         def finish(selected):
-            dates = [node["learningDate"], *[step["date"] for stage, step in schedule.items() if stage in selected]]
+            dates = [node["learningDate"], *[step["date"] if step["done"] else None
+                                          for stage, step in schedule.items() if stage in selected]]
             return max(dates) if dates and all(dates) else None
         mastery = finish(schedule)
         error = None
-        if not mastery:
+        earned_unplaced = any(step["dueDate"] and not step["done"] and not step["date"] for step in schedule.values())
+        if node["started"] and not prerequisites_ready(node, learning_window_end):
+            error = "Started learning is waiting for actual prerequisite completion"
+        if earned_unplaced or (node["started"] and weekly_hours == 0):
             error = ("No study hours configured; set weekday or weekend hours above zero" if weekly_hours == 0 else
-                     "Unscheduled work: missing dates, impossible dependencies or task pools, or exceeds the 3650-day planning horizon")
+                     "Earned work cannot fit configured task pools or the 3650-day planning horizon")
+        if error:
             errors.append({"topicId": topic["id"], "error": error})
         estimates[topic["id"]] = {
             "topicName": topic["name"], "subjectId": subject["id"], "subjectName": subject["name"],
@@ -571,7 +574,8 @@ def build_plan(data, today, stage_hours_callback, topic_stages_callback, confide
             "startDate": node["startDate"], "completionDate": node["learningDate"], "masteryDate": mastery,
             "revisionSchedule": {stage.lower(): step["date"] for stage, step in schedule.items()},
             "doneRevisions": sum(step["done"] for step in schedule.values()), "status": topic.get("status", "not-started"),
-            "isEstimate": not node["learned"], "queuePosition": node["order"] + 1, "schedulingError": error,
+            "isEstimate": node["started"], "queuePosition": node["order"] + 1 if node["active"] else None,
+            "schedulingError": error,
             "stream": node["stream"],
             "prelimsFinishDate": finish(set(schedule) - {"MVA", "MAINS"})
             if node["stream"] == "gs" and topic.get("examType", "both") != "mains" else None,
@@ -586,7 +590,8 @@ def build_plan(data, today, stage_hours_callback, topic_stages_callback, confide
         streams[stream] = {
             "coverageDate": complete_date([node["learningDate"] for node in members]),
             "pipelineDate": complete_date([estimates[node["topic"]["id"]]["masteryDate"] for node in members]),
-            "totalTopics": len(members), "learningHours": round(sum(node["initialRemaining"] for node in members), 6),
+            "totalTopics": len(members), "learningHours": round(sum((node["initialRemaining"] or 0)
+                                                                   for node in members if node["started"]), 6),
         }
     milestones = {"optional": {key: streams["optional"][key] for key in ("coverageDate", "pipelineDate")}}
     for exam in ("prelims", "mains"):
@@ -600,9 +605,9 @@ def build_plan(data, today, stage_hours_callback, topic_stages_callback, confide
             finish_date = estimates[topic["id"]][f"{exam}FinishDate"]
             dates.append(finish_date)
             entry = {"topicId": topic["id"], "topicName": topic["name"], "subjectName": subject["name"]}
-            if not finish_date:
+            if not finish_date and estimates[topic["id"]]["schedulingError"]:
                 unknown.append(entry)
-            elif deadline and finish_date > deadline:
+            elif finish_date and deadline and finish_date > deadline:
                 late.append(entry)
         milestones[exam] = {"finishDate": complete_date(dates), "deadline": deadline,
                             "lateTopics": late, "unscheduledTopics": unknown}
@@ -616,23 +621,23 @@ def build_plan(data, today, stage_hours_callback, topic_stages_callback, confide
             planned[category] += item["hours"]
             planned["total"] += item["hours"]
     summary = {
-        "totalTopics": len(nodes), "inPipeline": sum(not node["learned"] for node in nodes),
-        "notStarted": sum(node["topic"].get("status") == "not-started" for node in nodes),
-        "learning": sum(node["topic"].get("status") == "learning" for node in nodes),
+        "totalTopics": len(nodes), "inPipeline": sum(node["active"] and not estimates[node["topic"]["id"]]["masteryDate"] for node in nodes),
+        "notStarted": sum(not node["active"] for node in nodes),
+        "learning": sum(node["started"] for node in nodes),
         "overallFinishDate": complete_date([entry["masteryDate"] for entry in estimates.values()]),
         "parallelSlots": 2, "simulationDays": len(days), "weeklyStudyHours": weekly_hours,
-        "remainingLearningHours": round(sum(node["initialRemaining"] for node in nodes), 6),
+        "remainingLearningHours": round(sum((node["initialRemaining"] or 0) for node in nodes if node["started"]), 6),
         "remainingFollowUpHours": round(sum(step["remainingHours"] for node in nodes
-                           for step in node["stages"].values() if not step["done"]), 6),
-        "scheduledTopics": sum(bool(entry["masteryDate"]) for entry in estimates.values()),
-        "unscheduledTopics": sum(not entry["masteryDate"] for entry in estimates.values()),
+                           for step in node["stages"].values() if not step["done"] and step["dueDate"]), 6),
+        "scheduledTopics": sum(node["active"] and not estimates[node["topic"]["id"]]["schedulingError"] for node in nodes),
+        "unscheduledTopics": sum(bool(entry["schedulingError"]) for entry in estimates.values()),
         "schedulingErrors": errors, "warnings": warnings, "streams": streams, "milestones": milestones,
         "plannerConfig": config, "attemptYear": config["attemptYear"],
         "phase": preparation_phase(today, settings, config),
         "plannedHours": {key: round(value, 6) for key, value in planned.items()},
         "totalPlannedHours": round(planned["total"], 6),
-        "provisionalTopics": sum(not node["learned"] and node["topic"].get("estimateSource") not in ("user-estimate", "actual-logged") for node in nodes),
-        "provisionalCount": sum(not node["learned"] and node["topic"].get("estimateSource") not in ("user-estimate", "actual-logged") for node in nodes),
+        "provisionalTopics": sum(node["started"] and node["topic"].get("estimateSource") not in ("user-estimate", "actual-logged") for node in nodes),
+        "provisionalCount": sum(node["started"] and node["topic"].get("estimateSource") not in ("user-estimate", "actual-logged") for node in nodes),
         "backlogGuardDays": config.get("recallGuardDays", 7),
         "guardedLearningDays": {stream: sum(stream in load.get("backlogGuard", {}) for load in days.values()) for stream in STREAMS},
         "recallPressure": {stream: {
@@ -660,10 +665,11 @@ def plan_day(plan, data, day):
             topic, subject = topics[topic_id]
             stage = log_stage(log)
             revision = stage != "learning"
-            remaining = max(0, _hours(topic.get("estimatedHours", 7.5)) - sum(
+            estimate = _hours(topic.get("estimatedHours")) or None
+            remaining = max(0, estimate - sum(
                 _hours(entry.get("hours")) for entry in data.get("studyLogs", [])
                 if entry.get("topicId") == topic_id and (_date(entry.get("date")) or "9999") <= day
-                and log_stage(entry) == "learning"))
+                and log_stage(entry) == "learning")) if estimate else None
             load["activities"].append({
                 "category": "revision" if revision else "learning", "topicId": topic_id,
                 "topicName": topic["name"], "subjectId": subject["id"], "subjectName": subject["name"],

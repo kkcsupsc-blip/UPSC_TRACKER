@@ -35,16 +35,8 @@ def create_planner_blueprint(load_data, save_data, today):
         if not isinstance(streams, dict) or any(subject_id not in subjects or stream not in ("gs", "optional")
                                                 for subject_id, stream in streams.items()):
             return jsonify({"error": "Invalid subject stream assignment"}), 400
-        original_counts = {stream: sum(topic["status"] == "learning" for subject in data["subjects"]
-                                       if subject_stream(subject) == stream for topic in subject["topics"])
-                           for stream in ("gs", "optional")}
         for subject_id, stream in streams.items():
             subjects[subject_id]["studyStream"] = stream
-        for stream in ("gs", "optional"):
-            count = sum(topic["status"] == "learning" for subject in updated["subjects"]
-                        if subject_stream(subject) == stream for topic in subject["topics"])
-            if count > max(1, original_counts[stream]):
-                return jsonify({"error": f"This assignment creates multiple active {stream.upper()} learners; complete learning first"}), 409
         try:
             config = validate_planner(body["config"], updated["subjects"])
         except (TypeError, ValueError, AttributeError) as error:

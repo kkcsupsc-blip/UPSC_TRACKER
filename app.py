@@ -3956,6 +3956,7 @@ def default_data():
         },
         "studyLogs": [],
         "subjectCycles": [],
+        "progressTrackingVersion": 1,
         "version": 3,
     }
 
@@ -4030,8 +4031,9 @@ def _migrate_data(data):
     for subj in data.get("subjects", []):
         for topic in subj.get("topics", []):
             if "estimatedHours" not in topic:
-                days = topic.get("estimatedDays", 3)
-                topic["estimatedHours"] = round(days * 2.5, 1)
+                days = topic.get("estimatedDays")
+                topic["estimatedHours"] = round(days * 2.5, 1) if days is not None else None
+                needs_save = True
     if "examDates" not in data["settings"]:
         data["settings"]["examDates"] = {"prelims": "", "mains": ""}
     if "examBufferDays" not in data["settings"]:
@@ -4050,6 +4052,32 @@ def _migrate_data(data):
                 topic["links"] = []
             if "relatedTopicIds" not in topic:
                 topic["relatedTopicIds"] = []
+    if data.get("progressTrackingVersion", 0) < 1:
+        recorded = {entry.get("topicId") for entry in data["studyLogs"]}
+        recorded.update(entry.get("topicId") for entry in data.get("assessmentAttempts", []))
+        recorded.update(entry.get("topicId") for entry in data.get("activityHistory", []))
+        for subj in data.get("subjects", []):
+            for topic in subj.get("topics", []):
+                untouched = (topic.get("status") == "not-started" and not topic.get("startDate")
+                             and not topic.get("completionDate") and topic["id"] not in recorded
+                             and not any(key.startswith(f"{topic['id']}_") for key in data["completedRevisions"]))
+                if not untouched:
+                    continue
+                source = topic.get("estimateSource")
+                if source != "user-estimate":
+                    topic["estimatedHours"] = None
+                    topic["estimateSource"] = None
+                    topic.pop("estimatedDays", None)
+                if topic.get("roiSource") != "user" and (source == "initial-planning-default" or topic.get("roi") == "medium"):
+                    topic["roi"] = None
+                topic.pop("revisionSchedule", None)
+            if subj.get("notes") == "Main numbered topics only, in source-document order. Initial hours and ROI are editable planning defaults, not PDF measurements.":
+                subj["notes"] = "Main numbered topics only, in source-document order. Topic duration and priority remain blank until entered; start a topic to track actual learning."
+        if data.get("seedMetadata", {}).get("estimatedHoursDefault") == 7.5:
+            data["seedMetadata"]["estimatedHoursDefault"] = None
+            data["seedMetadata"]["priorityBasis"] = "Topic priorities are unset until entered by the user"
+        data["progressTrackingVersion"] = 1
+        needs_save = True
     return _fix_mastery_status(data, persist=False) or needs_save
 
 
@@ -4526,10 +4554,44 @@ def get_activity_hours(settings):
     return {**DEFAULT_ACTIVITY_HOURS, **settings.get("activityHours", {})}
 
 
+def _timer_elapsed(topic, now=None):
+    started = topic.get("timerStartedAt")
+    if not started:
+        return 0.0
+    try:
+        stamp = datetime.fromisoformat(started.replace("Z", "+00:00"))
+        if stamp.tzinfo is None:
+            stamp = stamp.replace(tzinfo=timezone.utc)
+        return max(0.0, (time.time() if now is None else now) - stamp.timestamp())
+    except (TypeError, ValueError, OverflowError):
+        return 0.0
+
+
+def _settle_learning_timer(data, topic, now=None):
+    """Log timer time on the IST dates it was spent, exactly once on pause/finish."""
+    now = time.time() if now is None else now
+    seconds = _timer_elapsed(topic, now)
+    cursor = now - seconds
+    while cursor < now:
+        start = datetime.fromtimestamp(cursor, IST)
+        midnight = (start + timedelta(days=1)).replace(hour=0, minute=0, second=0, microsecond=0).timestamp()
+        end = min(now, midnight)
+        data.setdefault("studyLogs", []).append({
+            "id": gen_id(), "topicId": topic["id"], "date": start.date().isoformat(),
+            "hours": round((end - cursor) / 3600, 8), "stage": "learning", "source": "timer",
+        })
+        cursor = end
+    topic["learningSeconds"] = round(topic.get("learningSeconds", 0) + seconds, 6)
+    topic["timerStartedAt"] = None
+
+
 def get_actual_hours(data, topic_id):
-    """Return total actual hours logged for a topic from study logs, or 0 if none."""
-    return sum(log["hours"] for log in data.get("studyLogs", [])
-               if log["topicId"] == topic_id and preparation_planner.log_stage(log) == "learning")
+    """Actual logged learning time, including an active stopwatch session."""
+    logged = sum(log["hours"] for log in data.get("studyLogs", [])
+                 if log["topicId"] == topic_id and preparation_planner.log_stage(log) == "learning")
+    topic = next((entry for subject in data.get("subjects", []) for entry in subject.get("topics", [])
+                  if entry["id"] == topic_id), {})
+    return logged + _timer_elapsed(topic) / 3600
 
 
 def get_effective_hours(data, topic):
@@ -4542,7 +4604,7 @@ def get_effective_hours(data, topic):
         actual = get_actual_hours(data, topic["id"])
         if actual > 0:
             return actual
-    return topic.get("estimatedHours", 5.0)
+    return topic.get("estimatedHours")
 
 
 def get_topic_scaled_hours(act_hrs, estimated_hours):
@@ -4609,6 +4671,13 @@ def _fixed_schedule_loads(data):
 
 def _build_preparation_plan(data):
     """Cache the canonical plan by content, local day, and scheduling callbacks."""
+    if any(topic.get("timerStartedAt") for subject in data.get("subjects", []) for topic in subject.get("topics", [])):
+        data = copy.deepcopy(data)
+        now = time.time()
+        for subject in data.get("subjects", []):
+            for topic in subject.get("topics", []):
+                if topic.get("timerStartedAt"):
+                    _settle_learning_timer(data, topic, now)
     callbacks = (get_topic_scaled_hours, get_activity_hours, get_effective_hours,
                  get_topic_stages, get_confidence_multiplier, preparation_planner.build_plan)
     fingerprint = hashlib.sha256(json.dumps(data, sort_keys=True, separators=(",", ":"),
@@ -4638,13 +4707,21 @@ def _simulate_learning_for_date(data, target_date, resolved_schedules=None):
     for item in load["activities"]:
         if item["category"] != "learning":
             continue
-        previous = allocations.get(item["topicId"], {}).get("hours", 0)
+        previous = allocations.get(item["topicId"], {})
+        topic = next((topic for subject in data["subjects"] for topic in subject["topics"]
+                      if topic["id"] == item["topicId"]), {})
         allocations[item["topicId"]] = {
             key: item[key] for key in ("topicId", "topicName", "subjectId", "subjectName",
                                       "stream", "remaining", "isSuggested")
         }
-        allocations[item["topicId"]].update(hours=round(previous + item["hours"], 6),
-                                            name=item["topicName"], subject=item["subjectName"])
+        measured = item.get("isActual", False)
+        allocations[item["topicId"]].update(
+            hours=round(previous.get("hours", 0) + item["hours"], 6),
+            actualHours=round(previous.get("actualHours", 0) + (item["hours"] if measured else 0), 6),
+            plannedHours=round(previous.get("plannedHours", 0) + (0 if measured else item["hours"]), 6),
+            name=item["topicName"], subject=item["subjectName"], topicStatus=topic.get("status"),
+            timerStartedAt=topic.get("timerStartedAt"), learningSeconds=topic.get("learningSeconds", 0),
+        )
     return allocations
 
 
@@ -5140,6 +5217,28 @@ def api_delete_subject(subj_id):
 
 # ---- Topics ----
 
+def _topic_planning_fields(body):
+    hours = body.get("estimatedHours")
+    if hours in (None, ""):
+        hours = None
+    else:
+        try:
+            if isinstance(hours, bool):
+                raise ValueError()
+            hours = float(hours)
+            if not math.isfinite(hours) or not 0 < hours <= 100:
+                raise ValueError()
+            hours = round(hours, 4)
+            if hours <= 0:
+                raise ValueError()
+        except (TypeError, ValueError):
+            raise ValueError("Duration must be blank or a positive number up to 100 hours") from None
+    roi = body.get("roi") or None
+    if roi is not None and roi not in ("very-high", "high", "medium", "low"):
+        raise ValueError("Choose a valid priority or leave it blank")
+    return hours, roi
+
+
 @app.route("/api/subjects/<subj_id>/topics", methods=["POST"])
 def api_add_topic(subj_id):
     body = request.get_json(force=True)
@@ -5147,20 +5246,22 @@ def api_add_topic(subj_id):
     subj = next((s for s in data["subjects"] if s["id"] == subj_id), None)
     if not subj:
         return jsonify({"error": "Subject not found"}), 404
-    # Smart default: average actual hours of completed topics in this subject
-    default_hrs = 7.5
-    completed_in_subj = [t for t in subj["topics"]
-                         if t["status"] in ("completed", "pipeline-complete")
-                         and t.get("estimatedHours", 0) > 0]
-    if completed_in_subj:
-        avg = sum(t["estimatedHours"] for t in completed_in_subj) / len(completed_in_subj)
-        default_hrs = round(avg, 1)
-
+    try:
+        hours, roi = _topic_planning_fields(body)
+    except ValueError as error:
+        return jsonify({"error": str(error)}), 400
+    name = body.get("name")
+    if not isinstance(name, str) or not name.strip():
+        return jsonify({"error": "Enter a topic name"}), 400
     topic = {
         "id": gen_id(),
-        "name": body["name"],
-        "estimatedHours": round(float(body.get("estimatedHours", default_hrs)), 1),
-        "roi": body.get("roi", "high"),
+        "name": name.strip(),
+        "estimatedHours": hours,
+        "estimateSource": "user-estimate" if hours is not None else None,
+        "roi": roi,
+        "roiSource": "user" if roi else None,
+        "learningSeconds": 0,
+        "timerStartedAt": None,
         "examType": body.get("examType", "both"),
         "notes": body.get("notes", ""),
         "status": "not-started",
@@ -5178,8 +5279,8 @@ def api_add_topic(subj_id):
         "New Topic Added",
         f"Topic: {topic['name']}\n"
         f"Subject: {subj['name']}\n"
-        f"Est. Duration: {topic['estimatedHours']}h\n"
-        f"Priority: {topic['roi'].upper()} ROI\n"
+        f"Duration: {str(topic['estimatedHours']) + 'h' if topic['estimatedHours'] is not None else 'Not set'}\n"
+        f"Priority: {(topic['roi'] or 'Not set').upper()}\n"
         f"━━━━━━━━━━━━━━━━━━\n"
         f"Start learning when ready!",
         tags=["memo", "pencil"],
@@ -5202,6 +5303,10 @@ def api_edit_topic(subj_id, topic_id):
     if not topic:
         return jsonify({"error": "Topic not found"}), 404
 
+    try:
+        hours, roi = _topic_planning_fields(body)
+    except ValueError as error:
+        return jsonify({"error": str(error)}), 400
     changes = []
     if "name" in body and body["name"].strip():
         old_name = topic["name"]
@@ -5214,21 +5319,23 @@ def api_edit_topic(subj_id, topic_id):
                 if pt.get("topicId") == topic_id:
                     pt["topicName"] = topic["name"]
     if "estimatedHours" in body:
-        old_hrs = topic.get("estimatedHours", 7.5)
-        topic["estimatedHours"] = max(0.5, min(100, round(float(body["estimatedHours"]), 1)))
-        topic["estimateSource"] = "user-estimate"
-        if old_hrs != topic["estimatedHours"]:
-            changes.append(f"Est. Hours: {old_hrs}h → {topic['estimatedHours']}h")
-    if "roi" in body and body["roi"] in ("very-high", "high", "medium", "low"):
-        old_roi = topic.get("roi", "medium")
-        topic["roi"] = body["roi"]
-        if old_roi != topic["roi"]:
-            changes.append(f"ROI: {old_roi.upper()} → {topic['roi'].upper()}")
-            # Update ROI in cumulative revision pending pool
+        old_hrs = topic.get("estimatedHours")
+        old_source = topic.get("estimateSource")
+        topic["estimatedHours"] = hours
+        topic["estimateSource"] = "user-estimate" if hours is not None else None
+        if old_hrs != hours or old_source != topic["estimateSource"]:
+            changes.append(f"Duration: {old_hrs} → {hours}")
+    if "roi" in body:
+        old_roi = topic.get("roi")
+        old_source = topic.get("roiSource")
+        topic["roi"] = roi
+        topic["roiSource"] = "user" if roi else None
+        if old_roi != roi or old_source != topic["roiSource"]:
+            changes.append(f"Priority: {old_roi or 'Not set'} → {roi or 'Not set'}")
             cum = data.get("cumulativeRevisions", {})
             for pt in cum.get("pendingTopics", []):
                 if pt.get("topicId") == topic_id:
-                    pt["roi"] = topic["roi"]
+                    pt["roi"] = roi
     if "examType" in body and body["examType"] in ("prelims", "mains", "both"):
         old_et = topic.get("examType", "both")
         topic["examType"] = body["examType"]
@@ -5299,23 +5406,24 @@ def api_start_topic(subj_id, topic_id):
     topic = next((t for t in subj["topics"] if t["id"] == topic_id), None)
     if not topic:
         return jsonify({"error": "Topic not found"}), 404
-    if topic["status"] != "not-started":
-        return jsonify({"error": "This topic has already been started"}), 409
-    stream = preparation_planner.subject_stream(subj)
-    active = [entry["name"] for subject in data["subjects"]
-              if preparation_planner.subject_stream(subject) == stream
-              for entry in subject["topics"] if entry["status"] == "learning"]
-    if active:
-        return jsonify({"error": f"The {stream.upper()} learning stream is occupied by: " + ", ".join(active)
-                        + ". Complete its initial learning before starting another topic in this stream.",
-                        "streamBusy": True, "stream": stream}), 409
+    if topic["status"] not in ("not-started", "learning"):
+        return jsonify({"error": "This topic is already completed"}), 409
+    if topic.get("timerStartedAt"):
+        return jsonify(topic)
     all_topics = {entry["id"]: entry for subject in data["subjects"] for entry in subject["topics"]}
     blocked = [all_topics[entry]["name"] for entry in topic.get("prerequisiteIds", [])
                if entry in all_topics and all_topics[entry]["status"] not in ("completed", "pipeline-complete")]
     if blocked:
         return jsonify({"error": "Complete prerequisite learning first: " + ", ".join(blocked)}), 409
+    now = time.time()
+    for subject in data["subjects"]:
+        for entry in subject["topics"]:
+            if entry.get("timerStartedAt"):
+                _settle_learning_timer(data, entry, now)
     topic["status"] = "learning"
-    topic["startDate"] = today_str()
+    topic["startDate"] = topic.get("startDate") or today_str()
+    topic.setdefault("learningSeconds", 0)
+    topic["timerStartedAt"] = datetime.fromtimestamp(now, timezone.utc).isoformat()
     save_data(data)
 
     send_ntfy(
@@ -5334,6 +5442,23 @@ def api_start_topic(subj_id, topic_id):
     return jsonify(topic)
 
 
+@app.route("/api/subjects/<subj_id>/topics/<topic_id>/pause", methods=["POST"])
+def api_pause_topic(subj_id, topic_id):
+    data = load_data()
+    subject = next((entry for entry in data["subjects"] if entry["id"] == subj_id), None)
+    if not subject:
+        return jsonify({"error": "Subject not found"}), 404
+    topic = next((entry for entry in subject["topics"] if entry["id"] == topic_id), None)
+    if not topic:
+        return jsonify({"error": "Topic not found"}), 404
+    if topic.get("status") != "learning":
+        return jsonify({"error": "Start learning before pausing"}), 409
+    if topic.get("timerStartedAt"):
+        _settle_learning_timer(data, topic)
+        save_data(data)
+    return jsonify({"ok": True, "topic": topic, "actualHours": get_actual_hours(data, topic_id)})
+
+
 @app.route("/api/subjects/<subj_id>/topics/<topic_id>/complete", methods=["POST"])
 def api_complete_topic(subj_id, topic_id):
     data = load_data()
@@ -5343,14 +5468,13 @@ def api_complete_topic(subj_id, topic_id):
     topic = next((t for t in subj["topics"] if t["id"] == topic_id), None)
     if not topic:
         return jsonify({"error": "Topic not found"}), 404
-    topic["status"] = "completed"
-    topic["completionDate"] = today_str()
-    # Auto-update estimatedHours with actual logged hours (replaces the guess)
-    actual = get_actual_hours(data, topic_id)
-    if actual > 0:
-        topic["estimatedHours"] = round(actual, 1)
-        topic["estimateSource"] = "actual-logged"
-    save_data(data)
+    if topic.get("status") == "not-started":
+        return jsonify({"error": "Start learning before finishing this topic"}), 409
+    if topic.get("status") == "learning":
+        _settle_learning_timer(data, topic)
+        topic["status"] = "completed"
+        topic["completionDate"] = today_str()
+        save_data(data)
     schedule = copy.deepcopy(_build_preparation_plan(data)["schedules"].get(topic_id, {}))
 
     # Build beautiful schedule summary
@@ -5390,6 +5514,9 @@ def api_reset_topic(subj_id, topic_id):
     topic["status"] = "not-started"
     topic["startDate"] = None
     topic["completionDate"] = None
+    topic["timerStartedAt"] = None
+    topic["learningSeconds"] = 0
+    topic.pop("revisionSchedule", None)
     keys_to_remove = [k for k in data["completedRevisions"] if k.startswith(topic_id)]
     for k in keys_to_remove:
         del data["completedRevisions"][k]
@@ -5439,7 +5566,10 @@ def api_mark_revision():
     if key in data["completedRevisions"]:
         return jsonify({"ok": True, "key": key})
     schedules, _ = resolve_all_revision_schedules(data)
-    planned = schedules.get(topic_id, {}).get(rev_type.lower(), {}).get("date")
+    step = schedules.get(topic_id, {}).get(rev_type.lower(), {})
+    if step.get("canMark") is False:
+        return jsonify({"error": "Complete prerequisite activities before marking this stage"}), 409
+    planned = step.get("date")
     data["completedRevisions"][key] = {
         "completedAt": int(time.time() * 1000),
         "confidence": confidence,
@@ -5785,7 +5915,7 @@ def api_dashboard():
                 "message": f"{len(late)} topic(s) have {exam.title()}-relevant activities planned after {milestone['deadline']}",
                 "topics": [f"{entry['subjectName']}: {entry['topicName']}" for entry in late],
             })
-        if unknown or not milestone.get("finishDate"):
+        if unknown:
             if exam_info["feasibility"]["status"] == "ok":
                 exam_info["feasibility"]["status"] = "unknown"
             exam_info["feasibility"]["warnings"].append({
@@ -6120,8 +6250,10 @@ def api_topic_detail(subj_id, topic_id):
         "estimate": topic_estimate,
         "today": today_str(),
         "resolvedStages": resolved_stages,
-        "loggedHours": round(logged_hours, 1),
-        "remainingHours": round(max(0, topic.get("estimatedHours", 7.5) - logged_hours), 1),
+        "loggedHours": round(logged_hours, 6),
+        "actualHours": round(logged_hours, 6),
+        "remainingHours": (round(max(0, topic["estimatedHours"] - logged_hours), 6)
+                           if topic.get("estimatedHours") is not None else None),
         "relatedTopics": related,
         "evidence": evidence_summary(data, topic, today_str()),
     })
@@ -6576,18 +6708,14 @@ def api_toggle_link_read(subj_id, topic_id, link_id):
 @app.route("/api/subjects/<subj_id>/topics/<topic_id>/related", methods=["POST"])
 def api_add_related(subj_id, topic_id):
     """Add a bidirectional relation between two topics."""
-    body = request.get_json(force=True)
-    related_id = body["relatedTopicId"]
+    body = request.get_json(silent=True) or {}
+    related_id = body.get("relatedTopicId")
+    if not isinstance(related_id, str) or not related_id or related_id == topic_id:
+        return jsonify({"error": "Select a different topic to link"}), 400
     data = load_data()
-
-    # Find both topics
-    topic_a = topic_b = None
-    for s in data["subjects"]:
-        for t in s["topics"]:
-            if t["id"] == topic_id:
-                topic_a = t
-            if t["id"] == related_id:
-                topic_b = t
+    subject = next((entry for entry in data["subjects"] if entry["id"] == subj_id), None)
+    topic_a = next((entry for entry in (subject or {}).get("topics", []) if entry["id"] == topic_id), None)
+    topic_b = next((entry for item in data["subjects"] for entry in item["topics"] if entry["id"] == related_id), None)
     if not topic_a or not topic_b:
         return jsonify({"error": "Topic not found"}), 404
 

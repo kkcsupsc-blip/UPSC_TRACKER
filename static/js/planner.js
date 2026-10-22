@@ -21,9 +21,7 @@ function plannerSubject(subject) {
 }
 
 function plannerCanStart(subject, subjects = []) {
-  const stream = plannerStream(subject);
-  return !subjects.some(entry => plannerStream(entry) === stream &&
-    (Number(entry.learningTopics) > 0 || (entry.topics || []).some(topic => topic.status === 'learning')));
+  return true;
 }
 
 function plannerBadge(subject) {
@@ -99,7 +97,7 @@ function plannerSettingsMarkup() {
       <label>Recall backlog guard (days; 0 disables)<input class="form-input" name="recallGuardDays" type="number" min="0" max="90" step="1" required value="${escape(config.recallGuardDays ?? 7)}"></label>
       <label class="planner-checkbox"><input name="weekendConsolidation" type="checkbox" ${config.weekendConsolidation ? 'checked' : ''}>Weekend consolidation</label>
     </div>
-    <div class="planner-meta">Active phase: ${escape(plannerSnapshot.phase || config.phase)}${Number.isFinite(plannerSnapshot.weeklyStudyHours) ? ` &middot; ${escape(plannerSnapshot.weeklyStudyHours)}h/week` : ''} &middot; One GS learner + one Optional learner</div>
+    <div class="planner-meta">Active phase: ${escape(plannerSnapshot.phase || config.phase)}${Number.isFinite(plannerSnapshot.weeklyStudyHours) ? ` &middot; ${escape(plannerSnapshot.weeklyStudyHours)}h/week` : ''} &middot; Started topics only; one running stopwatch</div>
     <div class="planner-table-scroll" tabindex="0" role="region" aria-label="Phase allocation percentages">
       <table class="planner-allocation"><caption>Phase allocation (%)</caption><thead><tr><th scope="col">Phase</th>${Object.values(PLANNER_ALLOCATIONS).map(label => `<th scope="col">${label}</th>`).join('')}<th scope="col">Total</th></tr></thead><tbody>
       ${PLANNER_PHASES.map(phase => `<tr><th scope="row">${phase[0].toUpperCase() + phase.slice(1)}</th>${Object.entries(PLANNER_ALLOCATIONS).map(([key, label]) => `<td><input class="form-input" type="number" required min="0" max="100" step="0.01" data-phase="${phase}" data-allocation="${key}" aria-label="${phase} ${label} percent" value="${escape(config.allocations?.[phase]?.[key])}"></td>`).join('')}<td><output data-total="${phase}"></output></td></tr>`).join('')}
@@ -253,26 +251,29 @@ function plannerActionButton(action, label, item, disabled = false, title = '') 
 
 function renderPlannerLearning(data, options = {}) {
   const actual = data.learningTopics || [];
-  const hasPlan = Array.isArray(data.learningPlan);
-  const plan = hasPlan ? data.learningPlan : actual.map(topic => ({ ...topic, topicId: topic.id, topicName: topic.name, hours: null, isSuggested: false }));
+  const plan = (data.learningPlan || []).filter(item => item.isSuggested !== true).map(item => ({ ...item }));
+  actual.forEach(topic => {
+    if (!plan.some(item => (item.topicId || item.id) === (topic.id || topic.topicId))) {
+      plan.push({ ...topic, topicId: topic.id || topic.topicId, topicName: topic.name, hours: 0, isSuggested: false });
+    }
+  });
   const subjects = plannerSnapshot?.subjects || [];
   const classify = item => plannerStream({ ...item, name: item.subjectName, studyStream: item.stream || subjects.find(subject => subject.id === item.subjectId)?.stream || item.studyStream });
-  const actualIds = new Set(actual.map(topic => topic.id || topic.topicId));
   return `<div class="planner-learning">${['gs', 'optional'].map(stream => {
     const entries = plan.filter(item => classify(item) === stream);
-    const startedInStream = actual.filter(item => classify(item) === stream);
-    const busy = startedInStream.length > 0 || subjects.some(subject => plannerStream(subject) === stream && subject.learningTopics > 0);
     return `<section class="planner-lane" data-stream="${stream}" aria-label="${stream === 'gs' ? 'GS' : 'Optional'} planned learning"><h4>${stream === 'gs' ? 'GS' : 'Optional'} learning</h4>${entries.map(item => {
-      const started = actualIds.has(item.topicId || item.id) || !Array.isArray(data.learningTopics) && item.isSuggested === false;
-      const suggested = item.isSuggested === true || !started;
-      const hours = Number.isFinite(item.hours) ? `${plannerEscape(item.hours)}h planned` : 'Planned hours unavailable';
+      const topic = actual.find(topic => (topic.id || topic.topicId) === (item.topicId || item.id)) || item;
+      const finished = ['completed', 'pipeline-complete'].includes(item.topicStatus || topic.status);
+      const planned = Number.isFinite(item.plannedHours) ? item.plannedHours : item.hours;
+      const hours = Number.isFinite(planned) ? `${plannerEscape(planned)}h planned` : 'No duration set';
+      const measured = Number.isFinite(item.actualHours) ? ` &middot; ${plannerEscape(item.actualHours)}h logged` : '';
       const remaining = Number.isFinite(item.remaining) ? ` &middot; ${plannerEscape(item.remaining)}h remaining` : '';
-      const canStart = options.allowStart !== false && !busy;
+      const timer = typeof learningTimerMarkup === 'function' ? learningTimerMarkup(topic) : '';
       return `<div class="planner-learning-topic"><div class="planner-learning-name">${plannerEscape(item.topicName || item.name)}</div>
-        <div class="planner-meta">${plannerEscape(item.subjectName)} &middot; ${hours}${remaining} &middot; ${started ? 'In progress' : 'Suggested, not started'}</div>
-        <div class="planner-learning-actions">${plannerActionButton('view', 'View', item)}${suggested && !started ? plannerActionButton('start', 'Start', item, !canStart, busy ? 'This learning stream is busy' : options.allowStart === false ? 'Start topics from today\'s plan' : 'Start learning') : ''}
-        ${started && options.allowLog !== false ? `<label>Actual hours<input type="number" class="form-input" min="0.25" max="24" step="0.25" value="${Number.isFinite(item.hours) && item.hours > 0 ? Math.min(24, item.hours) : 1}" aria-label="Actual hours for ${plannerEscape(item.topicName || item.name)}"></label>${plannerActionButton('log', 'Log', item)}${plannerActionButton('complete', 'Learning Done', item, false, 'Complete first-pass learning')}` : ''}</div></div>`;
-    }).join('') || '<div class="planner-empty">No learning allocated</div>'}</section>`;
+        <div class="planner-meta">${plannerEscape(item.subjectName)} &middot; ${hours}${measured}${remaining} &middot; ${finished ? 'Learning complete' : 'In progress'}</div>${timer}
+        <div class="planner-learning-actions">${plannerActionButton('view', 'View', item)}
+        ${!finished && options.allowLog !== false ? `${plannerActionButton(topic.timerStartedAt ? 'pause' : 'start', topic.timerStartedAt ? 'Pause' : 'Resume', item)}${plannerActionButton('complete', 'Finish', item)}<label>Actual hours (untimed session)<input type="number" class="form-input" min="0.01" max="24" step="0.01" placeholder="Not logged" aria-label="Actual hours for ${plannerEscape(item.topicName || item.name)}"></label>${plannerActionButton('log', 'Log', item)}` : ''}</div></div>`;
+    }).join('') || '<div class="planner-empty">No started learning allocated</div>'}</section>`;
   }).join('')}</div>`;
 }
 
@@ -281,7 +282,7 @@ function plannerStageCanMark(task) {
 }
 
 function plannerStageControl(task, date = '') {
-  if (!plannerStageCanMark(task)) return '<span class="planner-stage-note">Forecast only</span>';
+  if (!plannerStageCanMark(task)) return '<span class="planner-stage-note">Waiting for prerequisite work</span>';
   const label = task.done ? `Undo ${task.type} completion` : `Mark entire ${task.type} activity done (all sessions)`;
   return `<div class="planner-learning-actions" onclick="event.stopPropagation()"><button type="button" class="planner-stage-check" data-planner-action="stage" data-topic="${plannerEscape(task.topicId)}" data-type="${plannerEscape(task.type)}" data-date="${plannerEscape(date)}" data-done="${task.done ? 'true' : 'false'}" aria-label="${plannerEscape(label)}" title="${plannerEscape(label)}">${task.done ? '&#10003;' : '&#9633;'}</button>
     <label>Session hours today<input type="number" class="form-input" data-stage-hours min="0.01" max="24" step="0.01" value="0.5" aria-label="Actual ${plannerEscape(task.type)} session hours today"></label>
@@ -302,7 +303,8 @@ function installPlannerActions() {
     button.disabled = true;
     try {
       if (action === 'view') await showTopicDetail(subject, topic);
-      if (action === 'start') { await startLearning(subject, topic); renderAll(); }
+      if (action === 'start') await startLearning(subject, topic);
+      if (action === 'pause') await pauseLearning(subject, topic);
       if (action === 'log') await logStudyHours(topic, button.parentElement.querySelector('input').value);
       if (action === 'complete') await completeLearning(subject, topic);
       if (action === 'stage-log') {

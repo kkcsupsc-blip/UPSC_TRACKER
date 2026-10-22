@@ -32,31 +32,36 @@ class SchedulerUpdatesTests(unittest.TestCase):
         self.data["subjects"][0]["topics"].append(topic)
         return topic
 
-    def test_large_feasible_course_is_not_truncated_at_400_days(self):
+    def test_large_unstarted_course_has_no_synthetic_forecasts(self):
         self.data["settings"].update(weekdayHours=3, weekendHours=3)
         for index in range(40):
             self.topic(f"topic-{index}", status="not-started", estimatedHours=40,
                        startDate=None, completionDate=None)
         result = self.backend["estimate_all_timelines"](self.data)
         self.assertEqual(len(result["estimates"]), 40)
-        self.assertTrue(all(item["masteryDate"] for item in result["estimates"].values()))
-        self.assertIsNotNone(result["summary"]["overallFinishDate"])
+        self.assertTrue(all(item["masteryDate"] is None for item in result["estimates"].values()))
+        self.assertIsNone(result["summary"]["overallFinishDate"])
         self.assertEqual(result["summary"]["schedulingErrors"], [])
+        self.assertEqual(result["summary"]["totalPlannedHours"], 0)
 
-    def test_zero_study_hours_remain_unscheduled(self):
+    def test_zero_study_hours_only_warn_for_started_work(self):
         self.data["settings"].update(weekdayHours=0, weekendHours=0)
-        self.topic(status="not-started", startDate=None, completionDate=None)
+        topic = self.topic(status="not-started", startDate=None, completionDate=None)
         result = self.backend["estimate_all_timelines"](self.data)
         self.assertIsNone(result["summary"]["overallFinishDate"])
+        self.assertEqual(result["summary"]["unscheduledTopics"], 0)
+        self.assertEqual(result["summary"]["schedulingErrors"], [])
+        topic.update(status="learning", startDate="2026-10-20")
+        result = self.backend["estimate_all_timelines"](self.data)
         self.assertEqual(result["summary"]["unscheduledTopics"], 1)
         self.assertIn("No study hours configured", result["summary"]["schedulingErrors"][0]["error"])
 
-    def test_forecast_safety_limit_does_not_invent_a_finish_date(self):
-        self.topic(status="not-started", startDate=None, completionDate=None, estimatedHours=1000000)
+    def test_learning_window_is_bounded_without_inventing_finish_or_horizon_error(self):
+        self.topic(status="learning", startDate="2026-10-20", completionDate=None, estimatedHours=None)
         result = self.backend["estimate_all_timelines"](self.data)
-        self.assertEqual(result["summary"]["simulationDays"], 3650)
+        self.assertEqual(result["summary"]["simulationDays"], 31)
         self.assertIsNone(result["summary"]["overallFinishDate"])
-        self.assertIn("planning horizon", result["summary"]["schedulingErrors"][0]["error"])
+        self.assertEqual(result["summary"]["schedulingErrors"], [])
 
     def test_daily_load_and_learning_reserve_scaled_revision_hours(self):
         topic = self.topic()
@@ -76,7 +81,7 @@ class SchedulerUpdatesTests(unittest.TestCase):
         sessions = plan["schedules"]["topic"]["r1"]["sessions"]
         self.assertAlmostEqual(sum(session["hours"] for session in sessions), hours)
         self.assertLessEqual(load["revisionHours"] + load["learningHours"], 6)
-        self.assertTrue(any(item["category"] == "reserve" for item in load["activities"]))
+        self.assertFalse(any(item["category"] == "reserve" for item in load["activities"]))
 
     def test_no_log_learning_does_not_invent_elapsed_progress(self):
         self.topic(status="learning", estimatedHours=10,
@@ -85,7 +90,7 @@ class SchedulerUpdatesTests(unittest.TestCase):
             self.data, "2026-10-21", resolved_schedules={},
         )
         self.assertAlmostEqual(allocations["topic"]["hours"], 4.0002)
-        self.assertAlmostEqual(allocations["topic"]["remaining"], 5.9998)
+        self.assertAlmostEqual(allocations["topic"]["remaining"], 10)
 
     def test_learning_reserves_subject_cycle_and_sectional_capacity(self):
         self.data["settings"].update(weekdayHours=12, weekendHours=12)
@@ -152,9 +157,11 @@ class SchedulerUpdatesTests(unittest.TestCase):
         self.assertGreater(schedule["r3"]["date"], "2026-11-11")
         self.assertEqual(schedule["mcq"]["date"], "2026-11-11")
         self.assertGreaterEqual(schedule["mcqa"]["date"], "2026-11-11")
+        self.assertIsNone(schedule["mn"]["date"])
         self.assertEqual(schedule["r1"]["sessions"], [])
         self.assertEqual(schedule["mcq"]["sessions"], [])
         self.assertEqual(used["2026-11-11"], 0.5)
+        self.assertIsNone(self.backend["estimate_all_timelines"](self.data)["estimates"]["topic"]["masteryDate"])
 
     def test_impossible_task_reports_error_without_partial_reservation(self):
         used = {"2026-10-22": 0.2}
@@ -264,34 +271,42 @@ class SchedulerUpdatesTests(unittest.TestCase):
         for date, hours in used.items():
             self.assertLessEqual(hours, 6)
         estimate = self.backend["estimate_all_timelines"](self.data)["estimates"]["learner"]
-        self.assertEqual(estimate["completionDate"], "2026-10-22")
+        self.assertIsNone(estimate["completionDate"])
+        self.assertIsNone(estimate["masteryDate"])
         self.assertEqual(resolved["topic"]["r1"]["originalDate"], "2026-10-21")
         self.assertAlmostEqual(sum(session["hours"] for session in resolved["topic"]["r1"]["sessions"]), 1.5)
 
-    def test_completed_half_cluster_consumes_today_without_repeating_future_work(self):
+    def test_completed_stage_without_log_does_not_consume_synthetic_time(self):
         self.data["settings"].update(weekdayHours=1, weekendHours=1)
         self.topic(estimatedHours=5, activeStages=["PYQ", "ERA"])
         self.data["completedRevisions"]["topic_PYQ"] = {"completedAt": "2026-10-21"}
         resolved, used = self.backend["resolve_all_revision_schedules"](self.data)
         self.assertEqual(resolved["topic"]["pyq"]["sessions"], [])
-        self.assertEqual(resolved["topic"]["era"]["sessions"][0]["date"], "2026-10-22")
-        self.assertAlmostEqual(used["2026-10-21"], 1)
-        self.assertAlmostEqual(sum(used.values()), 2)
+        self.assertEqual(resolved["topic"]["era"]["sessions"][0]["date"], "2026-10-21")
+        self.assertAlmostEqual(used["2026-10-21"], 0.7778)
+        self.assertAlmostEqual(sum(used.values()), 1)
         self.assertTrue(all(hours <= 1 for hours in used.values()))
 
-    def test_final_date_is_latest_active_stage_not_r30(self):
+    def test_mastery_date_requires_every_actual_stage_completion(self):
         self.data["settings"]["activityHours"] = {"MAINS": 300}
         self.topic(activeStages=["R1", "R30", "MAINS"])
         self.cycle(start="2026-10-20", duration=60, hours=1)
+        self.data["completedRevisions"] = {
+            "topic_R1": {"completedAt": "2026-10-20"},
+            "topic_R30": {"completedAt": "2026-10-21"},
+        }
         estimate = self.backend["estimate_all_timelines"](self.data)["estimates"]["topic"]
-        schedule = estimate["revisionSchedule"]
-        self.assertGreater(schedule["mains"], schedule["r30"])
-        self.assertEqual(estimate["masteryDate"], max(schedule.values()))
+        self.assertGreater(estimate["revisionSchedule"]["mains"], estimate["revisionSchedule"]["r30"])
+        self.assertIsNone(estimate["masteryDate"])
+        self.data["completedRevisions"]["topic_MAINS"] = {"completedAt": "2026-10-21"}
+        estimate = self.backend["estimate_all_timelines"](self.data)["estimates"]["topic"]
+        self.assertEqual(estimate["masteryDate"], "2026-10-21")
 
     def test_actual_practice_completions_anchor_notes_and_consolidation(self):
         self.topic(activeStages=["R3", "PYQ", "ERA", "MN", "MCQ", "MCQA", "R7"])
         self.data["completedRevisions"] = {
             "topic_R3": {"completedAt": "2026-10-25"},
+            "topic_PYQ": {"completedAt": "2026-10-24"},
             "topic_ERA": {"completedAt": "2026-11-10"},
             "topic_MCQA": {"completedAt": "2026-12-01"},
         }
@@ -305,7 +320,9 @@ class SchedulerUpdatesTests(unittest.TestCase):
         self.topic(estimatedHours=5, activeStages=["R1", "PYQ", "ERA"])
         errors = []
         resolved, used = self.backend["resolve_all_revision_schedules"](self.data, errors)
-        self.assertTrue(all(step["date"] for step in resolved["topic"].values()))
+        self.assertIsNotNone(resolved["topic"]["r1"]["date"])
+        self.assertIsNone(resolved["topic"]["pyq"]["date"])
+        self.assertIsNone(resolved["topic"]["era"]["date"])
         self.assertTrue(any(len(step["sessions"]) > 1 for step in resolved["topic"].values()))
         self.assertTrue(all(hours <= 1.5 for hours in used.values()))
         self.assertEqual(errors, [])
@@ -358,7 +375,9 @@ class SchedulerUpdatesTests(unittest.TestCase):
         estimate = self.backend["estimate_all_timelines"](self.data)["estimates"]["topic"]
         self.assertEqual(set(estimate["revisionSchedule"]), {"r1", "r3"})
         self.assertEqual(estimate["revisionSchedule"]["r1"], "2026-11-10")
-        self.assertGreater(estimate["revisionSchedule"]["r3"], "2026-11-10")
+        self.assertIsNone(estimate["revisionSchedule"]["r3"])
+        self.assertIsNone(estimate["completionDate"])
+        self.assertIsNone(estimate["masteryDate"])
 
 
 if __name__ == "__main__":

@@ -18,7 +18,7 @@ This is the practical handbook for the application as it currently works.
 10. [Record And Interpret Assessments](#10-record-and-interpret-assessments)
 11. [Repair Errors And Integrate Current Affairs](#11-repair-errors-and-integrate-current-affairs)
 12. [Cumulative And Subject-Level Revision](#12-cumulative-and-subject-level-revision)
-13. [Read The Timeline Correctly](#13-read-the-timeline-correctly)
+13. [Read The Progress-Driven Calendar](#13-read-the-progress-driven-calendar)
 14. [Daily And Weekly Routine](#14-daily-and-weekly-routine)
 15. [Backups, Resets, And Troubleshooting](#15-backups-resets-and-troubleshooting)
 
@@ -26,9 +26,9 @@ This is the practical handbook for the application as it currently works.
 
 | Objective | What The Application Provides | What You Must Supply |
 | --- | --- | --- |
-| Keep preparation bounded | Subjects, main topics, source scopes, and topic-linked coverage entries | A checked syllabus and sensible limits on reading |
-| Make the next action visible | Learning status, Today's Plan, Calendar, and revision dates | Honest completion updates |
-| Prevent unrealistic planning | Shared-capacity forecasts, activity durations, and scheduling warnings | Sustainable hours and calibrated topic estimates |
+| Keep preparation bounded | Subjects, main topics, and bounded source resources | Sensible limits on reading |
+| Make the next action visible | Learning status, Today's Plan, Calendar, and earned revision dates | Honest Start/Pause/Finish and completion updates |
+| Prevent unrealistic planning | Daily capacity limits, priorities, and carry-forward of earned work | Sustainable hours and actual-time records |
 | Separate attendance from performance | Activity completion alongside independent assessment records | Actual scores, timing, and answer feedback |
 | Convert errors into corrective work | Error categories, open repairs, due reminders, and resolution records | The correction and a genuine retest |
 | Maintain knowledge beyond the first reading | Recall stages, cumulative revision, and subject cycles | Closed-book retrieval and mixed practice |
@@ -58,9 +58,9 @@ The fresh dataset contains **211 main topics from seven subject PDFs**. Subtopic
 | Sociology Paper II | 21 | Mains Only |
 | **Total** | **211** | |
 
-Topics retain their PDF code, layer, and page reference. Their initial learning estimates are **7.5 hours each**, with neutral **medium ROI**. The 211-topic baseline is still uncalibrated: these are editable planning defaults, not measured learning times or verified importance ratings. The planner counts unfinished topics as provisional unless their estimate source is `user-estimate` or `actual-logged`; that count is not a new topic total or an assessment of readiness.
+Topics retain their PDF code, layer, and page reference. Learning duration and topic ROI/priority are **blank until entered**. Starting a topic opens a persistent stopwatch; elapsed time is saved when paused or finished. Untouched topics do not create Calendar sessions or exam scheduling warnings. Existing automatic defaults on untouched topics are cleared once; real progress and explicitly saved estimates are retained.
 
-The seeded coverage checklist mirrors the documents. It is **not independently verified against the official UPSC syllabus**. Subjects or papers without a source document were not invented; separately account for CSAT, Essay, Ethics, and any remaining syllabus areas.
+The topic catalogue follows the supplied documents, not an independently verified official syllabus audit. The syllabus-coverage checklist is no longer shown. Subjects or papers without a source document were not invented; separately account for CSAT, Essay, Ethics, and any remaining syllabus areas.
 
 Active progress lives in [data/tracker_data.json](data/tracker_data.json). The untouched clean import copy is [data/upsc_subjects_seed.json](data/upsc_subjects_seed.json). See the [dataset guide](data/SUBJECT_SEED_README.md) for rebuilding details.
 
@@ -84,14 +84,13 @@ Leave that terminal running while using the application. This is a **Flask** app
 
 | Screen | Primary Use |
 | --- | --- |
-| Dashboard | Review active learning, due work, overdue work, capacity, and a forecast summary |
-| Subjects | Browse topics; start or finish learning; edit estimates, ROI, and exam type; open topic details |
-| Strategy & Evidence | Configure subject sources, coverage, topic scope and prerequisites; record assessments; resolve repairs |
-| Today's Plan | Use the GS/Optional learning lanes, log learning or stage-session hours, and review due work and repairs |
-| Calendar | Inspect sessions on particular dates using the same planner as Today's Plan and Timeline |
+| Dashboard | Review active learning, earned due work, overdue work, and daily capacity |
+| Subjects | Browse topics; Start/Pause/Resume/Finish learning; optionally set duration and priority |
+| Strategy & Evidence | Configure resources and topic scope; retain Assessment performance, attempts, and repairs; no syllabus-coverage editor |
+| Today's Plan | Work on explicitly started GS/Optional topics, earned revisions, and due repairs |
+| Calendar | Inspect actual study and capacity allocations for started topics and earned revisions; untouched topics stay absent |
 | Analytics | Review recorded activity progress and weekly study/revision reporting |
 | Cumulative Rev | Arrange synthesis batches and subject-level revision cycles |
-| Timeline | Compare first-pass coverage, full activity pipelines, exam-scoped dates, and workload warnings |
 | Settings | Configure the planner, hours, exam dates, activity durations, intervals, notifications, and backups |
 | HTML Pages | Open supported uploaded HTML study pages; this is separate from assessment evidence |
 | Help & Logic | Read the application's built-in explanation of its current rules |
@@ -193,7 +192,7 @@ To return an explicitly customised topic to inheritance, clear its selections in
 
 An activity duration is a planning estimate, not a score or required study achievement. Recall and note-making durations scale with topic depth; practice/writing slots are time-boxed. Do not lower estimates merely to make the finish date look better.
 
-In **Settings**, configure the planner and click **Save Planner**. If no planner settings have been saved, the implicit defaults are **attempt year 2028**, **Auto** phase, and **one GS learner + one Optional learner concurrently**.
+In **Settings**, configure the planner and click **Save Planner**. The initial settings use **attempt year 2028** and **Auto** phase. Several topics may be started, but only **one stopwatch runs at a time**: starting or resuming another topic automatically pauses and saves the previous session.
 
 - Review each subject's **Learning stream** and the **GS subject queue / Optional subject queue**. Explicit `studyStream` wins; otherwise Sociology profiles (`sociology1`/`sociology2`) or names containing Sociology/Optional classify as Optional, and other subjects as GS. Mains Only does not itself mean Optional.
 - Move subjects up/down to set explicit queues. Without an explicit position, stable fallback order is Economy, Environment, Geography, History, Polity, then Sociology I/II, with name/ID tie-breaks. Topic prerequisites still apply.
@@ -215,7 +214,7 @@ These shares divide the existing daily budget; they are not extra hours or measu
 2. Choose a realistic **Pre-Exam Buffer**.
 3. Click **Save Exam Dates**.
 
-With **Phase: Auto**, the planner uses Integrated until the configured Prelims focus window (default **112 days**, including Prelims day), then Mains after Prelims through the configured Mains date, or onward if none is set. Outside those windows it uses Integrated. You can select a phase explicitly. The buffer sets exam-scoped planning deadlines, not a hard ban on later work; verify the Timeline and shortfalls.
+With **Phase: Auto**, the planner uses Integrated until the configured Prelims focus window (default **112 days**, including Prelims day), then Mains after Prelims through the configured Mains date, or onward if none is set. Outside those windows it uses Integrated. You can select a phase explicitly. The buffer sets exam-scoped deadlines for earned work, not a hard ban on later work; inspect the Calendar and actual backlog.
 
 ### Step 3: Review One Subject Strategy
 
@@ -224,11 +223,9 @@ With **Phase: Auto**, the planner uses Integrated until the configured Prelims f
 3. Review the source resources and keep the scope bounded to relevant chapters or sections.
 4. Keep one core spine rather than reading every alternative listed in a PDF.
 5. Give any **Depth** resource a specific gap or question that justifies opening it.
-6. Review the topic-linked syllabus entries against the official syllabus.
-7. Select **Syllabus verified against official syllabus** only after that comparison.
-8. Click **Save strategy**.
+6. Click **Save resources & settings** when these settings change.
 
-The seeded checklist is topic-level. It is not necessary to enter all your subtopics into the tracker.
+The syllabus-coverage checklist, linked-topic mapping editor, and its Save strategy control have been removed. Assessment performance, attempt history, repairs, resources, and topic strategy remain available.
 
 Use the profile outputs to choose appropriate evidence, not merely identical exercises for every subject:
 
@@ -249,26 +246,28 @@ Use the profile outputs to choose appropriate evidence, not merely identical exe
 3. Select prerequisite topics only where their completed learning is genuinely necessary.
 4. Click **Save topic strategy**.
 
-The app rejects circular prerequisites. An unfinished prerequisite blocks starting dependent learning and affects its forecast. A related topic is different: it is a useful connection, not a prerequisite. Do not add every conceptual cross-link as a hard dependency.
+The app rejects circular prerequisites. An unfinished prerequisite blocks starting dependent learning; no dependent learning is started automatically. A related topic is different: it is a useful connection, not a prerequisite. Do not add every conceptual cross-link as a hard dependency.
 
 ## 9. Study One Topic: Step By Step
 
 Use **Indian Monsoon Mechanism & Seasons of India** as an example.
 
 1. **Find it:** Open Subjects, expand Geography, and select the topic.
-2. **Check scope:** Review its source reference, relevant chapters, exam type, selected activities, and learning-hour estimate. Adjust the estimate through Edit if needed.
+2. **Check scope:** Review its source reference, relevant chapters, exam type, and selected activities. Duration and priority may stay blank; use Edit only when choosing to supply them.
 3. **Preview questions:** Inspect representative PYQs to understand what the topic must enable you to do. This is a recommended study method, not an automatically enforced stage.
-4. **Start:** Click **Start** or **Start Learning**. Actual manual starts enforce **one GS + one Optional topic in Learning**, not three topics or two from the same stream. An unfinished prerequisite still blocks a start. A suggested forecast does not start the topic for you.
+4. **Start:** Click **Start**. The persistent stopwatch begins and the topic becomes eligible for Calendar allocation. Unfinished prerequisites still block dependent starts. Starting another topic pauses and saves the previous running stopwatch; it does not finish that topic.
 5. **Learn:** Study the bounded core material. Explain the mechanism, retrieve key relations, and practise the relevant diagram or map outside the app.
-6. **Log actual work:** Open Today's Plan, find the topic in **GS learning** (or **Optional learning** for an optional topic), enter the learning hours actually spent, and click **Log**.
-7. **Continue honestly:** Log each session once. Learning logs reduce remaining initial learning; use the separate stage-session control for later activities. Neither control is a way to pre-log future study.
-8. **Finish the first pass:** When the bounded learning work is complete, click **Learning Done** or **Mark as Completed** in topic details. This frees the lane for the next topic even while this topic's stages continue.
+6. **Pause/Resume:** Click **Pause** when stopping study; elapsed time is saved to study logs on the dates it was spent. Click **Resume** to continue. The stopwatch survives refreshes.
+7. **Continue honestly:** Record a session once. Manual learning logs remain available for work not timed in the app; do not manually log the same stopwatch session. Stage-session logs are separate.
+8. **Finish the first pass:** Click **Finish** only when learning is actually complete. This saves remaining stopwatch time and unlocks earned follow-up work. Reaching an optional duration never auto-completes learning.
 9. **Follow revision sessions:** Reopen the topic's Revision Timeline or Today's Plan. Use **Session hours today** + **Log** for partial activity time. Mark an activity done only after **all** its work is finished, including sessions on other days; a small allocation today is not completion of the whole stage.
 10. **Record evidence:** Use Strategy & Evidence for timed questions, recall checks, subject-skill checks, or writing assessments. This is separate from the activity checkbox.
 11. **Repair errors:** Tag relevant errors and complete the correction/retest workflow.
 12. **Recheck later:** Use later recall, mixed tests, and cumulative revision rather than assuming the first successful session is permanent retention.
 
-When learning is completed, recorded **learning-only** hours can replace the original estimate and influence later duration scaling. Activity logs do not count toward that replacement. Accurate logs therefore improve subsequent planning.
+Completed learning's actual hours influence later revision duration scaling without filling or overwriting the optional duration field. No learning completion or full-course finish date is predicted.
+
+To link related topics, open topic details, search by topic or subject name, select a result, and click **Link selected topic**. The selected result and success/failure message are shown. Links work in both directions; unlinking also gives feedback.
 
 Undo an activity if marked accidentally. This reopens an incomplete pipeline where applicable; it does not erase independent assessment evidence or undo work already performed in historical batches.
 
@@ -370,36 +369,19 @@ The subject cycles are **Consolidation, Active Recall, Targeted Repair, Rapid Fi
 
 Subject-cycle suggestions are planning aids, not verified evidence that the previous work has been completed. Confirm prerequisite preparation, available capacity, overlaps, and exam timing before accepting a block. The current exam-relative cycle logic is oriented around Prelims; separately plan optional/Mains-specific final revision.
 
-## 13. Read The Timeline Correctly
+## 13. Read The Progress-Driven Calendar
 
-1. Open **Timeline**.
-2. Check forecast/unscheduled topic counts, weekly hours, and the **Provisional forecast** count of topics still using uncalibrated defaults.
-3. Review remaining learning and follow-up activity hours separately.
-4. Compare **GS stream** and **Optional stream**: **First-pass coverage** is initial learning; **Full activity pipeline** includes the selected follow-ups. Read dates with their years.
-5. Inspect **Prelims-scoped activities / Mains-scoped activities**, planning deadlines, late/unscheduled topic lists, and each stream's review-pressure note.
-6. Return to the underlying scope, estimates, or hours if the plan does not fit your preparation window.
+The predictive Time Estimator has been removed. Today's Plan and Calendar share these rules:
 
-Today's Plan, Calendar, and Timeline use **one shared engine**: estimates, available hours, phase allocations, active stages, learning/stage logs, reservations, and prerequisites all affect the same plan. It simulates starts and split sessions; **a forecasted start does not actually change a topic to Learning**. An activity's forecast date is its final planned session, not necessarily its first session.
+1. Untouched topics remain a catalogue, not a pre-filled timetable.
+2. Only explicitly started topics (or topics with actual learning logs) receive learning allocations.
+3. Blank duration means open-ended learning. Daily slots are capacity allocations, not estimates of topic size or claims that study happened.
+4. Only **Finish** completes learning. Follow-up activities become eligible from actual completion; dependent stages wait for their actual prerequisites to be completed.
+5. Unfinished eligible work is carried forward within daily capacity, ordered by priority and existing due-work rules. No predicted learning completion releases a new revision chain.
+6. Logs record actual time; planned slots do not add progress. Pause/Finish saves stopwatch time, including splitting sessions across IST dates.
+7. Manually scheduled cumulative batches and subject cycles remain visible and consume capacity. Actual history, assessments, and repairs are retained.
 
-**Prelims-scoped finish** counts GS topics other than Mains Only and omits MVA/MAINS; Optional and other excluded work **still consume the shared budget**. **Mains-scoped finish** excludes Prelims-only topics. Neither date measures performance or guarantees exam readiness.
-
-**Recall backlog guard:** in Settings, **Recall backlog guard (days; 0 disables)** defaults to **7**. When pending recall is later than this tolerance, the forecast pauses **new starts in that stream**, keeps its existing active learner, and redirects idle learning quota to follow-ups/backlog recovery. Review pressure shows the maximum projected recall delay and the number of forecast days with new learning deferred (`recallPressure` / `guardedLearningDays`). This is a **soft planning tolerance, not a guarantee of on-time recall**; it cannot create missing hours.
-
-The engine has a **3,650-day** safety horizon, not a 400-day course cutoff. Unscheduled work and late deadlines are genuine workload signals, not dates to hide or promises of eventual readiness.
-
-### What Warnings Mean
-
-| Message Or Situation | Interpretation | Appropriate Response |
-| --- | --- | --- |
-| No study hours configured | There is no weekly learning capacity | Correct the available-hour settings |
-| Fixed reservations exceed daily budget capacity | Cumulative/subject-cycle demand exceeds capacity left after recorded time | Reschedule reservations or review sustainable hours; stage splitting does not remove this shortfall |
-| Unscheduled work | Missing dates, impossible dependencies, unusable task pools, or the finite horizon prevent a finish | Inspect prerequisites, phase shares, and workload rather than assuming zero days remaining |
-| Review pressure / new learning deferred | Recall is delayed and the guard is holding new forecast starts in that stream | Reduce backlog and recalibrate demand/capacity; the tolerance is not an on-time guarantee |
-| Not scheduled | A reliable date was not produced | Read the warning; do not interpret this as zero days remaining |
-| Unallocated work | Demand is not allocated in that displayed plan | Decide when to perform it; this does not promise automatic rollover tomorrow |
-| Finish date is after your target exam | The current plan does not fit that target | Calibrate actual learning needs and essential activities rather than editing numbers to hide the mismatch |
-
-Changing activity scope changes the forecast, not the amount of learning you truly need. The forecast is **not a marks predictor or a guarantee that an exam deadline will be met**.
+A blank calendar date is normal until relevant work has been started or earned. Exam countdowns remain, but untouched catalogue topics do not generate false late-activity warnings. Scheduling warnings apply only to eligible work that cannot fit available capacity; they are not predictions of marks or readiness.
 
 ## 14. Daily And Weekly Routine
 
@@ -419,9 +401,9 @@ Changing activity scope changes the forecast, not the amount of learning you tru
 - [ ] Review Analytics and the weekly record of work actually logged.
 - [ ] Inspect evidence quality and recurring errors, not just completed activities.
 - [ ] Review open repairs and stale evidence in Strategy & Evidence.
-- [ ] Recalibrate topic estimates from representative actual learning sessions.
+- [ ] Review actual learning time and optionally set priorities for started topics.
 - [ ] Check cumulative revision, subject cycles, and mixed practice.
-- [ ] Review the Timeline against your real target dates.
+- [ ] Review earned Calendar work against your real available hours.
 - [ ] Export an independent JSON backup.
 
 **Recommended discipline:** use the tracker briefly to decide and record work. Keep most preparation time for reading, retrieval, questions, writing, feedback, and correction.
@@ -443,9 +425,9 @@ The optional GitHub sync is best effort. Local saves and independent exports rem
 
 | Question | Answer |
 | --- | --- |
-| Is a suggested topic already started? | No. Seeded topics begin Not Started; click Start explicitly. A forecast is not a study record. |
-| Why can I not start another topic? | Only one actual learner is allowed per stream. Complete its initial learning and check unfinished prerequisites; a free Optional lane cannot hold a second GS learner. |
-| Why has the forecast stopped suggesting new learning? | Check that stream's recall backlog guard and review-pressure note. Existing active learning is preserved; delayed recall can defer new starts. |
+| Why is the Calendar initially empty? | Untouched topics are not scheduled. Start a topic or finish learning to earn follow-ups. |
+| Can I switch topics without finishing? | Yes. Start/Resume another topic; the previous running stopwatch is automatically paused and logged. Unfinished prerequisites still apply. |
+| Where is the Time Estimator? | It has been removed. Actual stopwatch time, logs, and earned Calendar work replace speculative finish dates. |
 | Why does completion show Estimated time used? | The stage was done today without a same-day actual stage log. Its estimated remaining time reserves capacity; it is not measured study. Log the actual stage time to replace it. |
 | Why did Compact not change this topic? | A non-empty topic or subject stage override takes precedence. Review the resolved active stages. |
 | Why is writing still self-assessed? | You selected Self review. A checkbox or confidence rating is not external evaluation. |
@@ -453,7 +435,7 @@ The optional GitHub sync is best effort. Local saves and independent exports rem
 | Why is recall early-recall? | Check learning completion and the configured delayed-recall threshold. |
 | Why did a subject test not update every topic? | Subject/full-paper scope is not automatically attributed to individual topics. |
 | Can I add links before starting? | Yes. CA Links is independent of learning status and available slots. |
-| Does checking the syllabus verification box audit the syllabus? | No. It records your declaration that you performed that comparison. |
+| Where is syllabus coverage? | Its checklist and topic-mapping editor were removed; Assessment performance and other evidence metrics remain. |
 | Does the app check the PDF facts or score my answers? | No. Source verification and answer evaluation remain your responsibility. |
 | Do I need to enter subtopics? | No. The installed dataset is main-topic level; manage finer detail in your study material. |
 

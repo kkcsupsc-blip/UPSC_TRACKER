@@ -60,7 +60,10 @@ class SubjectSeedTests(unittest.TestCase):
         self.assertEqual(len(result["estimates"]), 211)
         self.assertEqual(result["summary"]["totalTopics"], 211)
         self.assertEqual(result["summary"]["schedulingErrors"], [])
-        self.assertTrue(all(estimate["masteryDate"] for estimate in result["estimates"].values()))
+        self.assertTrue(all(estimate["masteryDate"] is None for estimate in result["estimates"].values()))
+        self.assertTrue(all(topic["estimatedHours"] is None and topic["roi"] is None
+                            for subject in seed["subjects"] for topic in subject["topics"]))
+        self.assertEqual(self.backend["compute_daily_load"](seed, "2026-10-21")["activities"], [])
 
     def test_optional_papers_only_use_mains_activities(self):
         seed = self.seed()

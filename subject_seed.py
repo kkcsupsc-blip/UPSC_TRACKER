@@ -132,17 +132,17 @@ def build_seed(root, defaults, extracted=None, created_at=None):
             "id": document["id"], "name": document["name"], "roi": "medium", "color": document["color"],
             "ntfyTopic": "", "defaultStages": None, "createdAt": created_at, "topics": [],
             "sourceDocument": document["document"],
-            "notes": "Main numbered topics only, in source-document order. Initial hours and ROI are editable planning defaults, not PDF measurements.",
+            "notes": "Main numbered topics only, in source-document order. Topic duration and priority remain blank until entered; start a topic to track actual learning.",
         }
         for item in document["topics"]:
             subject["topics"].append({
                 "id": f"{document['id']}-{item['code'].replace('.', '-')}",
-                "name": item["name"], "estimatedHours": 7.5, "roi": "medium", "examType": document["examType"],
+                "name": item["name"], "estimatedHours": None, "roi": None, "examType": document["examType"],
                 "status": "not-started", "startDate": None, "completionDate": None, "activeStages": None,
                 "links": [], "relatedTopicIds": [], "prerequisiteIds": [], "createdAt": created_at,
                 "notes": f"Topic {item['code']} | Layer {item['layerNumber']}: {item['layerName']} | PDF page {item['page']}",
                 "source": {"document": document["document"], **item},
-                "estimateSource": "initial-planning-default",
+                "estimateSource": None, "roiSource": None, "learningSeconds": 0, "timerStartedAt": None,
             })
         subject["strategy"] = validate_strategy({
             "profile": document["profile"], "stagePreset": "standard", "syllabusVerified": False,
@@ -153,8 +153,8 @@ def build_seed(root, defaults, extracted=None, created_at=None):
         data["subjects"].append(subject)
     data["seedMetadata"] = {
         "topicLevelOnly": True, "subjectCount": len(extracted), "topicCount": sum(len(subject["topics"]) for subject in extracted),
-        "createdAt": created_at, "estimatedHoursDefault": 7.5,
-        "priorityBasis": "Neutral ROI preserves source-document topic order until priorities are calibrated",
+        "createdAt": created_at, "estimatedHoursDefault": None,
+        "priorityBasis": "Topic priorities are unset until entered by the user",
         "syllabusBasis": "PDF topic architecture; not independently verified against the official syllabus",
         "documents": [{"path": subject["document"], "topicCount": len(subject["topics"]),
                        "sha256": hashlib.sha256((root / subject["document"]).read_bytes()).hexdigest()}

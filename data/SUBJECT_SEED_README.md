@@ -20,11 +20,11 @@ copy does not change unless you deliberately rebuild it.
 
 - Main topics only, in document order. Coverage bullets and subtopics were not imported.
 - Original topic codes, layer names and PDF page references in topic notes and source metadata.
-- Correct subject profiles, standard stage fallback, bounded source recommendations and topic-level coverage mappings.
+- Correct subject profiles, standard stage fallback, and bounded source recommendations. Legacy coverage mappings are retained as metadata, not shown as a syllabus editor.
 - Every topic starts as `not-started`, with no start/completion dates or previous links.
 - Study logs, completed activities, assessments, repairs, cumulative batches and subject cycles are empty.
-- Initial learning estimates are **7.5 hours per topic**. These are editable planning defaults, not timings extracted from the PDFs.
-- Neutral `medium` ROI preserves document order until you calibrate priorities. It is not a source-derived importance score.
+- Learning duration and topic ROI/priority are **blank** until entered by the user; no 7.5-hour or medium defaults are applied.
+- Topics do not create Calendar work until explicitly started. Start/Pause/Finish records actual learning time; revisions are earned through completed work.
 - Exam dates and notification channels are unset; old settings and progress are not carried into this fresh dataset.
 
 The coverage checklist mirrors the PDF architecture. It is not marked as independently

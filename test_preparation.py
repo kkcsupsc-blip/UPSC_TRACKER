@@ -112,7 +112,9 @@ class PreparationTests(unittest.TestCase):
             "estimatedHours": 3, "activeStages": ["R1"],
         })
         estimates = self.backend["estimate_all_timelines"](self.data)["estimates"]
-        self.assertGreaterEqual(estimates["topic"]["startDate"], estimates["foundation"]["completionDate"])
+        self.assertIsNone(estimates["topic"]["startDate"])
+        self.assertIsNone(estimates["foundation"]["completionDate"])
+        self.assertEqual(self.backend["compute_daily_load"](self.data, "2026-10-21")["activities"], [])
 
     def test_unmark_keeps_an_audit_record(self):
         self.topic.update(status="completed", completionDate="2026-10-20", activeStages=["R1"])
@@ -135,7 +137,9 @@ class PreparationTests(unittest.TestCase):
     def test_old_start_without_logs_does_not_imply_finished_learning(self):
         self.topic.update(startDate="2026-01-01", estimatedHours=20, activeStages=["R1"])
         estimate = self.backend["estimate_all_timelines"](self.data)["estimates"]["topic"]
-        self.assertGreater(estimate["completionDate"], "2026-10-21")
+        self.assertIsNone(estimate["completionDate"])
+        self.assertIsNone(estimate["masteryDate"])
+        self.assertEqual(self.backend["get_actual_hours"](self.data, "topic"), 0)
 
     def test_deleting_prerequisite_removes_dependent_links(self):
         self.data["subjects"][0]["topics"].append({

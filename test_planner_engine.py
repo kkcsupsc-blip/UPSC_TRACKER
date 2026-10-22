@@ -47,31 +47,30 @@ class PlannerEngineTests(unittest.TestCase):
             self.assertAlmostEqual(quotas[pool], expected, delta=0.005)
         self.assertAlmostEqual(sum(quotas.values()), 45)
 
-    def test_both_lanes_today_are_planned_without_mutation(self):
-        self.topic(self.subject("economy", "economy"), "gs")
-        self.topic(self.subject("soc1", "sociology1", "optional"), "optional", examType="mains")
+    def test_both_started_lanes_are_planned_without_mutation_or_progress(self):
+        self.topic(self.subject("economy", "economy"), "gs", status="learning", startDate="2026-10-20")
+        self.topic(self.subject("soc1", "sociology1", "optional"), "optional", examType="mains",
+                   status="learning", startDate="2026-10-20")
         before = copy.deepcopy(self.data)
         plan = self.plan()
         lanes = plan["days"]["2026-10-21"]["streams"]
         self.assertEqual(lanes["gs"]["topicId"], "gs")
         self.assertEqual(lanes["optional"]["topicId"], "optional")
-        self.assertTrue(lanes["gs"]["isSuggested"])
+        self.assertFalse(lanes["gs"]["isSuggested"])
+        self.assertEqual(lanes["gs"]["remaining"], 10)
         self.assertEqual(self.data, before)
         self.assert_budget(plan)
 
     def test_default_order_resists_file_reordering_and_config_can_override(self):
         for profile in ("polity", "geography", "economy", "history", "environment"):
-            self.topic(self.subject(profile, profile), profile)
-        self.topic(self.subject("soc2", "sociology2", "optional"), "soc2")
-        self.topic(self.subject("soc1", "sociology1", "optional"), "soc1")
+            self.topic(self.subject(profile, profile), profile, status="completed", completionDate="2026-10-20")
         first = self.plan()
         self.data["subjects"].reverse()
         second = self.plan()
         self.assertEqual(first["estimates"], second["estimates"])
-        self.assertEqual(first["days"]["2026-10-21"]["streams"]["gs"]["topicId"], "economy")
-        self.assertEqual(first["days"]["2026-10-21"]["streams"]["optional"]["topicId"], "soc1")
+        self.assertEqual(first["days"]["2026-10-21"]["activities"][0]["topicId"], "economy")
         self.data["settings"]["planner"] = {"gsSubjectOrder": ["polity"]}
-        self.assertEqual(self.plan()["days"]["2026-10-21"]["streams"]["gs"]["topicId"], "polity")
+        self.assertEqual(self.plan()["days"]["2026-10-21"]["activities"][0]["topicId"], "polity")
 
     def test_actual_logs_consume_capacity_and_remaining_only_once(self):
         self.topic(self.subject("gs", "economy"), "gs", status="learning", startDate="2026-01-01")
@@ -81,44 +80,71 @@ class PlannerEngineTests(unittest.TestCase):
         plan = self.plan()
         day = plan["days"]["2026-10-21"]
         learning = [item for item in day["activities"] if item.get("topicId") == "gs"]
-        self.assertAlmostEqual(sum(item["hours"] for item in learning), 2.4)
-        self.assertAlmostEqual(learning[-1]["remaining"], 5.6)
-        future_hours = sum(item["hours"] for load in plan["days"].values() for item in load["activities"]
-                           if item["category"] == "learning" and item["topicId"] == "gs")
-        self.assertAlmostEqual(future_hours, 8)
+        self.assertAlmostEqual(sum(item["hours"] for item in learning), 4.0002)
+        self.assertAlmostEqual(learning[-1]["remaining"], 7)
+        for load in plan["days"].values():
+            for item in load["activities"]:
+                if item["category"] == "learning" and item["topicId"] == "gs":
+                    self.assertEqual(item["remaining"], 7)
+        self.assertIsNone(plan["estimates"]["gs"]["completionDate"])
+        self.assertEqual(plan["summary"]["remainingLearningHours"], 7)
         self.assert_budget(plan)
 
-    def test_one_active_per_stream_and_lane_releases_before_pipeline(self):
+    def test_multiple_started_topics_share_priority_capacity_without_completion(self):
         subject = self.subject("gs", "economy")
-        self.topic(subject, "first", status="learning", estimatedHours=1, startDate="2026-10-20", activeStages=["R30"])
-        self.topic(subject, "second", status="learning", estimatedHours=20, startDate="2026-10-21")
+        for topic_id, roi in (("low", "low"), ("blank", None), ("empty", ""), ("medium", "medium"),
+                              ("high", "high"), ("very-high", "very-high")):
+            self.topic(subject, topic_id, status="learning", estimatedHours=None,
+                       startDate="2026-10-20", roi=roi)
         before = copy.deepcopy(self.data)
         plan = self.plan()
         activities = [item for item in plan["days"]["2026-10-21"]["activities"] if item["category"] == "learning"]
-        self.assertEqual([item["topicId"] for item in activities], ["first", "second", "second"])
-        self.assertEqual(activities[0]["remaining"], 0)
-        self.assertTrue(plan["summary"]["warnings"])
-        self.assertLess(plan["estimates"]["second"]["startDate"], plan["estimates"]["first"]["masteryDate"])
+        hours = {item["topicId"]: item["hours"] for item in activities}
+        self.assertEqual(set(hours), {"very-high", "high", "medium", "blank", "empty", "low"})
+        self.assertEqual(plan["days"]["2026-10-21"]["streams"]["gs"]["topicId"], "very-high")
+        self.assertGreater(hours["very-high"], hours["high"])
+        self.assertGreater(hours["high"], hours["medium"])
+        self.assertEqual(hours["blank"], hours["medium"])
+        self.assertEqual(hours["empty"], hours["medium"])
+        self.assertGreater(hours["medium"], hours["low"])
+        self.assertTrue(all(item["remaining"] is None for item in activities))
+        self.assertEqual(plan["summary"]["warnings"], [])
+        for estimate in plan["estimates"].values():
+            self.assertIsNone(estimate["completionDate"])
+            self.assertIsNone(estimate["masteryDate"])
+            self.assertTrue(all(value is None for value in estimate["revisionSchedule"].values()))
         self.assertEqual(self.data, before)
+        self.assert_budget(plan)
 
-    def test_prerequisites_and_document_topic_order(self):
+    def test_prerequisites_need_actual_completion_not_learning_reservations(self):
         subject = self.subject("gs", "economy")
-        self.topic(subject, "dependent", prerequisiteIds=["foundation"], estimatedHours=1)
-        self.topic(subject, "foundation", estimatedHours=1)
+        self.topic(subject, "dependent", prerequisiteIds=["foundation"], estimatedHours=1,
+                   status="learning", startDate="2026-10-20")
+        foundation = self.topic(subject, "foundation", estimatedHours=1,
+                                status="learning", startDate="2026-10-20")
+        plan = self.plan()
+        self.assertFalse(any(item.get("topicId") == "dependent" for load in plan["days"].values()
+                             for item in load["activities"]))
+        foundation.update(status="completed", completionDate="2026-10-20")
+        entries = self.plan()["days"]["2026-10-21"]["activities"]
+        self.assertTrue(any(item.get("topicId") == "dependent" for item in entries))
+
+    def test_learning_logs_start_topic_but_revision_or_future_logs_do_not(self):
+        subject = self.subject("gs", "economy")
+        for topic_id in ("logged", "revision-only", "future", "zero", "invalid", "missing-start"):
+            self.topic(subject, topic_id, estimatedHours=None, status="learning", startDate=None)
+        subject["topics"][-2]["startDate"] = "invalid-date"
+        self.data["studyLogs"] = [
+            {"topicId": "logged", "date": "2026-10-20", "hours": 1},
+            {"topicId": "revision-only", "date": "2026-10-20", "hours": 1, "stage": "R1"},
+            {"topicId": "future", "date": "2026-10-22", "hours": 1},
+            {"topicId": "zero", "date": "2026-10-20", "hours": 0},
+        ]
         plan = self.plan()
         entries = [item for load in plan["days"].values() for item in load["activities"] if item["category"] == "learning"]
-        self.assertEqual([item["topicId"] for item in entries], ["foundation", "dependent"])
-
-    def test_ready_prerequisite_does_not_interrupt_unfinished_lane(self):
-        subject = self.subject("gs", "economy")
-        self.topic(subject, "blocked", prerequisiteIds=["optional"], estimatedHours=1)
-        self.topic(subject, "in-progress", estimatedHours=20)
-        self.topic(self.subject("optional", "sociology1", "optional"), "optional", estimatedHours=1)
-        plan = self.plan()
-        entries = [item for item in plan["days"]["2026-10-21"]["activities"]
-                   if item["category"] == "learning" and item["stream"] == "gs"]
-        self.assertEqual({item["topicId"] for item in entries}, {"in-progress"})
-        self.assertGreaterEqual(plan["estimates"]["blocked"]["startDate"], plan["estimates"]["in-progress"]["completionDate"])
+        self.assertEqual({item["topicId"] for item in entries}, {"logged"})
+        self.assertEqual(plan["estimates"]["logged"]["startDate"], "2026-10-20")
+        self.assertEqual(plan["summary"]["schedulingErrors"], [])
 
     def test_actual_history_is_visible_without_reserving_capacity(self):
         self.topic(self.subject("gs", "economy"), "done", status="completed", completionDate="2026-10-19")
@@ -137,11 +163,14 @@ class PlannerEngineTests(unittest.TestCase):
         self.topic(self.subject("gs", "economy"), "done", status="completed", completionDate="2026-10-20",
                    stageProgress={"R1": {"hours": 0.4}}, activeStages=["R1", "PYQ", "ERA"])
         plan = self.plan()
-        for stage, total in (("r1", 1.4), ("pyq", 1.8), ("era", 1.8)):
-            step = plan["schedules"]["done"][stage]
-            self.assertGreater(len(step["sessions"]), 1)
-            self.assertAlmostEqual(sum(session["hours"] for session in step["sessions"]), total, places=5)
-        self.assertAlmostEqual(plan["summary"]["remainingFollowUpHours"], 5)
+        step = plan["schedules"]["done"]["r1"]
+        self.assertGreater(len(step["sessions"]), 1)
+        self.assertAlmostEqual(sum(session["hours"] for session in step["sessions"]), 1.4, places=5)
+        for stage in ("pyq", "era"):
+            self.assertEqual(plan["schedules"]["done"][stage]["sessions"], [])
+            self.assertFalse(plan["schedules"]["done"][stage]["canMark"])
+        self.assertAlmostEqual(plan["summary"]["remainingFollowUpHours"], 1.4)
+        self.assertIsNone(plan["estimates"]["done"]["masteryDate"])
         self.assert_budget(plan)
 
     def test_stage_logs_do_not_inflate_learning_depth_or_double_spend(self):
@@ -161,12 +190,20 @@ class PlannerEngineTests(unittest.TestCase):
                    activeStages=list(planner.STAGES))
         plan = self.plan(hours=lambda data, topic: {stage: 200 if stage == "MAINS" else 1 for stage in planner.STAGES})
         schedule = plan["schedules"]["done"]
-        for before, after in (("r1", "pyq"), ("pyq", "era"), ("era", "r3"), ("r3", "mn"),
-                              ("mn", "mcq"), ("mcq", "mcqa"), ("mcqa", "r7")):
-            self.assertLessEqual(schedule[before]["date"], schedule[after]["sessions"][0]["date"])
-        self.assertLess(schedule["mva"]["date"], schedule["r7"]["date"])
-        self.assertEqual(plan["estimates"]["done"]["prelimsFinishDate"], schedule["r30"]["date"])
-        self.assert_budget(plan)
+        self.assertIsNotNone(schedule["r1"]["date"])
+        for stage in set(schedule) - {"r1"}:
+            self.assertIsNone(schedule[stage]["date"])
+            self.assertEqual(schedule[stage]["sessions"], [])
+            self.assertIsNone(schedule[stage]["dueDate"])
+        self.data["completedRevisions"] = {
+            f"done_{stage}": {"completedAt": "2026-10-20"}
+            for stage in planner.STAGES if stage not in ("R30", "MAINS")
+        }
+        updated = self.plan(hours=lambda data, topic: {stage: 200 if stage == "MAINS" else 1 for stage in planner.STAGES})
+        self.assertIsNotNone(updated["schedules"]["done"]["r30"]["date"])
+        self.assertIsNotNone(updated["schedules"]["done"]["mains"]["date"])
+        self.assertIsNone(updated["estimates"]["done"]["masteryDate"])
+        self.assert_budget(updated)
 
     def test_unavailable_writing_pool_does_not_block_final_recall(self):
         self.data["settings"]["planner"] = {"weekendConsolidation": False, "allocations": {"integrated": {
@@ -174,8 +211,11 @@ class PlannerEngineTests(unittest.TestCase):
         gs = self.subject("gs", "economy")
         self.topic(gs, "reviewed", status="completed", completionDate="2026-10-20",
                    activeStages=["R1", "R3", "R7", "MAINS", "R30"])
-        self.topic(gs, "gs-learning", estimatedHours=100000)
-        self.topic(self.subject("optional", "sociology1", "optional"), "optional-learning", estimatedHours=100000)
+        self.data["completedRevisions"] = {f"reviewed_{stage}": {"completedAt": "2026-10-01"}
+                                            for stage in ("R1", "R3", "R7")}
+        self.topic(gs, "gs-learning", estimatedHours=None, status="learning", startDate="2026-10-20")
+        self.topic(self.subject("optional", "sociology1", "optional"), "optional-learning",
+                   estimatedHours=None, status="learning", startDate="2026-10-20")
         schedule = self.plan()["schedules"]["reviewed"]
         self.assertIsNotNone(schedule["r30"]["date"])
         self.assertIsNone(schedule["mains"]["date"])
@@ -215,13 +255,18 @@ class PlannerEngineTests(unittest.TestCase):
         self.data["completedRevisions"] = {"topic_MN": {"completedAt": "2026-10-10"}}
         plan = self.plan(hours=lambda data, topic: {"MN": 1, "MCQ": 100, "R7": 1})
         schedule = plan["schedules"]["topic"]
-        self.assertLessEqual(schedule["mcq"]["date"], schedule["r7"]["sessions"][0]["date"])
+        self.assertIsNotNone(schedule["mcq"]["date"])
+        self.assertIsNone(schedule["r7"]["date"])
+        self.assertEqual(schedule["r7"]["sessions"], [])
+        self.data["completedRevisions"]["topic_MCQ"] = {"completedAt": "2026-10-20"}
+        self.assertGreaterEqual(self.plan()["schedules"]["topic"]["r7"]["date"], "2026-10-25")
 
     def test_recall_backlog_pauses_only_new_learning_in_that_stream(self):
         gs = self.subject("gs", "economy")
         self.topic(gs, "overdue", status="completed", completionDate="2026-10-01")
         self.topic(gs, "next-gs", estimatedHours=10)
-        self.topic(self.subject("optional", "sociology1", "optional"), "optional", estimatedHours=100)
+        self.topic(self.subject("optional", "sociology1", "optional"), "optional", estimatedHours=100,
+                   status="learning", startDate="2026-10-20")
         plan = self.plan()
         day = plan["days"]["2026-10-21"]
         self.assertIn("gs", day["backlogGuard"])
@@ -241,6 +286,9 @@ class PlannerEngineTests(unittest.TestCase):
                    activeStages=["R1", "ERA", "R3"])
         plan = self.plan(hours=lambda data, topic: {"R1": 1, "ERA": 100, "R3": 1})
         schedule = plan["schedules"]["topic"]
+        self.assertIsNone(schedule["r3"]["date"])
+        self.data["completedRevisions"]["topic_R1"] = {"completedAt": "2026-10-20"}
+        schedule = self.plan(hours=lambda data, topic: {"R1": 1, "ERA": 100, "R3": 1})["schedules"]["topic"]
         self.assertLess(schedule["r3"]["date"], schedule["era"]["date"])
 
     def test_milestones_separate_coverage_pipeline_and_exam_scope(self):
@@ -250,14 +298,18 @@ class PlannerEngineTests(unittest.TestCase):
         plan = self.plan()
         summary = plan["summary"]
         self.assertEqual(summary["milestones"]["prelims"]["finishDate"], plan["estimates"]["gs"]["prelimsFinishDate"])
-        self.assertEqual([entry["topicId"] for entry in summary["milestones"]["prelims"]["lateTopics"]], ["gs"])
-        self.assertLess(summary["streams"]["gs"]["coverageDate"], summary["streams"]["gs"]["pipelineDate"])
+        self.assertEqual(summary["milestones"]["prelims"]["lateTopics"], [])
+        self.assertEqual(summary["milestones"]["prelims"]["unscheduledTopics"], [])
+        self.assertIsNone(summary["streams"]["gs"]["coverageDate"])
+        self.assertIsNone(summary["streams"]["gs"]["pipelineDate"])
         self.assertEqual(summary["attemptYear"], 2028)
 
     def test_pre_and_post_prelims_phases_change_daily_pools(self):
         self.data["settings"]["examDates"] = {"prelims": "2026-10-23", "mains": "2026-11-30"}
-        self.topic(self.subject("gs", "economy"), "gs", estimatedHours=100)
-        self.topic(self.subject("optional", "sociology1", "optional"), "optional", estimatedHours=100)
+        self.topic(self.subject("gs", "economy"), "gs", estimatedHours=100,
+                   status="learning", startDate="2026-10-20")
+        self.topic(self.subject("optional", "sociology1", "optional"), "optional", estimatedHours=100,
+                   status="learning", startDate="2026-10-20")
         plan = self.plan()
         first, post = plan["days"]["2026-10-21"], plan["days"]["2026-10-24"]
         self.assertEqual(first["phase"], "prelims")
@@ -267,7 +319,8 @@ class PlannerEngineTests(unittest.TestCase):
 
     def test_zero_budget_missing_dates_and_dependencies_stay_unknown(self):
         self.data["settings"].update(weekdayHours=0, weekendHours=0)
-        self.topic(self.subject("gs", "economy"), "blocked", prerequisiteIds=["missing"])
+        self.topic(self.subject("gs", "economy"), "blocked", prerequisiteIds=["missing"],
+                   status="learning", startDate="2026-10-20")
         plan = self.plan()
         self.assertIsNone(plan["estimates"]["blocked"]["masteryDate"])
         self.assertIsNone(plan["summary"]["milestones"]["prelims"]["finishDate"])
@@ -275,7 +328,8 @@ class PlannerEngineTests(unittest.TestCase):
         self.assertIsNone(plan["summary"]["milestones"]["prelims"]["deadline"])
 
     def test_impossible_prerequisite_with_positive_budget_stays_unknown(self):
-        self.topic(self.subject("gs", "economy"), "blocked", prerequisiteIds=["missing"])
+        self.topic(self.subject("gs", "economy"), "blocked", prerequisiteIds=["missing"],
+                   status="learning", startDate="2026-10-20")
         plan = self.plan()
         self.assertIsNone(plan["estimates"]["blocked"]["completionDate"])
         self.assertIsNone(plan["summary"]["overallFinishDate"])
@@ -297,23 +351,25 @@ class PlannerEngineTests(unittest.TestCase):
         weekend = self.plan()["schedules"]["done"]["r7"]["date"]
         self.assertLess(weekday, weekend)
 
-    def test_completed_stage_without_time_log_keeps_a_labelled_time_reservation_today(self):
+    def test_completed_stage_without_time_log_is_history_not_synthetic_time(self):
         self.topic(self.subject("gs", "economy"), "done", status="completed", completionDate="2026-10-20")
         self.data["completedRevisions"] = {"done_R1": {"completedAt": "2026-10-21"}}
         plan = self.backend["_build_preparation_plan"](self.data)
         load = self.backend["compute_daily_load"](self.data, "2026-10-21")
         self.assertEqual(plan["days"]["2026-10-21"], load)
-        self.assertEqual(load["estimatedSpentHours"], plan["schedules"]["done"]["r1"]["hours"])
+        self.assertEqual(load["estimatedSpentHours"], 0)
         self.assertEqual(load["actualHours"], 0)
-        self.assertAlmostEqual(load["plannedHours"], load["totalHours"] - load["estimatedSpentHours"])
+        self.assertEqual(load["plannedHours"], 0)
         self.assertTrue(load["activities"][0]["done"])
-        self.assertTrue(load["activities"][0]["isEstimatedActual"])
+        self.assertTrue(load["activities"][0]["displayOnly"])
+        self.assertEqual(plan["estimates"]["done"]["masteryDate"], "2026-10-21")
 
     def test_exhausted_zero_stage_pool_does_not_fabricate_dates(self):
         self.data["settings"]["planner"] = {"allocations": {"integrated": {
             "gs": 40, "optional": 40, "recall": 0, "practice": 0, "currentAffairs": 20}}}
-        self.topic(self.subject("gs", "economy"), "gs", estimatedHours=100000)
-        self.topic(self.subject("optional", "sociology1", "optional"), "optional", estimatedHours=100000)
+        self.topic(self.subject("gs", "economy"), "gs", estimatedHours=None, status="learning", startDate="2026-10-20")
+        self.topic(self.subject("optional", "sociology1", "optional"), "optional", estimatedHours=None,
+                   status="learning", startDate="2026-10-20")
         self.topic(self.data["subjects"][0], "done", status="completed", completionDate="2026-10-20")
         plan = self.plan()
         self.assertIsNone(plan["schedules"]["done"]["r1"]["date"])
@@ -329,8 +385,10 @@ class PlannerEngineTests(unittest.TestCase):
         self.assertEqual(plain["totalHours"], enriched["totalHours"])
 
     def test_daily_forecast_tasks_and_cache_share_one_build(self):
-        self.topic(self.subject("gs", "economy"), "gs", estimatedHours=1)
-        self.topic(self.subject("optional", "sociology1", "optional"), "optional", estimatedHours=1)
+        self.topic(self.subject("gs", "economy"), "gs", estimatedHours=1,
+                   status="learning", startDate="2026-10-20")
+        self.topic(self.subject("optional", "sociology1", "optional"), "optional", estimatedHours=1,
+                   status="learning", startDate="2026-10-20")
         with patch.object(planner, "build_plan", wraps=planner.build_plan) as engine:
             forecast = self.backend["estimate_all_timelines"](self.data)
             for offset in range(31):
@@ -340,30 +398,41 @@ class PlannerEngineTests(unittest.TestCase):
                 learning = self.backend["_simulate_learning_for_date"](self.data, day)
                 self.assertAlmostEqual(sum(item["hours"] for item in tasks), load["revisionHours"])
                 self.assertAlmostEqual(sum(item["hours"] for item in learning.values()), load["learningHours"])
-                self.assertTrue(all(not task["canMark"] and task["isProjected"] for task in tasks))
-                self.assertTrue(all(task["label"].startswith("Estimated") for task in tasks))
+                self.assertEqual(tasks, [])
+                self.assertGreater(load["learningHours"], 0)
+                self.assertEqual(load["actualHours"], 0)
             self.assertEqual(engine.call_count, 1)
             self.data["subjects"][0]["topics"][0]["estimatedHours"] += 1
             self.backend["estimate_all_timelines"](self.data)
             self.assertEqual(engine.call_count, 2)
         self.assertEqual(forecast["summary"]["totalTopics"], 2)
 
-    def test_standard_seed_211_topics_all_forecast_with_conserved_stage_hours(self):
+    def test_standard_seed_211_topics_are_catalog_only_without_false_exam_warnings(self):
         self.data = json.loads(Path(__file__).with_name("data").joinpath("upsc_subjects_seed.json").read_text(encoding="utf-8-sig"))
+        for subject in self.data["subjects"]:
+            for topic in subject["topics"]:
+                topic.update(estimatedHours=None, roi=None)
+        self.data["settings"]["examDates"] = {"prelims": "2026-10-22", "mains": "2026-10-23"}
         before = copy.deepcopy(self.data)
         plan = self.backend["_build_preparation_plan"](self.data)
         self.assertEqual(len(plan["estimates"]), 211)
         self.assertEqual(plan["summary"]["schedulingErrors"], [])
+        self.assertEqual(plan["summary"]["warnings"], [])
         self.assertEqual(plan["summary"]["unscheduledTopics"], 0)
-        for subject in self.data["subjects"]:
-            for topic in subject["topics"]:
-                durations = self.backend["get_topic_scaled_hours"](
-                    self.backend["get_activity_hours"](self.data["settings"]), topic["estimatedHours"])
-                for step in plan["schedules"][topic["id"]].values():
-                    self.assertAlmostEqual(sum(session["hours"] for session in step["sessions"]), durations[step["type"]], places=4)
-                if planner.subject_stream(subject) == "optional":
-                    self.assertNotIn("mcq", plan["schedules"][topic["id"]])
-                    self.assertIsNone(plan["estimates"][topic["id"]]["prelimsFinishDate"])
+        self.assertEqual(plan["summary"]["notStarted"], 211)
+        self.assertEqual(plan["summary"]["totalPlannedHours"], 0)
+        self.assertEqual(plan["summary"]["remainingLearningHours"], 0)
+        self.assertEqual(plan["summary"]["remainingFollowUpHours"], 0)
+        for exam in ("prelims", "mains"):
+            self.assertEqual(plan["summary"]["milestones"][exam]["lateTopics"], [])
+            self.assertEqual(plan["summary"]["milestones"][exam]["unscheduledTopics"], [])
+        for load in plan["days"].values():
+            self.assertEqual(load["activities"], [])
+            self.assertEqual(load["remaining"], load["budget"])
+        for estimate in plan["estimates"].values():
+            for field in ("startDate", "completionDate", "masteryDate", "prelimsFinishDate", "mainsFinishDate"):
+                self.assertIsNone(estimate[field])
+            self.assertTrue(all(day is None for day in estimate["revisionSchedule"].values()))
         self.assertEqual(self.data, before)
         self.assert_budget(plan)
 
