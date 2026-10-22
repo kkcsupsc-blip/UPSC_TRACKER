@@ -15,7 +15,7 @@
           "estimatedHours": 7.5,
           "roi": "medium",
           "examType": "both",
-          "status": "completed",
+          "status": "pipeline-complete",
           "startDate": "2026-10-22",
           "completionDate": "2026-10-22",
           "activeStages": null,
@@ -6983,7 +6983,16 @@
   "cumulativeRevisions": {
     "sectionalBatches": [],
     "subjectRevisions": [],
-    "pendingTopics": []
+    "pendingTopics": [
+      {
+        "topicId": "economy-1-1",
+        "topicName": "Basic Economic Concepts for UPSC",
+        "subjectId": "economy",
+        "subjectName": "Economy",
+        "roi": "medium",
+        "masteredAt": "2026-10-22"
+      }
+    ]
   },
   "studyLogs": [
     {
