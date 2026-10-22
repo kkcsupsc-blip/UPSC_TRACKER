@@ -6926,6 +6926,11 @@
       "completedAt": 1792684510004,
       "confidence": 3,
       "scheduledDate": "2026-10-23"
+    },
+    "economy-1-1_PYQ": {
+      "completedAt": 1792684548895,
+      "confidence": 2,
+      "scheduledDate": "2026-10-23"
     }
   },
   "completedPractice": {},
@@ -7038,6 +7043,14 @@
       "action": "completed",
       "completedAt": 1792684510004,
       "confidence": 3,
+      "scheduledDate": "2026-10-23"
+    },
+    {
+      "topicId": "economy-1-1",
+      "stage": "PYQ",
+      "action": "completed",
+      "completedAt": 1792684548895,
+      "confidence": 2,
       "scheduledDate": "2026-10-23"
     }
   ],
