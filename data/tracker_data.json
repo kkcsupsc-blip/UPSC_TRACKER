@@ -6928,8 +6928,56 @@
   "studyLogs": [],
   "subjectCycles": [],
   "version": 3,
-  "assessmentAttempts": [],
-  "repairItems": [],
+  "assessmentAttempts": [
+    {
+      "id": "4a953f956c5d425fbb65aae7c8797822",
+      "subjectId": "economy",
+      "topicId": "economy-1-1",
+      "date": "2026-10-22",
+      "kind": "writing",
+      "minutes": 60.0,
+      "notes": "",
+      "setType": "diagnostic",
+      "skill": "",
+      "errors": [
+        "concept",
+        "application",
+        "time"
+      ],
+      "maxMarks": 10.0,
+      "score": 6.0,
+      "reviewer": "external"
+    }
+  ],
+  "repairItems": [
+    {
+      "id": "f04a48e9823949869affb06917d4f825",
+      "subjectId": "economy",
+      "topicId": "economy-1-1",
+      "attemptId": "4a953f956c5d425fbb65aae7c8797822",
+      "category": "concept",
+      "status": "open",
+      "dueDate": "2026-10-24"
+    },
+    {
+      "id": "fad5563281fa4137885e626bebcf4373",
+      "subjectId": "economy",
+      "topicId": "economy-1-1",
+      "attemptId": "4a953f956c5d425fbb65aae7c8797822",
+      "category": "application",
+      "status": "open",
+      "dueDate": "2026-10-24"
+    },
+    {
+      "id": "a9fc657062754a61b6fcd66baa33e24f",
+      "subjectId": "economy",
+      "topicId": "economy-1-1",
+      "attemptId": "4a953f956c5d425fbb65aae7c8797822",
+      "category": "time",
+      "status": "open",
+      "dueDate": "2026-10-24"
+    }
+  ],
   "activityHistory": [],
   "seedMetadata": {
     "topicLevelOnly": true,
