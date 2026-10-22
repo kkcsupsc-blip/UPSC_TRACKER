@@ -6941,6 +6941,11 @@
       "completedAt": 1792684573467,
       "confidence": 2,
       "scheduledDate": "2026-10-23"
+    },
+    "economy-1-1_MN": {
+      "completedAt": 1792684579195,
+      "confidence": 2,
+      "scheduledDate": "2026-10-23"
     }
   },
   "completedPractice": {},
@@ -7076,6 +7081,14 @@
       "stage": "ERA",
       "action": "completed",
       "completedAt": 1792684573467,
+      "confidence": 2,
+      "scheduledDate": "2026-10-23"
+    },
+    {
+      "topicId": "economy-1-1",
+      "stage": "MN",
+      "action": "completed",
+      "completedAt": 1792684579195,
       "confidence": 2,
       "scheduledDate": "2026-10-23"
     }
