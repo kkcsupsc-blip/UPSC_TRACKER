@@ -15,9 +15,9 @@
           "estimatedHours": 7.5,
           "roi": "medium",
           "examType": "both",
-          "status": "learning",
+          "status": "completed",
           "startDate": "2026-10-22",
-          "completionDate": null,
+          "completionDate": "2026-10-22",
           "activeStages": null,
           "links": [],
           "relatedTopicIds": [
