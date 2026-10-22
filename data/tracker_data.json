@@ -6980,7 +6980,8 @@
       "total": 14,
       "accuracy": 76.9,
       "retrievalPercent": 71.4,
-      "netMarks": 18.0
+      "netMarks": 18.0,
+      "voided": true
     }
   ],
   "repairItems": [
@@ -7017,7 +7018,7 @@
       "topicId": "economy-1-1",
       "attemptId": "fcea157e64b3416ca06bbbd7f66fc177",
       "category": "elimination",
-      "status": "open",
+      "status": "cancelled",
       "dueDate": "2026-10-24"
     }
   ],
