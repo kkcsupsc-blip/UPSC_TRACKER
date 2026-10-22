@@ -6928,7 +6928,13 @@
       }
     }
   },
-  "completedRevisions": {},
+  "completedRevisions": {
+    "economy-1-1_R1": {
+      "completedAt": 1792684510004,
+      "confidence": 3,
+      "scheduledDate": "2026-10-23"
+    }
+  },
   "completedPractice": {},
   "holidays": [],
   "cumulativeRevisions": {
@@ -7032,7 +7038,16 @@
       "dueDate": "2026-10-24"
     }
   ],
-  "activityHistory": [],
+  "activityHistory": [
+    {
+      "topicId": "economy-1-1",
+      "stage": "R1",
+      "action": "completed",
+      "completedAt": 1792684510004,
+      "confidence": 3,
+      "scheduledDate": "2026-10-23"
+    }
+  ],
   "seedMetadata": {
     "topicLevelOnly": true,
     "subjectCount": 7,
