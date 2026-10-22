@@ -36,8 +36,8 @@
             "layerName": "CONCEPTUAL FOUNDATION"
           },
           "estimateSource": "initial-planning-default",
-          "timerStartedAt": "2026-10-22T11:26:43.124252+00:00",
-          "learningSeconds": 0
+          "timerStartedAt": null,
+          "learningSeconds": 16065.975343
         },
         {
           "id": "economy-1-2",
@@ -6936,7 +6936,16 @@
     "subjectRevisions": [],
     "pendingTopics": []
   },
-  "studyLogs": [],
+  "studyLogs": [
+    {
+      "id": "e48c2dad3436",
+      "topicId": "economy-1-1",
+      "date": "2026-10-22",
+      "hours": 4.46277093,
+      "stage": "learning",
+      "source": "timer"
+    }
+  ],
   "subjectCycles": [],
   "version": 3,
   "assessmentAttempts": [
