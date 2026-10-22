@@ -6951,6 +6951,11 @@
       "completedAt": 1792684581100,
       "confidence": 2,
       "scheduledDate": "2026-10-23"
+    },
+    "economy-1-1_MVA": {
+      "completedAt": 1792684583029,
+      "confidence": 2,
+      "scheduledDate": "2026-10-23"
     }
   },
   "completedPractice": {},
@@ -7102,6 +7107,14 @@
       "stage": "MCQ",
       "action": "completed",
       "completedAt": 1792684581100,
+      "confidence": 2,
+      "scheduledDate": "2026-10-23"
+    },
+    {
+      "topicId": "economy-1-1",
+      "stage": "MVA",
+      "action": "completed",
+      "completedAt": 1792684583029,
       "confidence": 2,
       "scheduledDate": "2026-10-23"
     }
