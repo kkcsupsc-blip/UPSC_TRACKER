@@ -6905,11 +6905,11 @@
       ],
       "allocations": {
         "integrated": {
-          "gs": 40,
-          "optional": 26.67,
-          "recall": 15.56,
-          "practice": 11.11,
-          "currentAffairs": 6.66
+          "gs": 35,
+          "optional": 38.4,
+          "recall": 15.5,
+          "practice": 11.1,
+          "currentAffairs": 0
         },
         "prelims": {
           "gs": 35,
