@@ -5561,8 +5561,8 @@
           "estimatedHours": 7.5,
           "roi": "medium",
           "examType": "mains",
-          "status": "learning",
-          "startDate": "2026-10-21",
+          "status": "not-started",
+          "startDate": null,
           "completionDate": null,
           "activeStages": null,
           "links": [],
@@ -5578,7 +5578,9 @@
             "layerNumber": 1,
             "layerName": "SOCIOLOGY - THE DISCIPLINE"
           },
-          "estimateSource": "initial-planning-default"
+          "estimateSource": "initial-planning-default",
+          "timerStartedAt": null,
+          "learningSeconds": 0
         },
         {
           "id": "sociology-1-1-2",
