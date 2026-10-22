@@ -6931,6 +6931,11 @@
       "completedAt": 1792684548895,
       "confidence": 2,
       "scheduledDate": "2026-10-23"
+    },
+    "economy-1-1_R3": {
+      "completedAt": 1792684552896,
+      "confidence": 1,
+      "scheduledDate": "2026-10-28"
     }
   },
   "completedPractice": {},
@@ -7052,6 +7057,14 @@
       "completedAt": 1792684548895,
       "confidence": 2,
       "scheduledDate": "2026-10-23"
+    },
+    {
+      "topicId": "economy-1-1",
+      "stage": "R3",
+      "action": "completed",
+      "completedAt": 1792684552896,
+      "confidence": 1,
+      "scheduledDate": "2026-10-28"
     }
   ],
   "seedMetadata": {
