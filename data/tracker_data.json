@@ -15,8 +15,8 @@
           "estimatedHours": 7.5,
           "roi": "medium",
           "examType": "both",
-          "status": "not-started",
-          "startDate": null,
+          "status": "learning",
+          "startDate": "2026-10-24",
           "completionDate": null,
           "activeStages": null,
           "links": [],
@@ -33,7 +33,7 @@
             "layerName": "CONCEPTUAL FOUNDATION"
           },
           "estimateSource": "initial-planning-default",
-          "timerStartedAt": null,
+          "timerStartedAt": "2026-10-24T16:18:52.892464+00:00",
           "learningSeconds": 0
         },
         {
