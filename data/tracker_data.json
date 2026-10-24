@@ -33,8 +33,8 @@
             "layerName": "CONCEPTUAL FOUNDATION"
           },
           "estimateSource": "initial-planning-default",
-          "timerStartedAt": "2026-10-24T17:21:53.552571+00:00",
-          "learningSeconds": 33.000616
+          "timerStartedAt": null,
+          "learningSeconds": 54.162995
         },
         {
           "id": "economy-1-2",
@@ -6944,6 +6944,14 @@
       "topicId": "economy-1-1",
       "date": "2026-10-24",
       "hours": 0.00916684,
+      "stage": "learning",
+      "source": "timer"
+    },
+    {
+      "id": "70ae0879dde7",
+      "topicId": "economy-1-1",
+      "date": "2026-10-24",
+      "hours": 0.00587844,
       "stage": "learning",
       "source": "timer"
     }
